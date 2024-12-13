@@ -14,7 +14,7 @@ class TestSaleOrder(CommonTestCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, **DISABLED_MAIL_CONTEXT))
 
-    def create_sale_order(self, payment_mode=None):
+    def create_sale_order(self, payment_method_line=None):
         with Form(self.env["sale.order"]) as sale_form:
             sale_form.partner_id = self.base_partner
             for _, p in self.products.items():
@@ -26,62 +26,65 @@ class TestSaleOrder(CommonTestCase):
                     order_line.price_unit = p.list_price
         sale = sale_form.save()
         self.assertEqual(
-            sale.payment_mode_id, self.base_partner.customer_payment_mode_id
+            sale.payment_method_line_id,
+            self.base_partner.property_inbound_payment_method_line_id,
         )
         sale_form = Form(sale)
 
         # force payment mode
-        if payment_mode:
-            sale_form.payment_mode_id = payment_mode
+        if payment_method_line:
+            sale_form.payment_method_line_id = payment_method_line
         return sale_form.save()
 
     def create_invoice_and_check(
-        self, order, expected_payment_mode, expected_partner_bank
+        self, order, expected_payment_method_line, expected_partner_bank
     ):
         order.action_confirm()
         order._create_invoices()
         invoice = order.invoice_ids
         self.assertEqual(len(invoice), 1)
-        self.assertEqual(invoice.payment_mode_id, expected_payment_mode)
+        self.assertEqual(
+            invoice.preferred_payment_method_line_id, expected_payment_method_line
+        )
         self.assertEqual(invoice.partner_bank_id, expected_partner_bank)
 
-    def test_sale_to_invoice_payment_mode(self):
+    def test_sale_to_invoice_payment_method_line(self):
         """
         Data:
-            A partner with a specific payment_mode
-            A sale order created with the payment_mode of the partner
+            A partner with a specific payment_method_line
+            A sale order created with the payment_method_line of the partner
         Test case:
             Create the invoice from the sale order
         Expected result:
-            The invoice must be created with the payment_mode of the partner
+            The invoice must be created with the payment_method_line of the partner
         """
         order = self.create_sale_order()
-        self.create_invoice_and_check(order, self.payment_mode, self.bank)
+        self.create_invoice_and_check(order, self.payment_method_line, self.bank)
 
-    def test_sale_to_invoice_payment_mode_2(self):
+    def test_sale_to_invoice_payment_method_line_2(self):
         """
         Data:
-            A partner with a specific payment_mode
-            A sale order created with an other payment_mode
+            A partner with a specific payment_method_line
+            A sale order created with an other payment_method_line
         Test case:
             Create the invoice from the sale order
         Expected result:
-            The invoice must be created with the specific payment_mode
+            The invoice must be created with the specific payment_method_line
         """
-        order = self.create_sale_order(payment_mode=self.payment_mode_2)
-        self.create_invoice_and_check(order, self.payment_mode_2, self.bank)
+        order = self.create_sale_order(payment_method_line=self.payment_method_line_2)
+        self.create_invoice_and_check(order, self.payment_method_line_2, self.bank)
 
-    def test_sale_to_invoice_payment_mode_via_payment(self):
+    def test_sale_to_invoice_payment_method_line_via_payment(self):
         """
         Data:
-            A partner with a specific payment_mode
-            A sale order created with an other payment_mode
+            A partner with a specific payment_method_line
+            A sale order created with an other payment_method_line
         Test case:
             Create the invoice from sale.advance.payment.inv
         Expected result:
-            The invoice must be created with the specific payment_mode
+            The invoice must be created with the specific payment_method_line
         """
-        order = self.create_sale_order(payment_mode=self.payment_mode_2)
+        order = self.create_sale_order(payment_method_line=self.payment_method_line_2)
         context = {
             "active_model": "sale.order",
             "active_ids": [order.id],
@@ -92,30 +95,33 @@ class TestSaleOrder(CommonTestCase):
             {
                 "advance_payment_method": "fixed",
                 "fixed_amount": 5,
-                "product_id": self.env.ref("sale.advance_product_0").id,
                 "sale_order_ids": order,
             }
         )
         payment.with_context(**context).create_invoices()
         invoice = order.invoice_ids
         self.assertEqual(len(invoice), 1)
-        self.assertEqual(invoice.payment_mode_id, self.payment_mode_2)
-        self.assertFalse(invoice.partner_bank_id)
+        self.assertEqual(
+            invoice.preferred_payment_method_line_id, self.payment_method_line_2
+        )
+        self.assertEqual(
+            invoice.partner_bank_id,
+            self.payment_method_line_2.journal_id.bank_account_id,
+        )
 
-    def test_several_sale_to_invoice_payment_mode(self):
+    def test_several_sale_to_invoice_payment_method_line(self):
         """
         Data:
-            A partner with a specific payment_mode
-            A sale order created with the payment_mode of the partner
+            A partner with a specific payment_method_line
+            A sale order created with the payment_method_line of the partner
             A sale order created with another payment mode
         Test case:
             Create the invoice from the sale orders
         Expected result:
             Two invoices should be generated
         """
-        payment_mode_2 = self.env.ref("account_payment_mode.payment_mode_outbound_dd1")
         order_1 = self.create_sale_order()
-        order_2 = self.create_sale_order(payment_mode_2)
+        order_2 = self.create_sale_order(self.payment_method_line_2)
         orders = order_1 | order_2
         orders.action_confirm()
         invoices = orders._create_invoices()
