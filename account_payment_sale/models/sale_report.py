@@ -8,13 +8,13 @@ from odoo import fields, models
 class SaleReport(models.Model):
     _inherit = "sale.report"
 
-    payment_mode_id = fields.Many2one(
-        "account.payment.mode",
+    payment_method_line_id = fields.Many2one(
+        "account.payment.method.line",
         string="Payment Mode",
         readonly=True,
     )
 
     def _select_additional_fields(self):
         res = super()._select_additional_fields()
-        res["payment_mode_id"] = "s.payment_mode_id"
+        res["payment_method_line_id"] = "s.payment_method_line_id"
         return res
