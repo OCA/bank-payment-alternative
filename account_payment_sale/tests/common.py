@@ -12,7 +12,10 @@ class CommonTestCase(TransactionCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, **DISABLED_MAIL_CONTEXT))
         cls.bank = cls.env["res.partner.bank"].create(
-            {"acc_number": "test", "partner_id": cls.env.user.company_id.partner_id.id}
+            {
+                "acc_number": "FR66 1234 5678 1212 6363 3636 098",
+                "partner_id": cls.env.ref("base.main_company").id,
+            }
         )
         cls.journal = cls.env["account.journal"].create(
             {
@@ -23,33 +26,31 @@ class CommonTestCase(TransactionCase):
                 "bank_account_id": cls.bank.id,
             }
         )
-        cls.payment_mode = cls.env["account.payment.mode"].create(
+        cls.payment_method_line = cls.env["account.payment.method.line"].create(
             {
                 "name": "test_mode",
-                "active": True,
                 "payment_method_id": cls.env.ref(
                     "account.account_payment_method_manual_in"
                 ).id,
                 "bank_account_link": "fixed",
-                "fixed_journal_id": cls.journal.id,
+                "journal_id": cls.journal.id,
             }
         )
-        cls.payment_mode_2 = cls.env["account.payment.mode"].create(
+        cls.payment_method_line_2 = cls.env["account.payment.method.line"].create(
             {
                 "name": "test_mode_2",
-                "active": True,
                 "payment_method_id": cls.env.ref(
                     "account.account_payment_method_manual_in"
                 ).id,
                 "bank_account_link": "fixed",
-                "fixed_journal_id": cls.journal.id,
+                "journal_id": cls.journal.id,
             }
         )
         cls.base_partner = cls.env["res.partner"].create(
             {
                 "name": "Dummy",
                 "email": "dummy@example.com",
-                "customer_payment_mode_id": cls.payment_mode.id,
+                "property_inbound_payment_method_line_id": cls.payment_method_line.id,
             }
         )
         cls.products = {

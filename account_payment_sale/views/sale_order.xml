@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  Copyright 2014-2020 Akretion (Alexis de Lattre <alexis.delattre@akretion.com>)
+  Copyright 2014-2020 Akretion France (https://www.akretion.com/)
+  @author: Alexis de Lattre <alexis.delattre@akretion.com>)
   License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
@@ -10,10 +11,7 @@
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
             <field name="payment_term_id" position="after">
-                <field
-                    name="payment_mode_id"
-                    options="{'no_open': True, 'no_create': True}"
-                />
+                <field name="payment_method_line_id" options="{'no_create': True}" />
             </field>
         </field>
     </record>
