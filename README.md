@@ -1,15 +1,15 @@
 
-[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/bank-payment&target_branch=18.0)
-[![Pre-commit Status](https://github.com/OCA/bank-payment/actions/workflows/pre-commit.yml/badge.svg?branch=18.0)](https://github.com/OCA/bank-payment/actions/workflows/pre-commit.yml?query=branch%3A18.0)
-[![Build Status](https://github.com/OCA/bank-payment/actions/workflows/test.yml/badge.svg?branch=18.0)](https://github.com/OCA/bank-payment/actions/workflows/test.yml?query=branch%3A18.0)
-[![codecov](https://codecov.io/gh/OCA/bank-payment/branch/18.0/graph/badge.svg)](https://codecov.io/gh/OCA/bank-payment)
-[![Translation Status](https://translation.odoo-community.org/widgets/bank-payment-18-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/bank-payment-18-0/?utm_source=widget)
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/bank-payment-alternative&target_branch=18.0)
+[![Pre-commit Status](https://github.com/OCA/bank-payment-alternative/actions/workflows/pre-commit.yml/badge.svg?branch=18.0)](https://github.com/OCA/bank-payment-alternative/actions/workflows/pre-commit.yml?query=branch%3A18.0)
+[![Build Status](https://github.com/OCA/bank-payment-alternative/actions/workflows/test.yml/badge.svg?branch=18.0)](https://github.com/OCA/bank-payment-alternative/actions/workflows/test.yml?query=branch%3A18.0)
+[![codecov](https://codecov.io/gh/OCA/bank-payment-alternative/branch/18.0/graph/badge.svg)](https://codecov.io/gh/OCA/bank-payment-alternative)
+[![Translation Status](https://translation.odoo-community.org/widgets/bank-payment-alternative-18-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/bank-payment-alternative-18-0/?utm_source=widget)
 
 <!-- /!\ do not modify above this line -->
 
-# bank-payment
+# Bank Payment - Alternative approach based on Odoo native payment methods
 
-bank-payment
+Alternative to https://github.com/OCA/bank-payment, based on Odoo native payment methods.
 
 <!-- /!\ do not modify below this line -->
 
