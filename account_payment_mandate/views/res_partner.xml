@@ -15,7 +15,7 @@
                     <button
                         type="action"
                         class="btn-link"
-                        name="%(account_banking_mandate.mandate_action)d"
+                        name="%(account_payment_mandate.mandate_action)d"
                         context="{'search_default_partner_id': id, 'default_partner_id': id}"
                     >
                         <field
