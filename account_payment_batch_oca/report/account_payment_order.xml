@@ -137,7 +137,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t
-                    t-call="account_payment_order.print_account_payment_order_document"
+                    t-call="account_payment_batch_oca.print_account_payment_order_document"
                     t-lang="doc.generated_user_id.lang"
                 />
             </t>

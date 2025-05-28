@@ -57,7 +57,7 @@
                         name="move_line_ids"
                         nolabel="1"
                         force_save="1"
-                        context="{'list_view_ref': 'account_payment_order.view_move_line_tree', 'form_view_ref':'account_payment_order.view_move_line_form_no_edit'}"
+                        context="{'list_view_ref': 'account_payment_batch_oca.view_move_line_tree', 'form_view_ref':'account_payment_batch_oca.view_move_line_form_no_edit'}"
                         colspan="2"
                     >
                         <list>

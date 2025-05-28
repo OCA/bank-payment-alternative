@@ -61,7 +61,7 @@
         <field name="model">account.payment.line</field>
         <field
             name="inherit_id"
-            ref="account_payment_order.account_payment_line_form"
+            ref="account_payment_batch_oca.account_payment_line_form"
         />
         <field name="mode">primary</field>
         <field name="arch" type="xml">
