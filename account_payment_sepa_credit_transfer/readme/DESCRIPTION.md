@@ -1,4 +1,4 @@
-Module to export payment orders in SEPA XML file format.
+Module to export payment orders in ISO 20022 XML file format.
 
 [ISO 20022](https://www.iso20022.org/) is the new international standard
 for bank XML files. This module implements SEPA Credit Transfer (SCT),
