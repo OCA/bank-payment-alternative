@@ -10,7 +10,7 @@
     <record id="view_mandate_form" model="ir.ui.view">
         <field name="name">sdd.mandate.form</field>
         <field name="model">account.banking.mandate</field>
-        <field name="inherit_id" ref="account_banking_mandate.view_mandate_form" />
+        <field name="inherit_id" ref="account_payment_mandate.view_mandate_form" />
         <field name="arch" type="xml">
             <button name="validate" position="before">
                 <button name="print_report" type="object" string="Print" />
@@ -35,7 +35,7 @@
     <record id="view_mandate_tree" model="ir.ui.view">
         <field name="name">sdd.mandate.list</field>
         <field name="model">account.banking.mandate</field>
-        <field name="inherit_id" ref="account_banking_mandate.view_mandate_tree" />
+        <field name="inherit_id" ref="account_payment_mandate.view_mandate_tree" />
         <field name="arch" type="xml">
             <field name="type" position="after">
                 <field
@@ -65,7 +65,7 @@
     <record id="view_mandate_search" model="ir.ui.view">
         <field name="name">sdd.mandate.search</field>
         <field name="model">account.banking.mandate</field>
-        <field name="inherit_id" ref="account_banking_mandate.view_mandate_search" />
+        <field name="inherit_id" ref="account_payment_mandate.view_mandate_search" />
         <field name="arch" type="xml">
             <filter name="expired" position="after">
                 <separator />

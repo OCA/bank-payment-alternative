@@ -30,7 +30,7 @@ class TestSDDBase(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_order.group_account_payment").id
+                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
                     )
                 ],
                 "company_ids": [Command.link(cls.company.id)],
@@ -97,7 +97,7 @@ class TestSDDBase(AccountTestInvoicingCommon):
                 "name": "SEPA direct debit test",
                 "company_id": cls.company.id,
                 "payment_method_id": cls.env.ref(
-                    "account_banking_sepa_direct_debit.sepa_direct_debit"
+                    "account_payment_sepa_direct_debit.sepa_direct_debit"
                 ).id,
                 "bank_account_link": "fixed",
                 "journal_id": cls.bank_journal.id,

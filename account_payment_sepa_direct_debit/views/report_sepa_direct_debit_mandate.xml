@@ -373,7 +373,7 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.basic_layout">
                     <t
-                        t-call="account_banking_sepa_direct_debit.sepa_direct_debit_mandate_document"
+                        t-call="account_payment_sepa_direct_debit.sepa_direct_debit_mandate_document"
                         t-lang="doc.partner_id.lang"
                     />
                 </t>
