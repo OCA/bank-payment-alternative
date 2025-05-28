@@ -1,6 +1,6 @@
 This module contains fields and functions that are used by the module
-for SEPA Credit Transfer (account_banking_sepa_credit_transfer) and SEPA
-Direct Debit (account_banking_sepa_direct_debit). This module doesn't
+for SEPA Credit Transfer (account_payment_sepa_credit_transfer) and SEPA
+Direct Debit (account_payment_sepa_direct_debit). This module doesn't
 provide any functionality by itself.
 
 This module was started during the Akretion-Noviat code sprint of
