@@ -11,8 +11,9 @@
     "author": "Akretion,Odoo Community Association (OCA)",
     "maintainers": ["alexis-via"],
     "development_status": "Mature",
-    "website": "https://github.com/OCA/bank-payment",
+    "website": "https://github.com/OCA/bank-payment-alternative",
     "depends": ["account"],
+    "excludes": ["account_payment_mode"],
     "data": [
         "security/ir.model.access.csv",
         "views/account_payment_method.xml",

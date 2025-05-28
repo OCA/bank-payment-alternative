@@ -369,10 +369,25 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:398fe25e1ed0988a7a0504f68878755aa77b7b87532718ca8dfaa344c31b88e1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Mature" src="https://img.shields.io/badge/maturity-Mature-brightgreen.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/bank-payment/tree/18.0/account_payment_base_oca"><img alt="OCA/bank-payment" src="https://img.shields.io/badge/github-OCA%2Fbank--payment-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/bank-payment-18-0/bank-payment-18-0-account_payment_base_oca"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/bank-payment&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
-<p>This is the new base module for the OCA <strong>bank-payment</strong> project. This
-module has been developped for Odoo 18 to adapt the OCA bank-payment
-stack to the new native payment mode object of Odoo.</p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Mature" src="https://img.shields.io/badge/maturity-Mature-brightgreen.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/bank-payment-alternative/tree/18.0/account_payment_base_oca"><img alt="OCA/bank-payment-alternative" src="https://img.shields.io/badge/github-OCA%2Fbank--payment--alternative-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/bank-payment-alternative-18-0/bank-payment-alternative-18-0-account_payment_base_oca"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/bank-payment-alternative&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<p>This is the new base module for the OCA project
+<strong>bank-payment-alternative</strong>. As the name suggests, the OCA project
+<strong>bank-payment-alternative</strong> is an alternative to the OCA project
+<strong>bank-payment</strong>. The project <strong>bank-payment-alternative</strong> uses the
+native payment mode object of Odoo (model <em>account.payment.method.line</em>)
+which has been introduced in Odoo v15 and is used on partners and
+invoices since Odoo v18.</p>
+<p>This module adds support for variable link between bank/cash journal and
+payment mode. A typical use case is for a company that has several bank
+accounts and wants to have an outbound payment mode <em>Wire transfer to
+suppliers</em> which is not linked to a specific bank account and decide
+which bank account will be debited when confirming the payment order.</p>
+<p>This module also adds support for the display of partially scrambled
+bank account numbers. This is useful for some inbound payment modes
+where the company debits the bank account of its customers and the
+company wants to show on its customer invoices the bank account number
+that will be debited without printing the full bank account number, but
+print it partially scrambled.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -387,10 +402,10 @@ stack to the new native payment mode object of Odoo.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h1><a class="toc-backref" href="#toc-entry-1">Bug Tracker</a></h1>
-<p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/bank-payment/issues">GitHub Issues</a>.
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/bank-payment-alternative/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/OCA/bank-payment/issues/new?body=module:%20account_payment_base_oca%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/OCA/bank-payment-alternative/issues/new?body=module:%20account_payment_base_oca%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -438,7 +453,7 @@ mission is to support the collaborative development of Odoo features and
 promote its widespread use.</p>
 <p>Current <a class="reference external" href="https://odoo-community.org/page/maintainer-role">maintainer</a>:</p>
 <p><a class="reference external image-reference" href="https://github.com/alexis-via"><img alt="alexis-via" src="https://github.com/alexis-via.png?size=40px" /></a></p>
-<p>This module is part of the <a class="reference external" href="https://github.com/OCA/bank-payment/tree/18.0/account_payment_base_oca">OCA/bank-payment</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/bank-payment-alternative/tree/18.0/account_payment_base_oca">OCA/bank-payment-alternative</a> project on GitHub.</p>
 <p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
 </div>
 </div>
