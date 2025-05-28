@@ -41,7 +41,7 @@ class TestSCT(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_order.group_account_payment").id
+                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
                     )
                 ],
                 "company_ids": [Command.link(cls.company.id)],
@@ -101,7 +101,7 @@ class TestSCT(AccountTestInvoicingCommon):
                 "name": "SEPA credit transfer test",
                 "company_id": cls.company.id,
                 "payment_method_id": cls.env.ref(
-                    "account_banking_sepa_credit_transfer.sepa_credit_transfer"
+                    "account_payment_sepa_credit_transfer.sepa_credit_transfer"
                 ).id,
                 "bank_account_link": "fixed",
                 "journal_id": cls.bank_journal.id,

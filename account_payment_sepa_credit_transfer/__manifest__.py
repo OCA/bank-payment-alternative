@@ -9,10 +9,10 @@
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion, Tecnativa, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/bank-payment",
+    "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Banking addons",
-    "conflicts": ["account_sepa"],
-    "depends": ["account_banking_pain_base"],
+    "depends": ["account_payment_sepa_base"],
+    "conflicts": ["account_sepa", "account_banking_sepa_credit_transfer"],
     "data": ["data/account_payment_method.xml"],
     "installable": True,
 }
