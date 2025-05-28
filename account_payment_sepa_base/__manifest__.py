@@ -10,7 +10,7 @@
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion, Noviat, Tecnativa, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/bank-payment",
+    "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Hidden",
     "depends": ["account_payment_batch_oca"],
     "excludes": ["account_banking_pain_base"],
