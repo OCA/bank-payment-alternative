@@ -33,7 +33,7 @@ class AccountPaymentMethod(models.Model):
             "pain.008.001.08",
             "pain.008.003.02",
         ]:
-            path = f"account_banking_sepa_direct_debit/data/{self.pain_version}.xsd"
+            path = f"account_payment_sepa_direct_debit/data/{self.pain_version}.xsd"
             return path
         return super()._get_xsd_file_path()
 

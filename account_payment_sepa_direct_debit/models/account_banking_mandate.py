@@ -133,6 +133,6 @@ class AccountBankingMandate(models.Model):
 
     def print_report(self):
         self.ensure_one()
-        xmlid = "account_banking_sepa_direct_debit.report_sepa_direct_debit_mandate"
+        xmlid = "account_payment_sepa_direct_debit.report_sepa_direct_debit_mandate"
         action = self.env.ref(xmlid).report_action(self)
         return action
