@@ -22,7 +22,9 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_order.group_account_payment").id
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
                     )
                 ]
             }
@@ -44,7 +46,6 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
         cls.inbound_mode = cls.env["account.payment.method.line"].create(
             {
                 "name": "Test Direct Debit of customers",
-                "bank_account_link": "variable",
                 "journal_id": cls.company_data["default_journal_bank"].id,
                 "payment_method_id": cls.payment_method_in.id,
                 "company_id": cls.company.id,

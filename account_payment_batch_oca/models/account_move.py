@@ -201,7 +201,7 @@ class AccountMove(models.Model):
                     )
                 )
         action = self.env["ir.actions.act_window"]._for_xml_id(
-            f"account_payment_order.account_payment_order_{action_payment_type}_action"
+            f"account_payment_batch_oca.account_payment_order_{action_payment_type}_action"
         )
         if len(result_payorder_ids) == 1:
             action.update(
@@ -224,7 +224,7 @@ class AccountMove(models.Model):
     def action_payment_lines(self):
         self.ensure_one()
         action = self.env["ir.actions.act_window"]._for_xml_id(
-            "account_payment_order.account_payment_line_action"
+            "account_payment_batch_oca.account_payment_line_action"
         )
         action.update(
             {
@@ -232,7 +232,7 @@ class AccountMove(models.Model):
                 "context": dict(
                     self.env.context,
                     account_payment_line_main_view=1,
-                    form_view_ref="account_payment_order.account_payment_line_form_readonly",
+                    form_view_ref="account_payment_batch_oca.account_payment_line_form_readonly",
                 ),
             }
         )

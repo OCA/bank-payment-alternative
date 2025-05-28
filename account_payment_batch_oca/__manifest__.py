@@ -8,7 +8,8 @@
 
 
 {
-    "name": "Account Payment Order",
+    "name": "Account Payment Batch OCA",
+    "summary": "Add payment orders and debit orders",
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV, "
@@ -16,13 +17,14 @@
     "Tecnativa, "
     "Akretion, "
     "Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/bank-payment",
+    "website": "https://github.com/OCA/bank-payment-alternative",
     "development_status": "Mature",
     "category": "Banking addons",
     "depends": [
         "account_payment_base_oca",
         "base_iban",
     ],
+    "excludes": ["account_payment_order"],
     "data": [
         "views/account_payment_method.xml",
         "security/payment_security.xml",

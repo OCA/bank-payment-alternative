@@ -6,7 +6,7 @@ from odoo.tools.misc import formatLang
 
 
 class AccountPaymentOrderReport(models.AbstractModel):
-    _name = "report.account_payment_order.print_account_payment_order_main"
+    _name = "report.account_payment_batch_oca.print_account_payment_order_main"
     _description = "Technical model for printing payment order"
 
     @api.model

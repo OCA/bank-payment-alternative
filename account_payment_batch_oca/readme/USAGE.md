@@ -8,4 +8,4 @@ This module also adds an action *Add to Payment Order* on supplier
 invoices and *Add to Debit Order* on customer invoices.
 
 You can print a Payment order via the menu Invoicing/Accounting \>
-Vendors \> Payment Orders and then select the payment oder to print.
+Vendors \> Payment Orders and then select the payment order to print.

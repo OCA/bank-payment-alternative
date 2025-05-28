@@ -22,7 +22,9 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_order.group_account_payment").id
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
                     )
                 ]
             }
@@ -46,7 +48,6 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
             {
                 "name": "Test Credit Transfer to Suppliers",
                 "company_id": cls.company.id,
-                "bank_account_link": "variable",
                 "journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.payment_method_out.id,
                 "selectable": True,
@@ -56,9 +57,9 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
             {
                 "name": "Test Direct Debit of suppliers from Société Générale",
                 "company_id": cls.company.id,
-                "bank_account_link": "variable",
                 "journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.payment_method_out.id,
+                "selectable": True,
             }
         )
         cls.invoice = cls._create_supplier_invoice(cls, "F1242")
