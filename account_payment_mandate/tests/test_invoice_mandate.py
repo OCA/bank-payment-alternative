@@ -26,7 +26,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_order.group_account_payment").id
+                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
                     )
                 ],
                 "company_ids": [

@@ -5,19 +5,20 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
-    "name": "Account Banking Mandate",
-    "summary": "Banking mandates",
+    "name": "Account Payment Mandate",
+    "summary": "Add support for banking mandates used in direct debits",
     "version": "18.0.1.0.0",
-    "development_status": "Production/Stable",
+    "development_status": "Mature",
     "license": "AGPL-3",
     "author": "Compassion CH, "
     "Tecnativa, "
     "Akretion, "
     "Therp B.V., "
     "Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/bank-payment",
+    "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Banking addons",
-    "depends": ["account_payment_order"],
+    "depends": ["account_payment_batch_oca"],
+    "excludes": ["account_banking_mandate"],
     "data": [
         "views/account_banking_mandate.xml",
         "views/account_payment_method.xml",
