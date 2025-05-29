@@ -12,7 +12,7 @@
     "maintainers": ["alexis-via"],
     "development_status": "Mature",
     "website": "https://github.com/OCA/bank-payment-alternative",
-    "depends": ["account"],
+    "depends": ["account_payment_method_base"],
     "excludes": ["account_payment_mode"],
     "data": [
         "security/ir.model.access.csv",
