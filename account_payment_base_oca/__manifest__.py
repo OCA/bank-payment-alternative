@@ -15,7 +15,6 @@
     "depends": ["account_payment_method_base"],
     "excludes": ["account_payment_mode"],
     "data": [
-        "security/ir.model.access.csv",
         "views/account_payment_method.xml",
         "views/account_payment_method_line.xml",
         "views/account_move.xml",
