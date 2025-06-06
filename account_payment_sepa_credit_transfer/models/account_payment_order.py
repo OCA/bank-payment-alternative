@@ -46,11 +46,11 @@ class AccountPaymentOrder(models.Model):
         gen_args = {
             "bic_xml_tag": bic_xml_tag,
             "name_maxsize": name_maxsize,
-            "convert_to_ascii": self.payment_method_id.convert_to_ascii,
+            "convert_to_ascii": self._convert_to_ascii(),
             "payment_method": "TRF",
-            "file_prefix": "sct_",
             "pain_flavor": pain_flavor,
             "pain_xsd_file": xsd_file,
+            "date_fmt": "%Y-%m-%d",
         }
         nsmap = self._generate_pain_nsmap()
         attrib = self._generate_pain_attrib()
@@ -60,49 +60,18 @@ class AccountPaymentOrder(models.Model):
         group_header = self._generate_group_header_block(pain_root, gen_args)
         transactions_count_a = 0
         amount_control_sum_a = 0.0
-        lines_per_group = {}
         # key = (requested_date, priority, local_instrument, categ_purpose)
         # values = list of lines as object
-        for line in self.payment_ids:
-            payment_line = line.payment_line_ids[:1]
-            priority = payment_line.priority
-            local_instrument = payment_line.local_instrument
-            categ_purpose = payment_line.category_purpose
-            # The field line.date is the requested payment date
-            # taking into account the 'date_prefered' setting
-            # cf account_banking_payment_export/models/account_payment.py
-            # in the inherit of action_open()
-            key = (line.date, priority, local_instrument, categ_purpose)
-            if key in lines_per_group:
-                lines_per_group[key].append(line)
-            else:
-                lines_per_group[key] = [line]
-        for (requested_date, priority, local_instrument, categ_purpose), lines in list(
-            lines_per_group.items()
-        ):
+        for lot in self.payment_lot_ids:
             # B. Payment info
-            payment_info = self._generate_start_payment_info_block(
-                pain_root,
-                f"{self.name}-{requested_date.strftime('%Y%m%d')}-"
-                f"{priority}-{local_instrument or 'NOin'}-"
-                f"{categ_purpose or 'NOpu'}",
-                priority,
-                local_instrument,
-                categ_purpose,
-                False,
-                requested_date,
-                gen_args,
-            )
+            payment_info = lot._generate_start_payment_info_block(pain_root, gen_args)
             self._generate_party_block(
                 payment_info, "Dbtr", "B", self.company_partner_bank_id, gen_args
             )
             self._generate_charge_bearer(payment_info)
-            transactions_count_b = 0
-            amount_control_sum_b = 0.0
-            for line in lines:
-                transactions_count_a += 1
-                transactions_count_b += 1
+            for line in lot.payment_ids:
                 # C. Credit Transfer Transaction Info
+                transactions_count_a += 1
                 credit_transfer_transaction_info = objectify.SubElement(
                     payment_info, "CdtTrfTxInf"
                 )
@@ -110,16 +79,18 @@ class AccountPaymentOrder(models.Model):
                     credit_transfer_transaction_info, "PmtId"
                 )
                 payment_identification.InstrId = self._prepare_field(
-                    "Instruction Identification", str(line.move_id.id), 35, gen_args
+                    "Instruction Identification",
+                    line.memo or str(line.id),
+                    35,
+                    gen_args,
                 )
                 payment_identification.EndToEndId = self._prepare_field(
-                    "End to End Identification", str(line.move_id.id), 35, gen_args
+                    "End to End Identification", line.memo or str(line.id), 35, gen_args
                 )
                 amount = objectify.SubElement(credit_transfer_transaction_info, "Amt")
                 amount.InstdAmt = line.currency_id._pain_format(line.amount)
                 amount.InstdAmt.set("Ccy", line.currency_id.name)
                 amount_control_sum_a += line.amount
-                amount_control_sum_b += line.amount
                 if not line.partner_bank_id:
                     raise UserError(
                         _(
@@ -144,8 +115,6 @@ class AccountPaymentOrder(models.Model):
                 self._generate_remittance_info_block(
                     credit_transfer_transaction_info, line, gen_args
                 )
-            payment_info.NbOfTxs = str(transactions_count_b)
-            payment_info.CtrlSum = self._format_control_sum(amount_control_sum_b)
         group_header.NbOfTxs = str(transactions_count_a)
         group_header.CtrlSum = self._format_control_sum(amount_control_sum_a)
         return self._finalize_sepa_file_creation(xml_root, gen_args)

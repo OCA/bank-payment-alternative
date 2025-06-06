@@ -41,8 +41,11 @@ class TestSCT(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
-                    )
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
+                    ),
+                    Command.link(cls.env.ref("account.group_validate_bank_account").id),
                 ],
                 "company_ids": [Command.link(cls.company.id)],
             }
@@ -57,6 +60,7 @@ class TestSCT(AccountTestInvoicingCommon):
             {
                 "acc_number": "FR731111 9999 8888 5555 9999 111",
                 "partner_id": cls.partner1.id,
+                "allow_out_payment": True,
             }
         )
         cls.partner2 = cls.partner_model.create(
@@ -69,6 +73,7 @@ class TestSCT(AccountTestInvoicingCommon):
             {
                 "acc_number": "FR831111 9999 8888 5555 9999 222",
                 "partner_id": cls.partner2.id,
+                "allow_out_payment": True,
             }
         )
         cls.partner3 = cls.partner_model.create(
@@ -81,6 +86,7 @@ class TestSCT(AccountTestInvoicingCommon):
             {
                 "acc_number": "FR931111 9999 8888 5555 9999 333",
                 "partner_id": cls.partner3.id,
+                "allow_out_payment": True,
             }
         )
         cls.partner_bank = cls.partner_bank_model.create(
@@ -91,6 +97,7 @@ class TestSCT(AccountTestInvoicingCommon):
                 "bank_id": (
                     cls.env.ref("account_payment_base_oca.bank_la_banque_postale").id
                 ),
+                "allow_out_payment": True,
             }
         )
         cls.bank_journal = cls.test_company_dict["default_journal_bank"]
@@ -278,11 +285,10 @@ class TestSCT(AccountTestInvoicingCommon):
         partner2_pay_line1 = pay_lines[0]
         self.assertEqual(partner2_pay_line1.currency_id, self.usd_currency)
         self.assertEqual(partner2_pay_line1.partner_bank_id, invoice1.partner_bank_id)
-        self.assertEqual(
+        self.assertFalse(
             partner2_pay_line1.currency_id.compare_amounts(
                 partner2_pay_line1.amount_currency, 2042
-            ),
-            0,
+            )
         )
         self.assertEqual(partner2_pay_line1.communication_type, "free")
         self.assertEqual(partner2_pay_line1.communication, "Inv9032")
@@ -290,13 +296,24 @@ class TestSCT(AccountTestInvoicingCommon):
         self.assertEqual(self.payment_order.state, "open")
         self.assertEqual(self.payment_order.sepa, False)
         self.assertEqual(self.payment_order.payment_count, 1)
+        self.assertEqual(self.payment_order.payment_lot_count, 1)
+        self.assertEqual(
+            partner2_pay_line1.payment_ids[0].currency_id, self.usd_currency
+        )
+        self.assertEqual(
+            partner2_pay_line1.payment_ids[0].payment_lot_id.currency_id,
+            self.usd_currency,
+        )
+        date = partner2_pay_line1.date
+        self.assertEqual(partner2_pay_line1.payment_ids[0].date, date)
+        self.assertEqual(partner2_pay_line1.payment_ids[0].payment_lot_id.date, date)
+
         partner2_bank_line = self.payment_order.payment_ids[0]
         self.assertEqual(partner2_bank_line.currency_id, self.usd_currency)
-        self.assertEqual(
+        self.assertFalse(
             partner2_bank_line.currency_id.compare_amounts(
                 partner2_bank_line.amount, 3054.0
-            ),
-            0,
+            )
         )
         self.assertEqual(partner2_bank_line.payment_reference, "Inv9032 - Inv9033")
         self.assertEqual(partner2_bank_line.partner_bank_id, invoice1.partner_bank_id)
