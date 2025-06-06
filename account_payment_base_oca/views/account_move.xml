@@ -23,9 +23,7 @@
             </xpath>
             <!-- Add selectable=True in domain of preferred_payment_method_line_id -->
             <field name="preferred_payment_method_line_id" position="attributes">
-                <attribute
-                    name="domain"
-                >[('payment_type', '=', 'inbound'), ('company_id', '=', company_id), ('selectable', '=', True)]</attribute>
+                <attribute name="invisible">1</attribute>
             </field>
             <!-- matching on field name="" invisible="" won't take into account the invisible=
             so I have to use xpath -->
@@ -33,10 +31,22 @@
                 expr="//field[@name='preferred_payment_method_line_id'][last()]"
                 position="attributes"
             >
-                <attribute
-                    name="domain"
-                >[('payment_type', '=', 'outbound'), ('company_id', '=', company_id), ('selectable', '=', True)]</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
+            <field name="partner_bank_id" position="before">
+                <field
+                    name="preferred_payment_method_line_id"
+                    string="Payment Method"
+                    domain="[('payment_type', '=', 'inbound'), ('company_id', '=', company_id), ('selectable', '=', True)]"
+                    invisible="move_type in ('in_invoice', 'in_refund')"
+                />
+                <field
+                    name="preferred_payment_method_line_id"
+                    string="Payment Method"
+                    domain="[('payment_type', '=', 'outbound'), ('company_id', '=', company_id), ('selectable', '=', True)]"
+                    invisible="move_type in ('out_invoice', 'out_refund')"
+                />
+            </field>
         </field>
     </record>
 
