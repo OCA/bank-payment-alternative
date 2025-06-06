@@ -4,7 +4,7 @@
         <field name="name">account.payment.order.form</field>
         <field name="model">account.payment.order</field>
         <field name="arch" type="xml">
-            <form string="Payment Order">
+            <form>
                 <header>
                     <button
                         name="%(account_payment_line_create_action)d"
@@ -43,14 +43,9 @@
                     <button
                         name="action_cancel"
                         type="object"
-                        invisible="state not in ('draft', 'open', 'generated')"
+                        invisible="state == 'cancel'"
                         string="Cancel Payments"
-                    />
-                    <button
-                        name="action_uploaded_cancel"
-                        type="object"
-                        invisible="state != 'uploaded'"
-                        string="Cancel Payments"
+                        confirm="Are you sure you want to cancel?"
                     />
                     <field
                         name="state"
@@ -62,13 +57,21 @@
                     <div class="oe_button_box" name="button_box">
                         <button
                             class="oe_stat_button"
-                            name="action_move_journal_line"
+                            name="action_open_invoices"
+                            type="object"
+                            icon="fa-bars"
+                            string="Invoices"
+                        />
+
+                        <button
+                            class="oe_stat_button"
+                            name="action_open_payments"
                             type="object"
                             icon="fa-bars"
                         >
                             <field
-                                string="Journal Entries"
-                                name="move_count"
+                                string="Payments"
+                                name="payment_count"
                                 widget="statinfo"
                             />
                         </button>
@@ -99,7 +102,7 @@
                         <group name="head-right">
                             <field name="date_prefered" readonly="state != 'draft'" />
                             <!-- {'datepicker': {'warn_future': true}} works well... but there is
-                            no 'warn_past' option in v16 unfortunately.
+                            no 'warn_past' option in v18 unfortunately.
                             It would be useful for "date_scheduled" ! -->
                             <field
                                 name="date_scheduled"
@@ -119,18 +122,17 @@
                                 invisible="state not in ('generated', 'uploaded')"
                             />
                             <field
-                                name="generated_user_id"
-                                invisible="state not in ('generated', 'uploaded')"
-                            />
-                            <field
                                 name="date_uploaded"
                                 invisible="state != 'uploaded'"
                             />
                             <field name="description" />
                             <field
-                                name="payment_count"
-                                invisible="state in ('draft', 'cancel')"
+                                name="payment_lot_count"
+                                invisible="state == 'draft'"
                             />
+                            <field name="payment_count" invisible="state == 'draft'" />
+                            <field name="total_company_currency" />
+                            <field name="company_currency_id" invisible="1" />
                         </group>
                     </group>
                     <notebook>
@@ -144,7 +146,7 @@
                         <page
                             name="payment-lines"
                             string="Payment Transactions"
-                            invisible="state in ('draft', 'cancel')"
+                            invisible="state == 'draft'"
                         >
                             <field
                                 name="payment_ids"
@@ -152,6 +154,13 @@
                                 create="0"
                                 context="{'list_view_ref': 'account_payment_batch_oca.view_account_payment_tree_payment_order'}"
                             />
+                        </page>
+                        <page
+                            name="payment-lots"
+                            string="Lots"
+                            invisible="state == 'draft'"
+                        >
+                            <field name="payment_lot_ids" nolabel="1" colspan="2" />
                         </page>
                     </notebook>
                 </sheet>
@@ -170,8 +179,14 @@
                 <field name="company_id" groups="base.group_multi_company" />
                 <field name="date_uploaded" />
                 <field name="description" optional="show" />
+                <field
+                    name="payment_lot_count"
+                    optional="hide"
+                    invisible="state == 'draft'"
+                    string="Lots"
+                />
                 <field name="payment_count" optional="show" string="Transactions" />
-                <field name="total_company_currency" sum="Total Company Currency" />
+                <field name="total_company_currency" sum="1" string="Amount" />
                 <field name="company_currency_id" invisible="1" />
                 <field name="payment_method_code" invisible="1" />
                 <field
@@ -252,7 +267,7 @@
         <field name="name">account.payment.order.graph</field>
         <field name="model">account.payment.order</field>
         <field name="arch" type="xml">
-            <graph string="Payment Orders">
+            <graph>
                 <field name="date_uploaded" type="row" interval="month" />
                 <field name="total_company_currency" type="measure" />
             </graph>
@@ -262,7 +277,7 @@
         <field name="name">account.payment.order.pivot</field>
         <field name="model">account.payment.order</field>
         <field name="arch" type="xml">
-            <pivot string="Payment Orders">
+            <pivot>
                 <field name="date_uploaded" type="row" interval="month" />
                 <field name="total_company_currency" type="measure" />
             </pivot>

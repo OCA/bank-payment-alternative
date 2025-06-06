@@ -48,23 +48,10 @@
                     />
                 </button>
             </div>
-            <field name="show_name_warning" position="after">
-                <field name="payment_order_ok" invisible="1" />
-            </field>
             <field name="payment_reference" position="before">
                 <field name="reference_type" readonly="state != 'draft'" />
             </field>
         </field>
-    </record>
-    <record
-        id="account_invoice_create_account_payment_line_action"
-        model="ir.actions.act_window"
-    >
-        <field name="name">Add to Payment/Debit Order</field>
-        <field name="res_model">account.invoice.payment.line.multi</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="binding_model_id" ref="account.model_account_move" />
     </record>
 
     <record id="view_invoice_tree" model="ir.ui.view">
@@ -74,8 +61,8 @@
         <field name="arch" type="xml">
             <button name="action_force_register_payment" position="after">
                 <button
-                    name="%(account_invoice_create_account_payment_line_action)d"
-                    type="action"
+                    name="create_account_payment_line"
+                    type="object"
                     string="Add to Payment/Debit Order"
                     groups="account_payment_batch_oca.group_account_payment"
                     invisible="context.get('default_move_type') not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')"

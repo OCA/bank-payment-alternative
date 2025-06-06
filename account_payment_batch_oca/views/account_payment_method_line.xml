@@ -13,7 +13,7 @@
             <group name="main" position="after">
                 <group
                     name="payment_order_options"
-                    string="Options for Payment Orders"
+                    string="Options for Payment/Debit Orders"
                     invisible="not payment_order_ok"
                 >
                     <field
@@ -29,7 +29,7 @@
                 </group>
                 <group
                     name="payment_order_create_defaults"
-                    string="Select Move Lines to Pay - Default Values"
+                    string="Select Journal Items to Pay - Default Values"
                     invisible="not payment_order_ok"
                 >
                     <field name="default_journal_ids" widget="many2many_tags" />

@@ -12,14 +12,6 @@ from odoo.exceptions import UserError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    # TODO what is this field for ????
-    payment_order_id = fields.Many2one(
-        comodel_name="account.payment.order",
-        string="Payment Order",
-        copy=False,
-        readonly=True,
-        check_company=True,
-    )
     payment_order_ok = fields.Boolean(
         related="preferred_payment_method_line_id.payment_order_ok"
     )
@@ -34,13 +26,10 @@ class AccountMove(models.Model):
     )
     payment_line_count = fields.Integer(compute="_compute_payment_line_count")
 
-    # TODO convert to read group ?
     def _compute_payment_line_count(self):
         for move in self:
-            move.payment_line_count = len(
-                self.env["account.payment.line"]._search(
-                    [("move_line_id", "in", self.line_ids.ids)]
-                )
+            move.payment_line_count = self.env["account.payment.line"].search_count(
+                [("move_line_id", "in", self.line_ids.ids)]
             )
 
     # Enable support for payment_state = "in_payment" on invoices
@@ -109,7 +98,7 @@ class AccountMove(models.Model):
         # in account_payment_order.py
         return vals
 
-    def get_account_payment_domain(self, payment_method_line):
+    def _get_account_payment_domain(self, payment_method_line):
         return [
             ("payment_method_line_id", "=", payment_method_line.id),
             ("state", "=", "draft"),
@@ -133,13 +122,13 @@ class AccountMove(models.Model):
             )
             if not applicable_lines:
                 raise UserError(
-                    _("No pending AR/AP lines to add on invoice '%s'.")
+                    _("No pending receivable/payable lines to add on invoice '%s'.")
                     % move.display_name
                 )
             payment_mode = move.preferred_payment_method_line_id
             if not payment_mode:
                 raise UserError(
-                    _("No Payment Mode on invoice '%s'.") % move.display_name
+                    _("No Payment Method on invoice '%s'.") % move.display_name
                 )
             if not payment_mode.payment_order_ok:
                 raise UserError(
@@ -166,7 +155,7 @@ class AccountMove(models.Model):
                     )
                 )
             payorder = apoo.search(
-                move.get_account_payment_domain(payment_mode), limit=1
+                move._get_account_payment_domain(payment_mode), limit=1
             )
             new_payorder = False
             if not payorder:
@@ -194,7 +183,7 @@ class AccountMove(models.Model):
             else:
                 move.message_post(
                     body=_(
-                        "%(count)d payment lines added to the existing draft "
+                        "%(count)d payment line(s) added to the existing draft "
                         "payment order %(pay_order_link)s.",
                         count=count,
                         pay_order_link=pay_order_link,
