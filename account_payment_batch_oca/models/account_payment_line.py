@@ -88,6 +88,9 @@ class AccountPaymentLine(models.Model):
     partner_bank_acc_type = fields.Selection(
         related="partner_bank_id.acc_type", string="Bank Account Type"
     )
+    partner_bank_allow_out_payment = fields.Boolean(
+        related="partner_bank_id.allow_out_payment", store=True
+    )
     date = fields.Date(string="Payment Date")
     # communication field is required=False because we don't want to block
     # the creation of lines from move/invoices when communication is empty
@@ -228,10 +231,24 @@ class AccountPaymentLine(models.Model):
 
     def draft2open_payment_line_check(self):
         self.ensure_one()
-        if self.bank_account_required and not self.partner_bank_id:
-            raise UserError(
-                _("Missing Partner Bank Account on payment line %s") % self.name
-            )
+        if self.bank_account_required:
+            if not self.partner_bank_id:
+                raise UserError(
+                    _("Missing Partner Bank Account on payment line %s") % self.name
+                )
+            if (
+                self.order_id._enforce_allow_out_payment()
+                and not self.partner_bank_id.allow_out_payment
+            ):
+                raise UserError(
+                    _(
+                        "Bank account '%(bank_account)s' of partner '%(partner)s' "
+                        "is untrusted. Check that this bank account can be trusted "
+                        "and activate the option 'Send Money' on it.",
+                        bank_account=self.partner_bank_id.display_name,
+                        partner=self.partner_id.display_name,
+                    )
+                )
         if not self.communication:
             raise UserError(_("Communication is empty on payment line %s.") % self.name)
 

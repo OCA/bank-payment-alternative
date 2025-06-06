@@ -6,7 +6,7 @@
 
 from collections import defaultdict
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import format_date
 
@@ -136,6 +136,12 @@ class AccountPaymentOrder(models.Model):
         store=True,
         string="Number of Payment Transactions",
     )
+    untrusted_bank_account_count = fields.Integer(
+        compute="_compute_untrusted_bank_accounts"
+    )
+    untrusted_bank_account_ids = fields.Many2many(
+        "res.partner.bank", compute="_compute_untrusted_bank_accounts"
+    )
     total_company_currency = fields.Monetary(
         compute="_compute_total", store=True, currency_field="company_currency_id"
     )
@@ -183,6 +189,27 @@ class AccountPaymentOrder(models.Model):
         mapped_data = {order.id: count for (order, count) in rg_res}
         for order in self:
             order.payment_lot_count = mapped_data.get(order.id, 0)
+
+    @api.depends(
+        "payment_line_ids.partner_bank_id.allow_out_payment", "payment_method_line_id"
+    )
+    def _compute_untrusted_bank_accounts(self):
+        rpbo = self.env["res.partner.bank"]
+        for order in self:
+            bank_accounts = rpbo
+            if (
+                order.payment_type == "outbound"
+                and order.payment_method_line_id
+                and order.payment_method_line_id.payment_method_id.bank_account_required
+            ):
+                for line in order.payment_line_ids:
+                    if (
+                        line.partner_bank_id
+                        and not line.partner_bank_id.allow_out_payment
+                    ):
+                        bank_accounts |= line.partner_bank_id
+            order.untrusted_bank_account_count = len(bank_accounts)
+            order.untrusted_bank_account_ids = [Command.set(bank_accounts.ids)]
 
     def unlink(self):
         for order in self:
@@ -312,6 +339,11 @@ class AccountPaymentOrder(models.Model):
             }
         )
 
+    def _enforce_allow_out_payment(self):
+        """Inherit this method if you don't want to enfore 'allow_out_payment' boolean
+        on bank accounts"""
+        return True
+
     def draft2open(self):
         """
         Called when you click on the 'Confirm' button
@@ -344,7 +376,7 @@ class AccountPaymentOrder(models.Model):
             # Delete existing lots
             order.payment_lot_ids.unlink()
             # Prepare account payments from the payment lines
-            payline_err_text = []
+            payline_err_text = set()
             group_paylines = {}  # key = pay_hashcode
             pay_hashcode2lot = {}  # key = pay_hashcode, value = payment_lot
             lot_hashcode2lot = {}  # key = lot_hashcode, value = payment_lot
@@ -352,7 +384,7 @@ class AccountPaymentOrder(models.Model):
                 try:
                     payline.draft2open_payment_line_check()
                 except UserError as e:
-                    payline_err_text.append(e.args[0])
+                    payline_err_text.add(e.args[0])
                 # Compute requested payment date
                 if order.date_prefered == "due":
                     requested_date = payline.ml_maturity_date or payline.date or today
@@ -369,7 +401,7 @@ class AccountPaymentOrder(models.Model):
                     and payline.ml_maturity_date
                     and requested_date < payline.ml_maturity_date
                 ):
-                    payline_err_text.append(
+                    payline_err_text.add(
                         _(
                             "The payment mode '%(pmode)s' has the option "
                             "'Disallow Debit Before Maturity Date'. The "
@@ -409,10 +441,7 @@ class AccountPaymentOrder(models.Model):
                 pay_hashcode2lot[pay_hashcode] = lot_hashcode2lot[lot_hashcode]
             # Raise errors that happened on the validation process
             if payline_err_text:
-                raise UserError(
-                    _("There's at least one validation error:\n")
-                    + "\n".join(payline_err_text)
-                )
+                raise UserError("\n".join(payline_err_text))
 
             # Why do we have to call flush_all() ??? A comment to explain would
             # be welcomed!
@@ -546,4 +575,22 @@ class AccountPaymentOrder(models.Model):
             )
         else:
             action["domain"] = [("id", "in", list(move_ids))]
+        return action
+
+    def action_open_untrusted_accounts(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "base.action_res_partner_bank_account_form"
+        )
+        if len(self.untrusted_bank_account_ids) == 1:
+            action.update(
+                {
+                    "view_mode": "form,list",
+                    "views": False,
+                    "view_id": False,
+                    "res_id": self.untrusted_bank_account_ids.id,
+                }
+            )
+        else:
+            action["domain"] = [("id", "in", self.untrusted_bank_account_ids.ids)]
         return action
