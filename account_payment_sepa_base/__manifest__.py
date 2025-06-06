@@ -16,9 +16,10 @@
     "excludes": ["account_banking_pain_base"],
     "external_dependencies": {"python": ["unidecode", "lxml"]},
     "data": [
-        "security/security.xml",
+        "security/res_groups.xml",
         "security/ir.model.access.csv",
         "views/account_payment_line.xml",
+        "views/account_payment_lot.xml",
         "views/account_payment_order.xml",
         "views/account_payment_method_line.xml",
         "views/res_config_settings.xml",

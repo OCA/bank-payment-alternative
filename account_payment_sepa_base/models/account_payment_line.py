@@ -177,17 +177,37 @@ class AccountPaymentLine(models.Model):
     communication = fields.Char(size=140)
 
     @api.model
-    def _get_payment_line_grouping_fields(self):
-        """Add specific PAIN fields to the grouping criteria."""
-        res = super()._get_payment_line_grouping_fields()
+    def _lot_grouping_fields(self):
+        res = super()._lot_grouping_fields()
         res += [
             "priority",
             "local_instrument",
             "category_purpose",
+        ]
+        return res
+
+    @api.model
+    def _payment_grouping_fields(self):
+        """Add specific PAIN fields to the grouping criteria.
+        Fields added to _lot_grouping_fields() are automatically added to
+        payment grouping criteria."""
+        res = super()._payment_grouping_fields()
+        res += [
             "purpose",
             "regulatory_reporting_id",
         ]
         return res
+
+    def _prepare_account_payment_lot_vals(self, lot_sequence):
+        vals = super()._prepare_account_payment_lot_vals(lot_sequence)
+        vals.update(
+            {
+                "priority": self.priority,
+                "local_instrument": self.local_instrument,
+                "category_purpose": self.category_purpose,
+            }
+        )
+        return vals
 
     def _generate_regulatory_reporting(self, parent_node, gen_args):
         if self.regulatory_reporting_id:
@@ -200,9 +220,15 @@ class AccountPaymentLine(models.Model):
                 self.regulatory_reporting_id.code,
                 10,
                 gen_args,
+                raise_if_oversized=True,
             )
 
     def _generate_purpose(self, parent_node):
         if self.purpose:
             purpose = objectify.SubElement(parent_node, "Purp")
             purpose.Cd = self.purpose
+
+    def _compute_sepa_final_hook(self, sepa):
+        """This hook is used by the module account_banking_sepa_direct_debit"""
+        self.ensure_one()
+        return sepa

@@ -145,15 +145,13 @@ class AccountPaymentOrder(models.Model):
                     ):
                         sepa = False
                         break
-                sepa = order._compute_sepa_final_hook(sepa)
+                    sepa = pline._compute_sepa_final_hook(sepa)
+                    if not sepa:
+                        break
                 if not sepa and payment_method.warn_not_sepa:
                     warn_not_sepa = True
             order.sepa = sepa
             order.show_warning_not_sepa = warn_not_sepa
-
-    def _compute_sepa_final_hook(self, sepa):
-        self.ensure_one()
-        return sepa
 
     @api.model
     def _prepare_field(
@@ -251,9 +249,11 @@ class AccountPaymentOrder(models.Model):
         )
         logger.debug(xml_string)
         self._validate_xml(xml_bytes, gen_args)
+        return (xml_bytes, self._prepare_sepa_filename())
 
-        filename = "{}{}.xml".format(gen_args["file_prefix"], self.name)
-        return (xml_bytes, filename)
+    def _prepare_sepa_filename(self):
+        filename = f"{self.name}.xml"
+        return filename
 
     def _generate_pain_nsmap(self):
         self.ensure_one()
@@ -280,61 +280,6 @@ class AccountPaymentOrder(models.Model):
         group_header.CtrlSum = 0.00
         self._generate_initiating_party_block(group_header, gen_args)
         return group_header
-
-    @api.model
-    def _generate_start_payment_info_block(
-        self,
-        parent_node,
-        payment_info_ident,
-        priority,
-        local_instrument,
-        category_purpose,
-        sequence_type,
-        requested_date,
-        gen_args,
-    ):
-        payment_info = objectify.SubElement(parent_node, "PmtInf")
-        payment_info.PmtInfId = self._prepare_field(
-            "Payment Information Identification",
-            payment_info_ident,
-            35,
-            gen_args,
-            raise_if_oversized=True,
-        )
-        payment_info.PmtMtd = gen_args["payment_method"]
-        payment_info.BtchBookg = str(self.batch_booking).lower()
-        # The "SEPA Customer-to-bank
-        # Implementation guidelines" for SCT and SDD says that control sum
-        # and nb_of_transactions should be present
-        # at both "group header" level and "payment info" level
-        payment_info.NbOfTxs = 0
-        payment_info.CtrlSum = 0.0
-        payment_type_info = objectify.SubElement(payment_info, "PmtTpInf")
-        if priority and gen_args["payment_method"] != "DD":
-            payment_type_info.InstrPrty = priority
-        if self.sepa:
-            service_level = objectify.SubElement(payment_type_info, "SvcLvl")
-            service_level.Cd = "SEPA"
-        if local_instrument:
-            local_instrument_root = objectify.SubElement(payment_type_info, "LclInstrm")
-            if gen_args.get("local_instrument_type") == "proprietary":
-                local_instrument_root.Prtry = local_instrument
-            else:
-                local_instrument_root.Cd = local_instrument
-        if sequence_type:
-            payment_type_info.SeqTp = sequence_type
-        if category_purpose:
-            category_purpose_node = objectify.SubElement(payment_type_info, "CtgyPurp")
-            category_purpose_node.Cd = category_purpose
-        if gen_args["payment_method"] == "DD":
-            payment_info.ReqdColltnDt = requested_date.strftime("%Y-%m-%d")
-        else:
-            if gen_args["pain_flavor"].startswith("pain.001.001.09"):
-                requested_exec_date = objectify.SubElement(payment_info, "ReqdExctnDt")
-                requested_exec_date.Dt = requested_date.strftime("%Y-%m-%d")
-            else:
-                payment_info.ReqdExctnDt = requested_date.strftime("%Y-%m-%d")
-        return payment_info
 
     @api.model
     def _must_have_initiating_party(self, gen_args):
@@ -571,3 +516,15 @@ class AccountPaymentOrder(models.Model):
         fmt = f"%.{decimal_places}f"
         control_sum_str = fmt % control_sum
         return control_sum_str
+
+    def _convert_to_ascii_non_sepa_files(self):
+        """This method is designed to be inherited"""
+        return True
+
+    def _convert_to_ascii(self):
+        self.ensure_one()
+        if self.sepa:
+            convert_to_ascii = True
+        else:
+            convert_to_ascii = self._convert_to_ascii_non_sepa_files()
+        return convert_to_ascii
