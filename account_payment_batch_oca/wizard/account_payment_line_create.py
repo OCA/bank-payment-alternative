@@ -165,7 +165,7 @@ class AccountPaymentLineCreate(models.TransientModel):
         lines = self.env["account.move.line"].search(domain)
         self.move_line_ids = lines
         action = {
-            "name": _("Select Move Lines to Create Transactions"),
+            "name": _("Select Journal Items to Create Transactions"),
             "type": "ir.actions.act_window",
             "res_model": "account.payment.line.create",
             "view_mode": "form",

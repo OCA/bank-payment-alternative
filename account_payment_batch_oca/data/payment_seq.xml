@@ -19,4 +19,11 @@
         <field name="padding">4</field>
         <field name="company_id" eval="False" />
     </record>
+    <record id="account_payment_order_inbound_seq" model="ir.sequence">
+        <field name="name">Debit Order</field>
+        <field name="code">account.payment.order.inbound</field>
+        <field name="prefix">DEBIT</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False" />
+    </record>
 </odoo>

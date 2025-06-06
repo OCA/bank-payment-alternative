@@ -35,13 +35,17 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
                 "name": "Test Partner",
             }
         )
-        cls.payment_method_out = cls.env["account.payment.method"].create(
-            {
-                "name": "test outbound payment order ok",
-                "code": "test_manual",
-                "payment_type": "outbound",
-                "payment_order_ok": True,
-            }
+        cls.payment_method_out = (
+            cls.env["account.payment.method"]
+            .sudo()
+            .create(
+                {
+                    "name": "test outbound payment order ok",
+                    "code": "test_manual",
+                    "payment_type": "outbound",
+                    "payment_order_ok": True,
+                }
+            )
         )
         cls.bank_journal = cls.company_data["default_journal_bank"]
         cls.mode = cls.env["account.payment.method.line"].create(
@@ -218,17 +222,13 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
         self.invoice.preferred_payment_method_line_id = False
         self.invoice.action_post()
         with self.assertRaises(UserError):
-            self.env["account.invoice.payment.line.multi"].with_context(
-                active_model="account.move", active_ids=self.invoice.ids
-            ).create({}).run()
+            self.invoice.create_account_payment_line()
 
     def test_cancel_payment_order(self):
         # Open invoice
         self.invoice.action_post()
-        # Add to payment order using the wizard
-        self.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=self.invoice.ids
-        ).create({}).run()
+        # Add to payment order
+        self.invoice.create_account_payment_line()
 
         payment_order = self.env["account.payment.order"].search(self.domain)
         self.assertEqual(len(payment_order), 1)
@@ -241,6 +241,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
         # Open payment order
         payment_order.draft2open()
         self.assertEqual(payment_order.payment_count, 1)
+        self.assertEqual(payment_order.payment_lot_count, 1)
         # Generate and upload
         payment_order.open2generated()
         payment_order.generated2uploaded()
@@ -249,7 +250,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
         with self.assertRaises(UserError):
             payment_order.unlink()
 
-        payment_order.action_uploaded_cancel()
+        payment_order.action_cancel()
         self.assertEqual(payment_order.state, "cancel")
         payment_order.cancel2draft()
         payment_order.unlink()
@@ -356,9 +357,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
         self.refund.action_post()
         self.assertEqual("R1234", self.refund._get_payment_order_communication_direct())
 
-        self.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=self.invoice.ids
-        ).create({}).run()
+        self.invoice.create_account_payment_line()
 
         payment_order = self.env["account.payment.order"].search(self.domain)
         self.assertEqual(len(payment_order), 1)
@@ -397,9 +396,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
             "FR/1234", self.refund._get_payment_order_communication_direct()
         )
 
-        self.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=self.invoice.ids
-        ).create({}).run()
+        self.invoice.create_account_payment_line()
 
         payment_order = self.env["account.payment.order"].search(self.domain)
         self.assertEqual(len(payment_order), 1)
@@ -434,9 +431,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
             lambda line: line.account_type == "liability_payable"
         ).reconcile()
 
-        self.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=self.invoice.ids
-        ).create({}).run()
+        self.invoice.create_account_payment_line()
 
         payment_order = self.env["account.payment.order"].search(self.domain)
         self.assertEqual(len(payment_order), 1)

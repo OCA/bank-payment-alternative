@@ -27,31 +27,31 @@
                     <field
                         name="journal_ids"
                         widget="many2many_tags"
-                        placeholder="Keep empty for using all journals"
+                        placeholder="Leave empty to get items from all journals"
                     />
                     <field
                         name="partner_ids"
                         widget="many2many_tags"
-                        placeholder="Keep empty to use all partners"
+                        placeholder="Leave empty to get items from all partners"
                     />
                     <field name="payment_mode" />
                     <field name="target_move" widget="radio" />
                     <field name="invoice" />
                     <label
                         for="populate"
-                        string="Click on Add All Move Lines to auto-select the move lines matching the above criteria or click on Add an item to manually select the move lines filtered by the above criteria."
+                        string="Click on Add All Journal Items to auto-select the journal items matching the above criteria or click on Add an item to manually select the journal items filtered by the above criteria."
                         colspan="2"
                     />
                     <button
                         name="populate"
                         type="object"
-                        string="Add All Move Lines"
+                        string="Add All Journal Items"
                         colspan="2"
                     />
                 </group>
                 <group
                     name="move_lines"
-                    string="Selected Move Lines to Create Transactions"
+                    string="Selected Journal Items to Create Transactions"
                 >
                     <field
                         name="move_line_ids"
@@ -89,7 +89,7 @@
         </field>
     </record>
     <record id="account_payment_line_create_action" model="ir.actions.act_window">
-        <field name="name">Create Transactions from Move Lines</field>
+        <field name="name">Create Transactions from Journal Items</field>
         <field name="res_model">account.payment.line.create</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

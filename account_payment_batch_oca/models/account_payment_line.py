@@ -33,7 +33,7 @@ class AccountPaymentLine(models.Model):
     bank_account_required = fields.Boolean(
         related="order_id.payment_method_id.bank_account_required",
     )
-    state = fields.Selection(related="order_id.state", string="State", store=True)
+    state = fields.Selection(related="order_id.state", store=True)
     move_line_id = fields.Many2one(
         comodel_name="account.move.line",
         string="Journal Item",
@@ -62,6 +62,7 @@ class AccountPaymentLine(models.Model):
         compute="_compute_amount_company_currency",
         string="Amount in Company Currency",
         currency_field="company_currency_id",
+        store=True,
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
@@ -146,20 +147,31 @@ class AccountPaymentLine(models.Model):
                 line.amount_company_currency = 0
 
     @api.model
-    def _get_payment_line_grouping_fields(self):
-        """This list of fields is used o compute the grouping hashcode."""
+    def _lot_grouping_fields(self):
+        """This list of fields is used to compute the grouping hashcode for lots.
+        This method is inherited in account_payment_sepa_base to add several fields.
+        The fields in this list MUST also be present in _payment_grouping_fields()
+        """
         return [
+            "date",
             "currency_id",
+        ]
+
+    @api.model
+    def _payment_grouping_fields(self):
+        """This list of fields is used o compute the grouping hashcode."""
+        res = self._lot_grouping_fields()
+        res += [
             "partner_id",
             "partner_bank_id",
-            "date",
             "communication_type",
         ]
+        return res
 
     def payment_line_hashcode(self):
         self.ensure_one()
         values = []
-        for field in self._get_payment_line_grouping_fields():
+        for field in self._payment_grouping_fields():
             values.append(str(self[field]))
         # Don't group the payment lines that are attached to the same supplier
         # but to move lines with different accounts (very unlikely),
@@ -170,6 +182,14 @@ class AccountPaymentLine(models.Model):
         if self.communication_type != "free":
             values.append(str(self.id))
         return "-".join(values)
+
+    def _lot_hash_code(self):
+        self.ensure_one()
+        values = []
+        for field in self._lot_grouping_fields():
+            values.append(str(self[field]))
+        hashcode = "-".join(values)
+        return hashcode
 
     @api.depends("partner_id", "move_line_id")
     def _compute_payment_line(self):
@@ -215,7 +235,7 @@ class AccountPaymentLine(models.Model):
         if not self.communication:
             raise UserError(_("Communication is empty on payment line %s.") % self.name)
 
-    def _prepare_account_payment_vals(self):
+    def _prepare_account_payment_vals(self, payment_lot, pay_sequence):
         """Prepare the dictionary to create an account payment record from a set of
         payment lines.
         """
@@ -252,11 +272,14 @@ class AccountPaymentLine(models.Model):
             "amount": sum(self.mapped("amount_currency")),
             "date": self[:1].date,
             "currency_id": self.currency_id.id,
-            "memo": order.name,
+            # memo is used as 'Instruction Identification' and
+            # 'End to End Identification' in ISO 20022 XML files, so it must be unique
+            "memo": f"{payment_lot.name}/{pay_sequence}",
             "payment_reference": " - ".join([line.communication for line in self]),
             "journal_id": journal.id,
             "partner_bank_id": self.partner_bank_id.id,
             "payment_order_id": order.id,
+            "payment_lot_id": payment_lot.id,
             "payment_line_ids": [Command.set(self.ids)],
             "payment_method_line_id": method_line_id,
             "invoice_ids": [
@@ -288,4 +311,15 @@ class AccountPaymentLine(models.Model):
                 vals["destination_account_id"] = (
                     self.partner_id.property_account_payable_id.id
                 )
+        return vals
+
+    def _prepare_account_payment_lot_vals(self, lot_sequence):
+        """This method should only use fields listed in self._lot_grouping_fields()"""
+        self.ensure_one()
+        vals = {
+            "order_id": self.order_id.id,
+            "currency_id": self.currency_id.id,
+            "date": self.date,
+            "name": f"{self.order_id.name}/LOT{lot_sequence}",
+        }
         return vals

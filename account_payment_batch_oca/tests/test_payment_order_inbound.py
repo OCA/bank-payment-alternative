@@ -35,13 +35,17 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
                 "name": "Test Partner",
             }
         )
-        cls.payment_method_in = cls.env["account.payment.method"].create(
-            {
-                "name": "test inbound payment order ok",
-                "code": "test_manual",
-                "payment_type": "inbound",
-                "payment_order_ok": True,
-            }
+        cls.payment_method_in = (
+            cls.env["account.payment.method"]
+            .sudo()
+            .create(
+                {
+                    "name": "test inbound payment order ok",
+                    "code": "test_manual",
+                    "payment_type": "inbound",
+                    "payment_order_ok": True,
+                }
+            )
         )
         cls.inbound_mode = cls.env["account.payment.method.line"].create(
             {
@@ -73,10 +77,8 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
         # Open invoice
         cls.invoice = cls._create_customer_invoice(cls)
         cls.invoice.action_post()
-        # Add to payment order using the wizard
-        cls.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=cls.invoice.ids
-        ).create({}).run()
+        # Add to payment order
+        cls.invoice.create_account_payment_line()
 
     def _create_customer_invoice(self):
         line_vals = {
@@ -133,6 +135,7 @@ class TestPaymentOrderInbound(TestPaymentOrderInboundBase):
         payment_order.draft2open()
 
         self.assertEqual(payment_order.payment_count, 1)
+        self.assertEqual(payment_order.payment_lot_count, 1)
 
         # Generate and upload
         payment_order.open2generated()
@@ -142,7 +145,7 @@ class TestPaymentOrderInbound(TestPaymentOrderInboundBase):
         with self.assertRaises(UserError):
             payment_order.unlink()
 
-        payment_order.action_uploaded_cancel()
+        payment_order.action_cancel()
         self.assertEqual(payment_order.state, "cancel")
         payment_order.cancel2draft()
         payment_order.unlink()

@@ -57,7 +57,7 @@ class AccountPaymentMethodLine(models.Model):
     )
     default_target_move = fields.Selection(
         selection=[("posted", "All Posted Entries"), ("all", "All Entries")],
-        string="Target Moves",
+        string="Target Journal Items",
         default="posted",
     )
     default_date_type = fields.Selection(
@@ -122,9 +122,8 @@ class AccountPaymentMethodLine(models.Model):
                 line.payment_method_id
                 and line.payment_method_id.payment_type in ptype_map
             ):
-                line.default_journal_ids = (
-                    self.env["account.journal"]
-                    .search(
+                line.default_journal_ids = list(
+                    self.env["account.journal"]._search(
                         [
                             (
                                 "type",
@@ -134,7 +133,6 @@ class AccountPaymentMethodLine(models.Model):
                             ("company_id", "=", line.company_id.id),
                         ]
                     )
-                    .ids
                 )
 
     @api.constrains("payment_order_ok", "selectable")
@@ -144,7 +142,7 @@ class AccountPaymentMethodLine(models.Model):
                 raise ValidationError(
                     _(
                         "Payment mode '%(mode)s' cannot be selectable on "
-                        "payment orders but not selectable on partners/invoices.",
+                        "payment/debit orders but not selectable on partners/invoices.",
                         mode=line.display_name,
                     )
                 )
