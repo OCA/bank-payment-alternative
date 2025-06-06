@@ -73,7 +73,9 @@
         <field name="name">account.payment.line.list</field>
         <field name="model">account.payment.line</field>
         <field name="arch" type="xml">
-            <list>
+            <list
+                decoration-danger="context.get('default_payment_type') == 'outbound' and partner_bank_id and not partner_bank_allow_out_payment"
+            >
                 <field
                     name="order_id"
                     column_invisible="not context.get('account_payment_line_main_view')"
@@ -81,6 +83,7 @@
                 <field name="partner_id" />
                 <field name="communication" />
                 <field name="partner_bank_id" />
+                <field name="partner_bank_allow_out_payment" column_invisible="1" />
                 <field name="partner_bank_acc_type" optional="hide" />
                 <field name="move_line_id" optional="hide" />
                 <field name="ml_maturity_date" optional="show" />

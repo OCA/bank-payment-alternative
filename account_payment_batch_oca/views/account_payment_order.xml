@@ -53,8 +53,33 @@
                         statusbar_visible="draft,open,generated,uploaded"
                     />
                 </header>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    name="warning_untrusted_accounts"
+                    invisible="not untrusted_bank_account_count"
+                >
+                        <field
+                    name="untrusted_bank_account_count"
+                /> bank account(s) is/are untrusted. Click on the button at the top to access it/them.
+                </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button
+                            class="oe_stat_button text-danger button-danger"
+                            name="action_open_untrusted_accounts"
+                            type="object"
+                            icon="fa-bank"
+                            bg_color="text-bg-danger"
+                            invisible="not untrusted_bank_account_count"
+                        >
+                            <field
+                                string="Untrusted Bank Accounts"
+                                name="untrusted_bank_account_count"
+                                widget="statinfo"
+                            />
+                        </button>
+
                         <button
                             class="oe_stat_button"
                             name="action_open_invoices"
