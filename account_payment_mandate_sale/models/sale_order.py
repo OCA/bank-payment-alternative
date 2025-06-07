@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
         store=True,
         tracking=True,
         domain="[('partner_id', '=', commercial_invoice_partner_id), "
-        "('state', 'in', ('draft', 'valid')), "
+        "('state', 'in', ('draft', 'valid', 'final')), "
         "('company_id', '=', company_id)]",
     )
     mandate_required = fields.Boolean(
