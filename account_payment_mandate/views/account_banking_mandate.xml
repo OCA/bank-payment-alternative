@@ -19,11 +19,28 @@
                         groups="account_payment_batch_oca.group_account_payment"
                     />
                     <button
+                        name="valid2final"
+                        type="object"
+                        string="Final Debit"
+                        groups="account_payment_batch_oca.group_account_payment"
+                        confirm="Are you sure the next debit with this mandate will be the final debit?"
+                        invisible="state != 'valid'"
+                    />
+                    <button
+                        name="final2valid"
+                        type="object"
+                        string="Back to Valid"
+                        groups="account_payment_batch_oca.group_account_payment"
+                        confirm="You should put it back to valid only if it was set to 'Final Debit' by mistake. Do you want to continue?"
+                        invisible="state != 'final'"
+                    />
+
+                    <button
                         name="cancel"
                         type="object"
                         string="Cancel"
                         confirm="Are you sure you want to cancel this mandate?"
-                        invisible="context.get('mandate_bank_partner_view') or state not in ('draft', 'valid')"
+                        invisible="context.get('mandate_bank_partner_view') or state not in ('draft', 'valid', 'final')"
                         groups="account_payment_batch_oca.group_account_payment"
                     />
                     <button
@@ -67,25 +84,42 @@
                         </h1>
                     </div>
                     <group name="main">
-                        <field name="company_id" groups="base.group_multi_company" />
-                        <field name="format" string="Format" />
-                        <field name="type" string="Type" />
-                        <field
-                            name="partner_bank_id"
-                            options="{'create_name_field': 'acc_number'}"
-                            invisible="context.get('mandate_bank_partner_view')"
-                        />
-                        <field
-                            name="partner_id"
-                            invisible="context.get('mandate_bank_partner_view')"
-                            readonly="True"
-                        />
-                        <field
-                            name="signature_date"
-                            options="{'datepicker': {'warn_future': true}}"
-                        />
-                        <field name="scan" />
-                        <field name="last_debit_date" />
+                        <group name="main-left">
+                            <field
+                                name="format"
+                                string="Format"
+                                readonly="state != 'draft'"
+                            />
+                            <field
+                                name="type"
+                                string="Type"
+                                readonly="state != 'draft'"
+                            />
+                            <field
+                                name="partner_id"
+                                invisible="context.get('mandate_bank_partner_view')"
+                                readonly="state != 'draft'"
+                            />
+                            <field
+                                name="partner_bank_id"
+                                options="{'create_name_field': 'acc_number'}"
+                                invisible="context.get('mandate_bank_partner_view') or not partner_id"
+                            />
+                            <field
+                                name="signature_date"
+                                options="{'datepicker': {'warn_future': true}}"
+                                readonly="state != 'draft'"
+                            />
+                        </group>
+                        <group name="main-right">
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                                readonly="state != 'draft'"
+                            />
+                            <field name="scan" />
+                            <field name="last_debit_date" />
+                        </group>
                     </group>
                 </sheet>
                 <chatter />
@@ -98,7 +132,11 @@
         <field name="arch" type="xml">
             <list>
                 <field name="id" column_invisible="1" />
-                <field name="unique_mandate_reference" string="Reference" />
+                <field
+                    name="unique_mandate_reference"
+                    string="Reference"
+                    decoration-bf="1"
+                />
                 <field
                     name="partner_id"
                     invisible="context.get('mandate_bank_partner_view')"
@@ -113,10 +151,11 @@
                     name="type"
                     string="Type"
                     widget="badge"
-                    decoration-muted="type == 'generic'"
+                    decoration-info="type == 'recurrent'"
+                    decoration-warning="type == 'oneoff'"
                 />
-                <field name="signature_date" optional="show" />
-                <field name="last_debit_date" optional="hide" />
+                <field name="signature_date" optional="show" string="Signature" />
+                <field name="last_debit_date" optional="hide" string="Last Debit" />
                 <field name="company_id" groups="base.group_multi_company" />
                 <button
                     name="validate"
@@ -143,6 +182,7 @@
                     decoration-success="state == 'valid'"
                     decoration-muted="state == 'cancel'"
                     decoration-warning="state == 'expired'"
+                    decoration-danger="state == 'final'"
                 />
             </list>
         </field>
@@ -169,6 +209,11 @@
                     domain="[('state', '=', 'valid')]"
                 />
                 <filter
+                    name="final"
+                    string="Final Debit"
+                    domain="[('state', '=', 'final')]"
+                />
+                <filter
                     name="expired"
                     string="Expired"
                     domain="[('state', '=', 'expired')]"
@@ -178,11 +223,34 @@
                     string="Cancelled"
                     domain="[('state', '=', 'cancel')]"
                 />
+                <separator />
+                <filter
+                    name="recurrent"
+                    string="Recurrent"
+                    domain="[('type', '=', 'recurrent')]"
+                />
+                <filter
+                    name="oneoff"
+                    string="Single Use"
+                    domain="[('type', '=', 'oneoff')]"
+                />
+                <separator />
+                <filter name="signature_date" date="signature_date" />
                 <group string="Group By" name="groupby">
                     <filter
                         name="state_groupby"
                         string="State"
                         context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="format_groupby"
+                        string="Format"
+                        context="{'group_by': 'format'}"
+                    />
+                    <filter
+                        name="type_groupby"
+                        string="Type"
+                        context="{'group_by': 'type'}"
                     />
                     <filter
                         name="signature_date_groupby"
