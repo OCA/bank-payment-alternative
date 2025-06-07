@@ -25,7 +25,9 @@ class TestMandate(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
                     )
                 ],
                 "company_ids": [
@@ -50,6 +52,7 @@ class TestMandate(AccountTestInvoicingCommon):
         )
         cls.mandate = cls.env["account.banking.mandate"].create(
             {
+                "partner_id": cls.partner.id,
                 "partner_bank_id": cls.bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": cls.company.id,
@@ -61,7 +64,7 @@ class TestMandate(AccountTestInvoicingCommon):
         cls.other_bank_account = cls.env["res.partner.bank"].create(
             {
                 "acc_number": "FR55 1234 5678 9012 2683 2930 A98",
-                "partner_id": cls.partner.id,
+                "partner_id": cls.other_partner.id,
             }
         )
 
@@ -89,10 +92,9 @@ class TestMandate(AccountTestInvoicingCommon):
         with self.assertRaises(UserError):
             self.mandate.cancel()
 
-    def test_onchange_methods(self):
-        self.mandate.partner_bank_id = self.other_bank_account
-        self.mandate.mandate_partner_bank_change()
-        self.assertEqual(self.mandate.partner_id, self.other_bank_account.partner_id)
+    def test_bank_account_change_unrelated_partner(self):
+        with self.assertRaises(UserError):
+            self.mandate.partner_bank_id = self.other_bank_account
 
     def test_constrains_01(self):
         self.mandate.validate()
@@ -119,7 +121,11 @@ class TestMandate(AccountTestInvoicingCommon):
 
     def test_constrains_04(self):
         mandate = self.env["account.banking.mandate"].create(
-            {"signature_date": "2015-01-01", "company_id": self.company.id}
+            {
+                "signature_date": "2015-01-01",
+                "company_id": self.company.id,
+                "partner_id": self.company_2.partner_id.id,
+            }
         )
         bank_account = self.env["res.partner.bank"].create(
             {
@@ -138,6 +144,7 @@ class TestMandate(AccountTestInvoicingCommon):
         """
         mandate = self.env["account.banking.mandate"].create(
             {
+                "partner_id": self.other_partner.id,
                 "partner_bank_id": self.other_bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,
@@ -152,6 +159,7 @@ class TestMandate(AccountTestInvoicingCommon):
         """
         mandate = self.env["account.banking.mandate"].create(
             {
+                "partner_id": self.other_partner.id,
                 "partner_bank_id": self.other_bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,
@@ -167,6 +175,7 @@ class TestMandate(AccountTestInvoicingCommon):
         """
         mandate = self.env["account.banking.mandate"].create(
             {
+                "partner_id": self.other_partner.id,
                 "partner_bank_id": self.other_bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,
@@ -183,6 +192,7 @@ class TestMandate(AccountTestInvoicingCommon):
         """
         mandate = self.env["account.banking.mandate"].create(
             {
+                "partner_id": self.other_partner.id,
                 "partner_bank_id": self.other_bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,
@@ -198,6 +208,7 @@ class TestMandate(AccountTestInvoicingCommon):
         """
         mandate = self.env["account.banking.mandate"].create(
             {
+                "partner_id": self.other_partner.id,
                 "partner_bank_id": self.other_bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,

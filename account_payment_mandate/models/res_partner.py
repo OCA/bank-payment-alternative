@@ -44,6 +44,12 @@ class ResPartner(models.Model):
                 ).filtered(
                     lambda x: x.state == "valid" and x.company_id.id == company_id
                 )
+                if not mandates:
+                    mandates = partner.commercial_partner_id.bank_ids.mapped(
+                        "mandate_ids"
+                    ).filtered(
+                        lambda x: x.state == "final" and x.company_id.id == company_id
+                    )
                 first_valid_mandate_id = mandates[:1].id
                 partner.valid_mandate_id = first_valid_mandate_id
                 mandates_dic[commercial_partner_id] = first_valid_mandate_id

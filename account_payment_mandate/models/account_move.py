@@ -16,6 +16,9 @@ class AccountMove(models.Model):
         compute="_compute_mandate_id",
         readonly=False,
         store=True,
+        domain="[('partner_id', '=', commercial_partner_id), "
+        "('state', 'in', ('valid', 'final')), "
+        "('company_id', '=', company_id)]",
     )
     mandate_required = fields.Boolean(
         related="preferred_payment_method_line_id.payment_method_id.mandate_required"

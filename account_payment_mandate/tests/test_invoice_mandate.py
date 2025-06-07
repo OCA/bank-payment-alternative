@@ -26,7 +26,9 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
                     )
                 ],
                 "company_ids": [
@@ -54,6 +56,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
 
         cls.mandate = cls.env["account.banking.mandate"].create(
             {
+                "partner_id": cls.partner.id,
                 "partner_bank_id": bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": cls.company.id,
@@ -72,7 +75,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
             {
                 "name": "Inbound Credit ACME Bank",
                 "company_id": cls.company.id,
-                "bank_account_link": "variable",
+                "bank_account_link": "fixed",
                 "payment_method_id": cls.env.ref(
                     "account.account_payment_method_manual_in"
                 ).id,
@@ -116,9 +119,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
         if payable_move_lines:
             self.assertEqual(payable_move_lines[0].move_id.mandate_id, self.mandate)
 
-        self.env["account.invoice.payment.line.multi"].with_context(
-            active_model="account.move", active_ids=self.invoice.ids
-        ).create({}).run()
+        self.invoice.create_account_payment_line()
 
         payment_order = self.env["account.payment.order"].search([])
         self.assertEqual(len(payment_order.ids), 1)
@@ -143,6 +144,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
 
         mandate_2 = self.env["account.banking.mandate"].create(
             {
+                "partner_id": partner_2.id,
                 "partner_bank_id": bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company_2.id,
@@ -194,6 +196,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
 
         mandate_2 = self.env["account.banking.mandate"].create(
             {
+                "partner_id": partner_2.id,
                 "partner_bank_id": bank_account.id,
                 "signature_date": "2015-01-01",
                 "company_id": self.company.id,
@@ -235,19 +238,23 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
             "_get_payment_method_information",
             _get_payment_method_information,
         ):
-            pay_method_test = self.env["account.payment.method"].create(
-                {
-                    "name": "Test",
-                    "code": "test",
-                    "payment_type": "inbound",
-                    "mandate_required": False,
-                }
+            pay_method_test = (
+                self.env["account.payment.method"]
+                .sudo()
+                .create(
+                    {
+                        "name": "Test",
+                        "code": "test",
+                        "payment_type": "inbound",
+                        "mandate_required": False,
+                    }
+                )
             )
         mode_inbound_acme_2 = self.env["account.payment.method.line"].create(
             {
                 "name": "Inbound Credit ACME Bank 2",
                 "company_id": self.company.id,
-                "bank_account_link": "variable",
+                "bank_account_link": "fixed",
                 "payment_method_id": pay_method_test.id,
                 "journal_id": self.bank_journal.id,
             }

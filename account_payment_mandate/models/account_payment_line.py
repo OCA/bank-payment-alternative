@@ -17,7 +17,7 @@ class AccountPaymentLine(models.Model):
         readonly=False,
         precompute=True,
         string="Direct Debit Mandate",
-        domain="[('state', '=', 'valid'), ('partner_id', '=', partner_id)]",
+        domain="[('state', 'in', ('valid', 'final')), ('partner_id', '=', partner_id)]",
         check_company=True,
     )
     mandate_required = fields.Boolean(
@@ -34,14 +34,7 @@ class AccountPaymentLine(models.Model):
                 if move and move.mandate_id:
                     mandate = move.mandate_id
                 elif line.partner_id:
-                    domain = [
-                        ("state", "=", "valid"),
-                        ("company_id", "=", line.company_id.id),
-                        ("partner_id", "=", line.partner_id.id),
-                    ]
-                    mandate = self.env["account.banking.mandate"].search(
-                        domain, limit=1
-                    )
+                    mandate = line.partner_id.valid_mandate_id
             line.mandate_id = mandate and mandate.id or False
 
     @api.depends("mandate_id")
@@ -81,11 +74,13 @@ class AccountPaymentLine(models.Model):
     def draft2open_payment_line_check(self):
         res = super().draft2open_payment_line_check()
         if self.mandate_required and not self.mandate_id:
-            raise UserError(_("Missing Mandate on payment line %s") % self.name)
+            raise UserError(
+                _("Missing mandate on payment line '%s'.") % self.display_name
+            )
         return res
 
     @api.model
-    def _get_payment_line_grouping_fields(self):
-        res = super()._get_payment_line_grouping_fields()
+    def _payment_grouping_fields(self):
+        res = super()._payment_grouping_fields()
         res.append("mandate_id")
         return res
