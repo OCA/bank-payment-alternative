@@ -9,9 +9,8 @@
             name="partner_bank_id"
             ref="account_payment_base_oca.res_partner_12_iban"
         />
-        <field name="format">sepa</field>
+        <field name="format">sepa_core</field>
         <field name="type">recurrent</field>
-        <field name="recurrent_sequence_type">first</field>
         <field name="signature_date" eval="time.strftime('%Y-01-01')" />
         <field name="state">valid</field>
         <field name="company_id" ref="base.main_company" />
@@ -22,9 +21,8 @@
             name="partner_bank_id"
             ref="account_payment_base_oca.res_partner_2_iban"
         />
-        <field name="format">sepa</field>
+        <field name="format">sepa_core</field>
         <field name="type">recurrent</field>
-        <field name="recurrent_sequence_type">first</field>
         <field name="signature_date" eval="time.strftime('%Y-%m-01')" />
         <field name="state">valid</field>
         <field name="company_id" ref="base.main_company" />

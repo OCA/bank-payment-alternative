@@ -8,7 +8,6 @@ from lxml import etree
 
 from odoo import Command
 from odoo.tests import tagged
-from odoo.tools import float_compare
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
@@ -30,7 +29,9 @@ class TestSDDBase(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref("account_payment_batch_oca.group_account_payment").id
+                        cls.env.ref(
+                            "account_payment_batch_oca.group_account_payment"
+                        ).id
                     )
                 ],
                 "company_ids": [Command.link(cls.company.id)],
@@ -107,6 +108,7 @@ class TestSDDBase(AccountTestInvoicingCommon):
         )
         cls.partner1_mandate = cls.mandate_model.create(
             {
+                "partner_id": cls.partner1.id,
                 "partner_bank_id": cls.partner1_bank.id,
                 "company_id": cls.company.id,
                 "signature_date": "2023-11-05",
@@ -116,6 +118,7 @@ class TestSDDBase(AccountTestInvoicingCommon):
         )
         cls.partner2_mandate = cls.mandate_model.create(
             {
+                "partner_id": cls.partner2.id,
                 "partner_bank_id": cls.partner2_bank.id,
                 "company_id": cls.company.id,
                 "signature_date": "2023-10-05",
@@ -125,7 +128,6 @@ class TestSDDBase(AccountTestInvoicingCommon):
         )
 
     def check_sdd(self):
-        self.partner2_mandate.recurrent_sequence_type = "first"
         invoice1 = self.create_invoice(self.partner1.id, self.partner2_mandate, 42.0)
         self.partner1_mandate.type = "oneoff"
         invoice2 = self.create_invoice(self.partner2.id, self.partner1_mandate, 11.0)
@@ -146,34 +148,38 @@ class TestSDDBase(AccountTestInvoicingCommon):
         )
         self.assertEqual(len(pay_lines), 1)
         partner1_pay_line1 = pay_lines[0]
-        accpre = self.env["decimal.precision"].precision_get("Account")
         self.assertEqual(partner1_pay_line1.currency_id, self.eur_currency)
         self.assertEqual(partner1_pay_line1.mandate_id, invoice1.mandate_id)
         self.assertEqual(
             partner1_pay_line1.partner_bank_id, invoice1.mandate_id.partner_bank_id
         )
-        self.assertEqual(
-            float_compare(
-                partner1_pay_line1.amount_currency, 42, precision_digits=accpre
-            ),
-            0,
+        self.assertFalse(
+            partner1_pay_line1.currency_id.compare_amounts(
+                partner1_pay_line1.amount_currency, 42
+            )
         )
         self.assertEqual(partner1_pay_line1.communication_type, "free")
         self.assertEqual(partner1_pay_line1.communication, invoice1.name)
-        payment_order._compute_sepa()
         payment_order.draft2open()
         self.assertEqual(payment_order.state, "open")
-        self.assertEqual(payment_order.sepa, True)
-        # Check account payment
-        partner1_bank_line = payment_order.payment_ids[0]
-        self.assertEqual(partner1_bank_line.currency_id, self.eur_currency)
-        self.assertEqual(
-            float_compare(partner1_bank_line.amount, 42.0, precision_digits=accpre),
-            0,
+        self.assertTrue(payment_order.sepa)
+        self.assertEqual(len(payment_order.payment_lot_ids), 2)
+        # Check account.payment
+        partner1_payment_line = payment_order.payment_ids[0]
+        self.assertEqual(partner1_payment_line.currency_id, self.eur_currency)
+        self.assertFalse(
+            partner1_payment_line.currency_id.compare_amounts(
+                partner1_payment_line.amount, 42.0
+            )
         )
-        self.assertEqual(partner1_bank_line.payment_reference, invoice1.name)
+        self.assertEqual(partner1_payment_line.payment_reference, invoice1.name)
+        self.assertTrue(
+            partner1_payment_line.memo.startswith(
+                f"{partner1_payment_line.payment_lot_id.name}/"
+            )
+        )
         self.assertEqual(
-            partner1_bank_line.partner_bank_id, invoice1.mandate_id.partner_bank_id
+            partner1_payment_line.partner_bank_id, invoice1.mandate_id.partner_bank_id
         )
         payment_order.open2generated()
         self.assertEqual(payment_order.state, "generated")
@@ -202,8 +208,6 @@ class TestSDDBase(AccountTestInvoicingCommon):
         self.assertEqual(payment_order.state, "uploaded")
         for inv in [invoice1, invoice2]:
             self.assertIn(inv.payment_state, ("in_payment", "paid"))
-        self.assertEqual(self.partner2_mandate.recurrent_sequence_type, "recurring")
-        return
 
     def create_invoice(self, partner_id, mandate, price_unit, inv_type="out_invoice"):
         line_vals = {
