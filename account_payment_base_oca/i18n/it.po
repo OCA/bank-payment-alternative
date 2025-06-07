@@ -254,6 +254,7 @@ msgstr "In uscita"
 
 #. module: account_payment_base_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_search
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_move_form
 msgid "Payment Method"
 msgstr "Metodo di pagamento"
 
