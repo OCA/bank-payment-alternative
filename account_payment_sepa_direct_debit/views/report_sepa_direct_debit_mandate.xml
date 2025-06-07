@@ -15,23 +15,23 @@
                         style="max-height: 45px;"
                         class="float-left"
                     />
-                    <h4 t-if="doc.scheme != 'B2B'">
-                        <strong>Sepa Direct Debit Mandate</strong>
+                    <h4 t-if="doc.format == 'sepa_core'">
+                        <strong>SEPA Direct Debit Mandate</strong>
                         <t t-if="is_not_english">
                             <br />
                             <span
                                 class="native_lang native_lang_small"
-                                t-esc="'Sepa Direct Debit Mandate'"
+                                t-esc="'SEPA Direct Debit Mandate'"
                             />
                         </t>
                     </h4>
-                    <h4 t-if="doc.scheme == 'B2B'">
-                        <strong>Sepa Business-To-Business Direct debit Mandate</strong>
+                    <h4 t-if="doc.format == 'sepa_b2b'">
+                        <strong>SEPA Business-To-Business Direct debit Mandate</strong>
                         <t t-if="is_not_english">
                             <br />
                             <span
                                 class="native_lang native_lang_small"
-                                t-esc="'Sepa Business-To-Business Direct debit Mandate'"
+                                t-esc="'SEPA Business-To-Business Direct debit Mandate'"
                             />
                         </t>
                     </h4>
@@ -133,13 +133,13 @@
             <div class="row mt0">
                 <div class="col-12">
                     <p>By signing this mandate form, you authorise (A) <strong
-                        t-if="doc.scheme == 'B2B'"
+                        t-if="doc.format == 'sepa_b2b'"
                     >
                         <span t-field="doc.company_id.name" />
                     </strong>
                        to send instructions to your bank to debit your account and (B) your bank to
                        debit your account in accordance with the instructions from <strong
-                        t-if="doc.scheme == 'B2B'"
+                        t-if="doc.format == 'sepa_b2b'"
                     >
                         <span t-field="doc.company_id.name" />
                     </strong>.
@@ -149,14 +149,14 @@
                         class="native_lang"
                         t-esc="'(By signing this mandate form, you authorise (A) '"
                     />
-                           <t t-if="doc.scheme == 'B2B'">
+                           <t t-if="doc.format == 'sepa_b2b'">
                         <span class="native_lang" t-field="doc.company_id.name" />
                     </t>
                            <span
                         class="native_lang"
                         t-esc="' to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from '"
                     />
-                           <t t-if="doc.scheme == 'B2B'">
+                           <t t-if="doc.format == 'sepa_b2b'">
                         <span class="native_lang" t-field="doc.company_id.name" />
                     </t>.)
                        </t>
@@ -165,7 +165,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <p t-if="doc.scheme == 'B2B'">
+                    <p t-if="doc.format == 'sepa_b2b'">
                         This mandate is only intended for business-to-business transactions.
                         You are not entitled to a refund from your bank after your account has
                         been debited, but you are entitled to request your bank
@@ -178,7 +178,7 @@
                         />
                     </t>
                     </p>
-                    <p t-if="doc.scheme != 'B2B'">
+                    <p t-if="doc.format == 'sepa_core'">
                         As part of your rights, you are entitled to a refund from
                         your bank under the terms and conditions of your agreement
                         with your bank.
@@ -342,7 +342,7 @@
             </div>
             <div class="row">
                 <div class="col-12 text-center">
-                    <p t-if="doc.scheme != 'B2B'">
+                    <p t-if="doc.format == 'sepa_core'">
                         ALL GAPS ARE MANDATORY. ONCE THIS MANDATE HAS BEEN SIGNED MUST BE SENT TO CREDITOR FOR STORAGE.
                         <t t-if="is_not_english">
                         <br />
@@ -352,7 +352,7 @@
                         />
                     </t>
                     </p>
-                    <p t-if="doc.scheme == 'B2B'">
+                    <p t-if="doc.format == 'sepa_b2b'">
                         ALL GAPS ARE MANDATORY. ONCE THIS MANDATE HAS BEEN SIGNED MUST BE SENT TO CREDITOR FOR STORAGE.
                         NEVERTHELESS, THE BANK OF DEBTOR REQUIRES DEBTOR’S AUTHORIZATION BEFORE DEBITING B2B DIRECT DEBITS IN THE ACCOUNT.
                         THE DEBTOR WILL BE ABLE TO MANAGE THE MENTIONED AUTHORIZATION THROUGH THE MEANS PROVIDED BY HIS BANK.

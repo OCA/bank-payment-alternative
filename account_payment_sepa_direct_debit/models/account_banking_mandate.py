@@ -15,90 +15,36 @@ logger = logging.getLogger(__name__)
 
 
 class AccountBankingMandate(models.Model):
-    """SEPA Direct Debit Mandate"""
-
     _inherit = "account.banking.mandate"
-    _rec_name = "display_name"
 
     format = fields.Selection(
-        selection_add=[("sepa", "Sepa Mandate")],
-        default="sepa",
-        ondelete={"sepa": "set default"},
+        selection_add=[("sepa_core", "SEPA CORE"), ("sepa_b2b", "SEPA B2B")],
+        default="sepa_core",
+        ondelete={"sepa_core": "set default", "sepa_b2b": "set default"},
     )
     type = fields.Selection(
         selection_add=[("recurrent", "Recurrent"), ("oneoff", "One-Off")],
         default="recurrent",
         ondelete={"recurrent": "set null", "oneoff": "set null"},
     )
-    recurrent_sequence_type = fields.Selection(
-        [("first", "First"), ("recurring", "Recurring"), ("final", "Final")],
-        string="Sequence Type for Next Debit",
-        tracking=70,
-        help="This field is only used for Recurrent mandates, not for "
-        "One-Off mandates.",
-        default="first",
-    )
-    scheme = fields.Selection(
-        [("CORE", "Basic (CORE)"), ("B2B", "Enterprise (B2B)")],
-        default="CORE",
-        tracking=80,
-    )
     unique_mandate_reference = fields.Char(size=35)  # cf ISO 20022
-    display_name = fields.Char(compute="_compute_display_name2", store=True)
 
-    @api.constrains("format", "type", "recurrent_sequence_type", "partner_bank_id")
+    @api.constrains("format", "partner_bank_id")
     def _check_sepa_mandate(self):
         for mandate in self:
-            if mandate.format == "sepa":
-                if mandate.type == "recurrent" and not mandate.recurrent_sequence_type:
-                    raise ValidationError(
-                        _("The recurrent SEPA mandate '%s' must have a sequence type.")
-                        % mandate.display_name
+            if (
+                mandate.format in ("sepa_core", "sepa_b2b")
+                and mandate.partner_bank_id
+                and mandate.partner_bank_id.acc_type != "iban"
+            ):
+                raise ValidationError(
+                    _(
+                        "The SEPA mandate '%(mandate)s' is linked to bank account "
+                        "'%(bank_account)s' which is not an IBAN bank account.",
+                        mandate=mandate.display_name,
+                        bank_account=mandate.partner_bank_id.display_name,
                     )
-                if (
-                    mandate.partner_bank_id
-                    and mandate.partner_bank_id.acc_type != "iban"
-                ):
-                    raise ValidationError(
-                        _(
-                            "The SEPA mandate '%(mandate)s' is linked to bank account "
-                            "'%(bank_account)s' which is not an IBAN bank account.",
-                            mandate=mandate.display_name,
-                            bank_account=mandate.partner_bank_id.display_name,
-                        )
-                    )
-
-    @api.depends("unique_mandate_reference", "recurrent_sequence_type")
-    def _compute_display_name2(self):
-        for mandate in self:
-            if mandate.format == "sepa":
-                mandate.display_name = (
-                    f"{mandate.unique_mandate_reference} "
-                    f"({mandate.recurrent_sequence_type})"
                 )
-            else:
-                mandate.display_name = mandate.unique_mandate_reference
-
-    @api.onchange("partner_bank_id")
-    def mandate_partner_bank_change(self):
-        super().mandate_partner_bank_change()
-        res = {}
-        if (
-            self.state == "valid"
-            and self.partner_bank_id
-            and self.type == "recurrent"
-            and self.recurrent_sequence_type != "first"
-        ):
-            self.recurrent_sequence_type = "first"
-            res["warning"] = {
-                "title": _("Mandate update"),
-                "message": _(
-                    "As you changed the bank account attached "
-                    "to this mandate, the 'Sequence Type' has "
-                    "been set back to 'First'."
-                ),
-            }
-        return res
 
     def _sdd_mandate_set_state_to_expired(self):
         logger.info("Searching for SDD Mandates that must be set to Expired")
@@ -110,7 +56,8 @@ class AccountBankingMandate(models.Model):
                 "|",
                 ("last_debit_date", "=", False),
                 ("last_debit_date", "<=", expire_limit_date),
-                ("state", "=", "valid"),
+                ("format", "in", ("sepa_core", "sepa_b2b")),
+                ("state", "in", ("valid", "final")),
                 ("signature_date", "<=", expire_limit_date),
             ]
         )
@@ -130,9 +77,3 @@ class AccountBankingMandate(models.Model):
             )
         else:
             logger.info("0 SDD Mandates had to be set to Expired")
-
-    def print_report(self):
-        self.ensure_one()
-        xmlid = "account_payment_sepa_direct_debit.report_sepa_direct_debit_mandate"
-        action = self.env.ref(xmlid).report_action(self)
-        return action
