@@ -22,11 +22,6 @@ class AccountBankingMandate(models.Model):
         default="sepa_core",
         ondelete={"sepa_core": "set default", "sepa_b2b": "set default"},
     )
-    type = fields.Selection(
-        selection_add=[("recurrent", "Recurrent"), ("oneoff", "One-Off")],
-        default="recurrent",
-        ondelete={"recurrent": "set null", "oneoff": "set null"},
-    )
     unique_mandate_reference = fields.Char(size=35)  # cf ISO 20022
 
     @api.constrains("format", "partner_bank_id")
