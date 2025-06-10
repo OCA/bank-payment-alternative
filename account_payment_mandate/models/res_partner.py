@@ -17,9 +17,10 @@ class ResPartner(models.Model):
         string="First Valid Mandate",
     )
 
+    @api.depends_context("company")
     def _compute_mandate_count(self):
         mandate_data = self.env["account.banking.mandate"]._read_group(
-            [("partner_id", "in", self.ids)],
+            [("partner_id", "in", self.ids), ("company_id", "=", self.env.company.id)],
             groupby=["partner_id"],
             aggregates=["__count"],
         )

@@ -20,7 +20,7 @@ class AccountPaymentMethod(models.Model):
                 raise ValidationError(
                     _(
                         "The option 'Mandate Required' cannot be enabled on "
-                        "payment method %s which is not an inbound payment method."
+                        "payment method '%s' which is not an inbound payment method."
                     )
                     % method.display_name
                 )

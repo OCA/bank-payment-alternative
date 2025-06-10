@@ -17,7 +17,8 @@ class AccountPaymentLine(models.Model):
         readonly=False,
         precompute=True,
         string="Direct Debit Mandate",
-        domain="[('state', 'in', ('valid', 'final')), ('partner_id', '=', partner_id)]",
+        domain="[('state', 'in', ('valid', 'final')), ('partner_id', '=', partner_id), "
+        "('company_id', '=', company_id)]",
         check_company=True,
     )
     mandate_required = fields.Boolean(
@@ -59,14 +60,14 @@ class AccountPaymentLine(models.Model):
                 raise ValidationError(
                     _(
                         "The payment line number {line_number} has "
-                        "the bank account  '{line_bank_account}' which "
+                        "the bank account '{line_bank_account}' which "
                         "is not attached to the mandate '{mandate_ref}' "
                         "(this mandate is attached to the bank account "
                         "'{mandate_bank_account}')."
                     ).format(
                         line_number=pline.name,
                         line_bank_account=pline.partner_bank_id.acc_number,
-                        mandate_ref=pline.mandate_id.unique_mandate_reference,
+                        mandate_ref=pline.mandate_id.display_name,
                         mandate_bank_account=pline.mandate_id.partner_bank_id.acc_number,
                     )
                 )

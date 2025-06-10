@@ -153,8 +153,8 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.signature_date and mandate.signature_date > today:
                 raise ValidationError(
-                    _("The date of signature of mandate '%s' " "is in the future!")
-                    % mandate.unique_mandate_reference
+                    _("The date of signature of mandate '%s' is in the future!")
+                    % mandate.display_name
                 )
             if (
                 mandate.signature_date
@@ -166,7 +166,7 @@ class AccountBankingMandate(models.Model):
                         "The mandate '%s' can't have a date of last debit "
                         "before the date of signature."
                     )
-                    % mandate.unique_mandate_reference
+                    % mandate.display_name
                 )
 
     @api.constrains("state", "partner_bank_id", "partner_id", "signature_date")
@@ -179,7 +179,7 @@ class AccountBankingMandate(models.Model):
                             "Cannot validate the mandate '%s' without a date of "
                             "signature."
                         )
-                        % mandate.unique_mandate_reference
+                        % mandate.display_name
                     )
                 if not mandate.partner_bank_id:
                     raise ValidationError(
@@ -187,7 +187,7 @@ class AccountBankingMandate(models.Model):
                             "Cannot validate the mandate '%s' because it is not "
                             "attached to a bank account."
                         )
-                        % mandate.unique_mandate_reference
+                        % mandate.display_name
                     )
             if (
                 mandate.partner_bank_id
@@ -219,14 +219,16 @@ class AccountBankingMandate(models.Model):
     def validate(self):
         for mandate in self:
             if mandate.state != "draft":
-                raise UserError(_("Mandate should be in draft state."))
+                raise UserError(
+                    _("Mandate '%s' should be in draft state.") % mandate.display_name
+                )
         self.write({"state": "valid"})
 
     def cancel(self):
         for mandate in self:
             if mandate.state not in ("draft", "valid", "final"):
                 raise UserError(
-                    _("Mandate %s should be in draft, valid or final debit state.")
+                    _("Mandate '%s' should be in draft, valid or final debit state.")
                     % mandate.display_name
                 )
         self.write({"state": "cancel"})
@@ -238,7 +240,7 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "cancel":
                 raise UserError(
-                    _("Mandate %s should be in cancel state.") % mandate.display_name
+                    _("Mandate '%s' should be in cancel state.") % mandate.display_name
                 )
         self.write({"state": "draft"})
 
@@ -246,7 +248,7 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "valid":
                 raise UserError(
-                    _("Mandate %s should be in valid state.") % mandate.display_name
+                    _("Mandate '%s' should be in valid state.") % mandate.display_name
                 )
         self.write({"state": "final"})
 
@@ -255,7 +257,7 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "final":
                 raise UserError(
-                    _("Mandate %s should be in 'Final Debit' state.")
+                    _("Mandate '%s' should be in 'Final Debit' state.")
                     % mandate.display_name
                 )
         self.write({"state": "valid"})
