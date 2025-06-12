@@ -6,7 +6,7 @@
 -->
 <odoo noupdate="1">
     <record id="account_payment_method_line_multicompany_rule" model="ir.rule">
-        <field name="name">Payment mode multi-company</field>
+        <field name="name">Payment method multi-company</field>
         <field name="model_id" ref="account.model_account_payment_method_line" />
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
