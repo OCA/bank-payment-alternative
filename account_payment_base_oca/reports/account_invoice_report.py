@@ -11,12 +11,12 @@ class AccountInvoiceReport(models.Model):
     _inherit = "account.invoice.report"
 
     payment_method_line_id = fields.Many2one(
-        "account.payment.method.line", readonly=True, string="Payment Mode"
+        "account.payment.method.line", readonly=True, string="Payment Method"
     )
 
     @api.model
     def _select(self) -> SQL:
         return SQL(
-            "%s, move.preferred_payment_method_line_id AS " "payment_method_line_id",
+            "%s, move.preferred_payment_method_line_id AS payment_method_line_id",
             super()._select(),
         )

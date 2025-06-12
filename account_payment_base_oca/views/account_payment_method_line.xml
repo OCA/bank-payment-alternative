@@ -149,7 +149,7 @@
                 />
                 <group string="Group By" name="groupby">
                     <filter
-                        string="Payment Method"
+                        string="Technical Payment Method"
                         name="payment_method_groupby"
                         context="{'group_by': 'payment_method_id'}"
                     />
@@ -159,7 +159,7 @@
     </record>
 
     <record id="account_payment_method_line_action" model="ir.actions.act_window">
-        <field name="name">Payment Modes</field>
+        <field name="name">Payment Methods</field>
         <field name="res_model">account.payment.method.line</field>
         <field name="view_mode">list,form</field>
     </record>

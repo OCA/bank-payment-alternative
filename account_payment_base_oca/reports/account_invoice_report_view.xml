@@ -25,7 +25,7 @@
             </field>
             <filter name="category_product" position="after">
                 <filter
-                    string="Payment Mode"
+                    string="Payment Method"
                     name="payment_method_line_groupby"
                     context="{'group_by': 'payment_method_line_id'}"
                 />
