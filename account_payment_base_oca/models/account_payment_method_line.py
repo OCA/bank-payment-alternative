@@ -14,6 +14,7 @@ class AccountPaymentMethodLine(models.Model):
     _check_company_auto = True
 
     # START inherit of native fields
+    payment_method_id = fields.Many2one(string="Technical Payment Method")
     name = fields.Char(translate=True)
     journal_id = fields.Many2one(
         domain="[('id', 'in', filter_journal_ids)]",
@@ -44,10 +45,10 @@ class AccountPaymentMethodLine(models.Model):
         string="Link to Bank Account",
         required=True,
         default="fixed",
-        help="For payment modes that are always attached to the same bank "
+        help="For payment methods that are always attached to the same bank "
         "account of your company (such as wire transfer from customers or "
         "SEPA direct debit from suppliers), select "
-        "'Fixed'. For payment modes that are not always attached to the same "
+        "'Fixed'. For payment methods that are not always attached to the same "
         "bank account (such as SEPA Direct debit for customers, wire transfer "
         "to suppliers), you should select 'Variable', which means that you "
         "will select the bank account on the payment order. If your company "
@@ -90,9 +91,9 @@ class AccountPaymentMethodLine(models.Model):
     refund_payment_method_line_id = fields.Many2one(
         comodel_name="account.payment.method.line",
         domain="[('payment_type', '!=', payment_type)]",
-        string="Payment Mode for Refunds",
-        help="This payment mode will be used when doing "
-        "refunds coming from the current payment mode.",
+        string="Payment Method for Refunds",
+        help="This payment method will be used when doing "
+        "refunds coming from the current payment method.",
         check_company=True,
     )
 

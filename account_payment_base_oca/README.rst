@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ========================
 Account Payment Base OCA
 ========================
@@ -17,7 +13,7 @@ Account Payment Base OCA
 .. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
     :alt: Mature
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fbank--payment--alternative-lightgray.png?logo=github
@@ -36,18 +32,19 @@ This is the new base module for the OCA project
 **bank-payment-alternative**. As the name suggests, the OCA project
 **bank-payment-alternative** is an alternative to the OCA project
 **bank-payment**. The project **bank-payment-alternative** uses the
-native payment mode object of Odoo (model *account.payment.method.line*)
-which has been introduced in Odoo v15 and is used on partners and
-invoices since Odoo v18.
+native payment method object of Odoo (model
+*account.payment.method.line*) which has been introduced in Odoo v15 and
+is used on partners and invoices since Odoo v18.
 
 This module adds support for variable link between bank/cash journal and
-payment mode. A typical use case is for a company that has several bank
-accounts and wants to have an outbound payment mode *Wire transfer to
-suppliers* which is not linked to a specific bank account and decide
-which bank account will be debited when confirming the payment order.
+payment method. A typical use case is for a company that has several
+bank accounts and wants to have an outbound payment method *Wire
+transfer to suppliers* which is not linked to a specific bank account
+and decide which bank account will be debited when confirming the
+payment order.
 
 This module also adds support for the display of partially scrambled
-bank account numbers. This is useful for some inbound payment modes
+bank account numbers. This is useful for some inbound payment methods
 where the company debits the bank account of its customers and the
 company wants to show on its customer invoices the bank account number
 that will be debited without printing the full bank account number, but
@@ -79,26 +76,26 @@ Authors
 Contributors
 ------------
 
-- Alexis de Lattre <alexis.delattre@akretion.com>
-- Eric Lembregts <eric@lembregts.eu>
-- Andrea Stirpe <a.stirpe@onestein.nl>
-- Marçal Isern <marsal.isern@qubiq.es>
-- Miquel Alzanillas <malzanillas@apsl.net>
-- Raphaël Valyi
-- Stefan Rijnhart (Therp)
-- Alexandre Fayolle
-- Stéphane Bidoul <stephane.bidoul@acsone.eu>
-- Danimar Ribeiro
-- Angel Moya <angel.moya@domatix.com>
-- `Tecnativa <https://www.tecnativa.com>`__:
+-  Alexis de Lattre <alexis.delattre@akretion.com>
+-  Eric Lembregts <eric@lembregts.eu>
+-  Andrea Stirpe <a.stirpe@onestein.nl>
+-  Marçal Isern <marsal.isern@qubiq.es>
+-  Miquel Alzanillas <malzanillas@apsl.net>
+-  Raphaël Valyi
+-  Stefan Rijnhart (Therp)
+-  Alexandre Fayolle
+-  Stéphane Bidoul <stephane.bidoul@acsone.eu>
+-  Danimar Ribeiro
+-  Angel Moya <angel.moya@domatix.com>
+-  `Tecnativa <https://www.tecnativa.com>`__:
 
-  - Pedro M. Baeza
-  - Carlos Dauden
-  - Víctor Martínez
+   -  Pedro M. Baeza
+   -  Carlos Dauden
+   -  Víctor Martínez
 
-- `DynApps <https://www.dynapps.be>`__:
+-  `DynApps <https://www.dynapps.be>`__:
 
-  - Raf Ven <raf.ven@dynapps.be>
+   -  Raf Ven <raf.ven@dynapps.be>
 
 Maintainers
 -----------
