@@ -5,6 +5,7 @@
     </record>
     <!-- Azure Interior -->
     <record id="res_partner_12_mandate" model="account.banking.mandate">
+        <field name="partner_id" ref="base.res_partner_12" />
         <field
             name="partner_bank_id"
             ref="account_payment_base_oca.res_partner_12_iban"
@@ -17,6 +18,7 @@
     </record>
     <!-- Deco Addict -->
     <record id="res_partner_2_mandate" model="account.banking.mandate">
+        <field name="partner_id" ref="base.res_partner_2" />
         <field
             name="partner_bank_id"
             ref="account_payment_base_oca.res_partner_2_iban"
