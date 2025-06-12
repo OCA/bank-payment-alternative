@@ -31,7 +31,7 @@ class TestSaleOrder(CommonTestCase):
         )
         sale_form = Form(sale)
 
-        # force payment mode
+        # force payment method
         if payment_method_line:
             sale_form.payment_method_line_id = payment_method_line
         return sale_form.save()
@@ -114,7 +114,7 @@ class TestSaleOrder(CommonTestCase):
         Data:
             A partner with a specific payment_method_line
             A sale order created with the payment_method_line of the partner
-            A sale order created with another payment mode
+            A sale order created with another payment_method_line
         Test case:
             Create the invoice from the sale orders
         Expected result:
