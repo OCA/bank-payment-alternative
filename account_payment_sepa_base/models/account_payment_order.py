@@ -249,11 +249,7 @@ class AccountPaymentOrder(models.Model):
         )
         logger.debug(xml_string)
         self._validate_xml(xml_bytes, gen_args)
-        return (xml_bytes, self._prepare_sepa_filename())
-
-    def _prepare_sepa_filename(self):
-        filename = f"{self.name}.xml"
-        return filename
+        return (xml_bytes, "xml")
 
     def _generate_pain_nsmap(self):
         self.ensure_one()
