@@ -102,7 +102,6 @@ class TestSCT(AccountTestInvoicingCommon):
         )
         cls.bank_journal = cls.test_company_dict["default_journal_bank"]
         cls.bank_journal.write({"bank_account_id": cls.partner_bank.id})
-        # update payment mode
         cls.payment_method_line = cls.env["account.payment.method.line"].create(
             {
                 "name": "SEPA credit transfer test",

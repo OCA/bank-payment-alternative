@@ -65,17 +65,18 @@ This module is part of the OCA/bank-payment-alternative suite.
 Configuration
 =============
 
--  Create a Payment Mode dedicated to SEPA Credit Transfer.
--  Select the Payment Method *SEPA Credit Transfer to suppliers* (which
-   is automatically created upon module installation).
--  Check that this payment method uses the proper version of PAIN.
+-  Create a Payment Method dedicated to SEPA Credit Transfer.
+-  Select the Technical Payment Method *SEPA Credit Transfer to
+   suppliers* (which is automatically created upon module installation).
+-  Check that this technical payment method uses the proper version of
+   PAIN.
 
 Usage
 =====
 
 In the menu *Invoicing/Accounting > Vendors > Payment Orders*, create a
-new payment order and select the Payment Mode dedicated to SEPA Credit
-Transfer that you created during the configuration step.
+new payment order and select the *Payment Method* dedicated to SEPA
+Credit Transfer that you created during the configuration step.
 
 Bug Tracker
 ===========
