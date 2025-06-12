@@ -383,4 +383,6 @@ class TestSCT(AccountTestInvoicingCommon):
         }
         inv = cls.env["account.move"].create(data)
         inv.action_post()
+        if not inv.partner_bank_id.allow_out_payment:
+            inv.partner_bank_id.write({"allow_out_payment": True})
         return inv
