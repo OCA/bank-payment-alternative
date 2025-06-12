@@ -419,7 +419,7 @@ class AccountPaymentOrder(models.Model):
                 payline.date = requested_date
                 # Group options
                 pay_hashcode = (
-                    payline.payment_line_hashcode()
+                    payline._payment_line_hashcode()
                     if order.payment_method_line_id.group_lines
                     else payline.id
                 )

@@ -35,17 +35,6 @@ This module adds support for payment orders and debit orders.
 .. contents::
    :local:
 
-Installation
-============
-
-This module depends on:
-
--  account_payment_partner
--  base_iban
--  document
-
-This modules is part of the OCA/bank-payment suite.
-
 Configuration
 =============
 
