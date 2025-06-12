@@ -10,7 +10,7 @@ class SaleReport(models.Model):
 
     payment_method_line_id = fields.Many2one(
         "account.payment.method.line",
-        string="Payment Mode",
+        string="Payment Method",
         readonly=True,
     )
 

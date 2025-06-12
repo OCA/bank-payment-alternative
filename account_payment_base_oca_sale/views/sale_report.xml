@@ -22,7 +22,7 @@
             <filter name="industry_id" position="after">
                 <filter
                     name="payment_method_line_groupby"
-                    string="Payment Mode"
+                    string="Payment Method"
                     context="{'group_by': 'payment_method_line_id'}"
                 />
             </filter>

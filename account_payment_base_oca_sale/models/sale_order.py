@@ -11,7 +11,7 @@ class SaleOrder(models.Model):
     payment_method_line_id = fields.Many2one(
         comodel_name="account.payment.method.line",
         compute="_compute_payment_method_line_id",
-        string="Payment Mode",
+        string="Payment Method",
         store=True,
         readonly=False,
         precompute=True,
@@ -50,7 +50,7 @@ class SaleOrder(models.Model):
     def _get_invoice_grouping_keys(self) -> list:
         """
         When several sale orders are generating invoices,
-        we want to add the payment mode in grouping criteria.
+        we want to add the payment method in grouping criteria.
         """
         keys = super()._get_invoice_grouping_keys()
         if "preferred_payment_method_line_id" not in keys:
