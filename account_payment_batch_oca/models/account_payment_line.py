@@ -274,8 +274,8 @@ class AccountPaymentLine(models.Model):
             if not method_line:
                 raise UserError(
                     _(
-                        "No payment mode with a fixed link to journal '%(journal)s' "
-                        "with payment method '%(payment_method)s'. "
+                        "No payment method with a fixed link to journal '%(journal)s' "
+                        "with technical payment method '%(payment_method)s'. "
                         "You must create one.",
                         journal=journal.display_name,
                         payment_method=order.payment_method_id.display_name,

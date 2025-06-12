@@ -30,7 +30,7 @@ class AccountPaymentOrder(models.Model):
         index=True,
         domain="[('payment_order_ok', '=', True), "
         "('payment_type', '=', payment_type), ('company_id', '=', company_id)]",
-        string="Payment Mode",
+        string="Payment Method",
     )
     payment_type = fields.Selection(
         selection=[("inbound", "Inbound"), ("outbound", "Outbound")],
@@ -238,10 +238,13 @@ class AccountPaymentOrder(models.Model):
                 )
                 raise ValidationError(
                     _(
-                        "The payment type (%(ptype)s) is not the same as the payment "
-                        "type of the payment mode (%(pmode)s)",
-                        ptype=payment_type2label[order.payment_type],
-                        pmode=payment_type2label[
+                        "On payment/debit order %(order)s, the payment type is "
+                        "%(order_ptype)s, but the payment method %(method)s "
+                        "is configured with payment type %(method_ptype)s.",
+                        order=order.display_name,
+                        order_ptype=payment_type2label[order.payment_type],
+                        method=order.payment_method_line_id.display_name,
+                        method_ptype=payment_type2label[
                             order.payment_method_line_id.payment_type
                         ],
                     )
@@ -255,10 +258,10 @@ class AccountPaymentOrder(models.Model):
                 if order.date_scheduled < today:
                     raise ValidationError(
                         _(
-                            "On payment order %(porder)s, the Payment Execution Date "
-                            "is in the past (%(exedate)s).",
+                            "On payment/debit order %(porder)s, the payment "
+                            "execution date is in the past (%(exedate)s).",
                             porder=order.name,
-                            exedate=order.date_scheduled,
+                            exedate=format_date(self.env, order.date_scheduled),
                         )
                     )
 
@@ -403,11 +406,11 @@ class AccountPaymentOrder(models.Model):
                 ):
                     payline_err_text.add(
                         _(
-                            "The payment mode '%(pmode)s' has the option "
+                            "The payment method '%(method)s' has the option "
                             "'Disallow Debit Before Maturity Date'. The "
                             "payment line %(pline)s has a maturity date %(mdate)s "
                             "which is after the computed payment date %(pdate)s.",
-                            pmode=order.payment_method_line_id.display_name,
+                            method=order.payment_method_line_id.display_name,
                             pline=payline.name,
                             mdate=format_date(self.env, payline.ml_maturity_date),
                             pdate=format_date(self.env, requested_date),

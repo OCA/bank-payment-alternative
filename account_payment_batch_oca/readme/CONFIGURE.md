@@ -1,2 +1,2 @@
-This module adds several options on Payment Modes, cf
-Invoicing/Accounting \> Configuration \> Management \> Payment Modes.
+This module adds several options on Payment Methods, cf
+Invoicing/Accounting \> Configuration \> Management \> Payment Methods.
