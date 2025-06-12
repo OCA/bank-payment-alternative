@@ -369,7 +369,7 @@ class AccountPaymentOrder(models.Model):
         """Generate an Id element for partner inside the parent node.
         party_type can currently be Cdtr or Dbtr. Notably, the initiating
         party orgid is generated with another mechanism and configured
-        at the company or payment mode level.
+        at the company or payment method level.
         """
         return
 
