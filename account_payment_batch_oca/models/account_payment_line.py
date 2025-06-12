@@ -171,7 +171,7 @@ class AccountPaymentLine(models.Model):
         ]
         return res
 
-    def payment_line_hashcode(self):
+    def _payment_line_hashcode(self):
         self.ensure_one()
         values = []
         for field in self._payment_grouping_fields():
