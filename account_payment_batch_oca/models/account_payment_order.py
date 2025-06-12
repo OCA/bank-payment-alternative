@@ -497,12 +497,12 @@ class AccountPaymentOrder(models.Model):
         self.ensure_one()
         action = {}
         payment_file_bytes, filename_ext = self.generate_payment_file()
-        filename = ".".join([self._prepare_filename(), filename_ext])
         vals = {
             "state": "generated",
             "date_generated": fields.Date.context_today(self),
         }
-        if payment_file_bytes and filename:
+        if payment_file_bytes and filename_ext:
+            filename = ".".join([self._prepare_filename(), filename_ext])
             attachment = self.env["ir.attachment"].create(
                 {
                     "name": filename,
