@@ -36,6 +36,7 @@ class AccountPaymentLineCreate(models.TransientModel):
     move_date = fields.Date(default=fields.Date.context_today)
     payment_mode = fields.Selection(
         selection=[("same", "Same"), ("same_or_null", "Same or Empty"), ("any", "Any")],
+        string="Payment Method",
     )
     eligible_move_line_ids = fields.Many2many(
         comodel_name="account.move.line",

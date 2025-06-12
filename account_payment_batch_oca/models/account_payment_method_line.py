@@ -25,13 +25,13 @@ class AccountPaymentMethodLine(models.Model):
         "ir.sequence",
         check_company=True,
         copy=False,
-        help="If left empty, the payment orders with this payment mode will use the "
+        help="If left empty, the payment orders with this payment method will use the "
         "generic sequence for all payment orders.",
     )
     no_debit_before_maturity = fields.Boolean(
         string="Disallow Debit Before Maturity Date",
         default=True,
-        help="If you activate this option on an Inbound payment mode, "
+        help="If you activate this option on an Inbound payment method, "
         "you will have an error message when you confirm a debit order "
         "that has a payment line with a payment date before the maturity "
         "date.",
@@ -39,7 +39,7 @@ class AccountPaymentMethodLine(models.Model):
     # Default options for the "payment.order.create" wizard
     default_payment_mode = fields.Selection(
         selection=[("same", "Same"), ("same_or_null", "Same or empty"), ("any", "Any")],
-        string="Payment Mode on Invoice",
+        string="Payment Method on Invoice",
         default="same",
     )
     default_journal_ids = fields.Many2many(
@@ -141,8 +141,8 @@ class AccountPaymentMethodLine(models.Model):
             if line.payment_order_ok and not line.selectable:
                 raise ValidationError(
                     _(
-                        "Payment mode '%(mode)s' cannot be selectable on "
+                        "Payment method '%(method)s' cannot be selectable on "
                         "payment/debit orders but not selectable on partners/invoices.",
-                        mode=line.display_name,
+                        method=line.display_name,
                     )
                 )

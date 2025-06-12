@@ -134,10 +134,10 @@ class AccountMove(models.Model):
                 raise UserError(
                     _(
                         "No Payment Line created for invoice '%(invoice)s' because "
-                        "its payment mode '%(pay_mode)s' is not intended for payment "
-                        "orders.",
+                        "its payment method '%(pay_method)s' is not intended for "
+                        "payment/debit orders.",
                         invoice=move.display_name,
-                        pay_mode=payment_mode.display_name,
+                        pay_method=payment_mode.display_name,
                     )
                 )
             payment_lines = applicable_lines.payment_line_ids.filtered(
