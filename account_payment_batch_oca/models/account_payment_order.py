@@ -472,7 +472,7 @@ class AccountPaymentOrder(models.Model):
         self.write({"state": "open"})
 
     def generate_payment_file(self):
-        """Returns (payment file as string, filename)"""
+        """Returns (payment file as bytes, filename extension without the dot)"""
         self.ensure_one()
         if self.payment_method_id.code in ("manual", "test_manual"):
             return (False, False)
@@ -485,10 +485,16 @@ class AccountPaymentOrder(models.Model):
                 % self.payment_method_id.code
             )
 
+    def _prepare_filename(self):
+        """Returns filename without extension"""
+        self.ensure_one()
+        return self.name.replace("/", "-")
+
     def open2generated(self):
         self.ensure_one()
         action = {}
-        payment_file_bytes, filename = self.generate_payment_file()
+        payment_file_bytes, filename_ext = self.generate_payment_file()
+        filename = ".".join([self._prepare_filename(), filename_ext])
         vals = {
             "state": "generated",
             "date_generated": fields.Date.context_today(self),

@@ -237,7 +237,8 @@ class AccountPaymentLine(models.Model):
                     _("Missing Partner Bank Account on payment line %s") % self.name
                 )
             if (
-                self.order_id._enforce_allow_out_payment()
+                self.order_id.payment_type == "outbound"
+                and self.order_id._enforce_allow_out_payment()
                 and not self.partner_bank_id.allow_out_payment
             ):
                 raise UserError(
@@ -340,3 +341,12 @@ class AccountPaymentLine(models.Model):
             "name": f"{self.order_id.name}/LOT{lot_sequence}",
         }
         return vals
+
+    def action_open_related_move(self):
+        self.ensure_one()
+        if not self.move_line_id:
+            raise UserError(
+                _("Payment line %s is not linked to a journal item.")
+                % self.display_name
+            )
+        return self.move_line_id.action_open_business_doc()
