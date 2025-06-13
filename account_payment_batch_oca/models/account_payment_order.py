@@ -380,9 +380,9 @@ class AccountPaymentOrder(models.Model):
             order.payment_lot_ids.unlink()
             # Prepare account payments from the payment lines
             payline_err_text = set()
-            group_paylines = {}  # key = pay_hashcode
-            pay_hashcode2lot = {}  # key = pay_hashcode, value = payment_lot
-            lot_hashcode2lot = {}  # key = lot_hashcode, value = payment_lot
+            group_paylines = {}  # key = pay_key
+            pay_key2lot = {}  # key = pay_key, value = payment_lot
+            lot_key2lot = {}  # key = lot_key, value = payment_lot
             for payline in order.payment_line_ids:
                 try:
                     payline.draft2open_payment_line_check()
@@ -418,30 +418,26 @@ class AccountPaymentOrder(models.Model):
                     )
                 payline.date = requested_date
                 # Group options
-                pay_hashcode = (
-                    payline._payment_line_hashcode()
+                pay_key = (
+                    payline._payment_line_grouping_key()
                     if order.payment_method_line_id.group_lines
                     else payline.id
                 )
-                lot_hashcode = payline._lot_hash_code()
-                if pay_hashcode in group_paylines:
-                    group_paylines[pay_hashcode]["paylines"] |= payline
-                    group_paylines[pay_hashcode]["total"] += payline.amount_currency
+                lot_key = payline._lot_grouping_key()
+                if pay_key in group_paylines:
+                    group_paylines[pay_key]["paylines"] |= payline
+                    group_paylines[pay_key]["total"] += payline.amount_currency
                 else:
-                    group_paylines[pay_hashcode] = {
+                    group_paylines[pay_key] = {
                         "paylines": payline,
                         "total": payline.amount_currency,
                         "currency": payline.currency_id,
                     }
-                if lot_hashcode not in lot_hashcode2lot:
-                    lot_hashcode2lot[lot_hashcode] = self.env[
-                        "account.payment.lot"
-                    ].create(
-                        payline._prepare_account_payment_lot_vals(
-                            len(lot_hashcode2lot) + 1
-                        )
+                if lot_key not in lot_key2lot:
+                    lot_key2lot[lot_key] = self.env["account.payment.lot"].create(
+                        payline._prepare_account_payment_lot_vals(len(lot_key2lot) + 1)
                     )
-                pay_hashcode2lot[pay_hashcode] = lot_hashcode2lot[lot_hashcode]
+                pay_key2lot[pay_key] = lot_key2lot[lot_key]
             # Raise errors that happened on the validation process
             if payline_err_text:
                 raise UserError("\n".join(payline_err_text))
@@ -453,7 +449,7 @@ class AccountPaymentOrder(models.Model):
             # Create account payments
             lot2pay_seq = defaultdict(int)
             payment_vals = []
-            for pay_hashcode, paydict in group_paylines.items():
+            for pay_key, paydict in group_paylines.items():
                 # Block generation of negative account.payment
                 if paydict["currency"].compare_amounts(paydict["total"], 0) <= 0:
                     raise UserError(
@@ -464,7 +460,7 @@ class AccountPaymentOrder(models.Model):
                             amount=paydict["total"],
                         )
                     )
-                lot = pay_hashcode2lot[pay_hashcode]
+                lot = pay_key2lot[pay_key]
                 lot2pay_seq[lot] += 1
                 payment_vals.append(
                     paydict["paylines"]._prepare_account_payment_vals(
