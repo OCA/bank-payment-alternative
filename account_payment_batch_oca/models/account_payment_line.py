@@ -184,6 +184,8 @@ class AccountPaymentLine(models.Model):
         # otherwise it would break the structured communication system !
         if self.communication_type != "free":
             key.append(self.id)
+        else:
+            key.append(None)
         return tuple(key)
 
     def _lot_grouping_key(self):
