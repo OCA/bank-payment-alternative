@@ -171,28 +171,27 @@ class AccountPaymentLine(models.Model):
         ]
         return res
 
-    def _payment_line_hashcode(self):
+    def _payment_line_grouping_key(self):
         self.ensure_one()
-        values = []
+        key = []
         for field in self._payment_grouping_fields():
-            values.append(str(self[field]))
+            key.append(str(self[field]))
         # Don't group the payment lines that are attached to the same supplier
         # but to move lines with different accounts (very unlikely),
         # for easier generation/comprehension of the transfer move
-        values.append(str(self.move_line_id.account_id or False))
+        key.append(self.move_line_id and self.move_line_id.account_id.id or False)
         # Don't group the payment lines that use a structured communication
         # otherwise it would break the structured communication system !
         if self.communication_type != "free":
-            values.append(str(self.id))
-        return "-".join(values)
+            key.append(self.id)
+        return tuple(key)
 
-    def _lot_hash_code(self):
+    def _lot_grouping_key(self):
         self.ensure_one()
-        values = []
+        key = []
         for field in self._lot_grouping_fields():
-            values.append(str(self[field]))
-        hashcode = "-".join(values)
-        return hashcode
+            key.append(str(self[field]))
+        return tuple(key)
 
     @api.depends("partner_id", "move_line_id")
     def _compute_payment_line(self):
