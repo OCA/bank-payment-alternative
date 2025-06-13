@@ -134,13 +134,13 @@ msgstr ""
 #. module: account_payment_base_oca
 #: model:ir.model.fields,help:account_payment_base_oca.field_account_payment_method_line__bank_account_link
 msgid ""
-"For payment modes that are always attached to the same bank account of your "
-"company (such as wire transfer from customers or SEPA direct debit from "
-"suppliers), select 'Fixed'. For payment modes that are not always attached "
-"to the same bank account (such as SEPA Direct debit for customers, wire "
-"transfer to suppliers), you should select 'Variable', which means that you "
-"will select the bank account on the payment order. If your company only has "
-"one bank account, you should always select 'Fixed'."
+"For payment methods that are always attached to the same bank account of "
+"your company (such as wire transfer from customers or SEPA direct debit from"
+" suppliers), select 'Fixed'. For payment methods that are not always "
+"attached to the same bank account (such as SEPA Direct debit for customers, "
+"wire transfer to suppliers), you should select 'Variable', which means that "
+"you will select the bank account on the payment order. If your company only "
+"has one bank account, you should always select 'Fixed'."
 msgstr ""
 
 #. module: account_payment_base_oca
@@ -231,32 +231,23 @@ msgid "Outbound"
 msgstr ""
 
 #. module: account_payment_base_oca
-#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_search
+#: model:ir.model.fields,field_description:account_payment_base_oca.field_account_invoice_report__payment_method_line_id
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_account_invoice_report_search
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_move_form
 msgid "Payment Method"
 msgstr ""
 
 #. module: account_payment_base_oca
-#: model:ir.model,name:account_payment_base_oca.model_account_payment_method
-#: model:ir.model,name:account_payment_base_oca.model_account_payment_method_line
-msgid "Payment Methods"
-msgstr ""
-
-#. module: account_payment_base_oca
-#: model:ir.model.fields,field_description:account_payment_base_oca.field_account_invoice_report__payment_method_line_id
-#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_account_invoice_report_search
-msgid "Payment Mode"
-msgstr ""
-
-#. module: account_payment_base_oca
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__refund_payment_method_line_id
-msgid "Payment Mode for Refunds"
+msgid "Payment Method for Refunds"
 msgstr ""
 
 #. module: account_payment_base_oca
 #: model:ir.actions.act_window,name:account_payment_base_oca.account_payment_method_line_action
+#: model:ir.model,name:account_payment_base_oca.model_account_payment_method
+#: model:ir.model,name:account_payment_base_oca.model_account_payment_method_line
 #: model:ir.ui.menu,name:account_payment_base_oca.account_payment_method_line_menu
-msgid "Payment Modes"
+msgid "Payment Methods"
 msgstr ""
 
 #. module: account_payment_base_oca
@@ -309,6 +300,12 @@ msgid "Show Customer Bank Account"
 msgstr ""
 
 #. module: account_payment_base_oca
+#: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__payment_method_id
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_search
+msgid "Technical Payment Method"
+msgstr ""
+
+#. module: account_payment_base_oca
 #: model:ir.model.constraint,message:account_payment_base_oca.constraint_account_payment_method_line_show_bank_account_chars_positive
 msgid ""
 "The number of digits to show for customer bank account must be positive or "
@@ -318,8 +315,8 @@ msgstr ""
 #. module: account_payment_base_oca
 #: model:ir.model.fields,help:account_payment_base_oca.field_account_payment_method_line__refund_payment_method_line_id
 msgid ""
-"This payment mode will be used when doing refunds coming from the current "
-"payment mode."
+"This payment method will be used when doing refunds coming from the current "
+"payment method."
 msgstr ""
 
 #. module: account_payment_base_oca
