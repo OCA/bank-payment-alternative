@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-05 15:26+0000\n"
+"PO-Revision-Date: 2025-06-14 09:26+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -149,6 +149,13 @@ msgid ""
 "will select the bank account on the payment order. If your company only has "
 "one bank account, you should always select 'Fixed'."
 msgstr ""
+"Per i metodi di pagamento sempre collegati allo stesso conto bancario "
+"dell'azienda (come bonifico bancario dai clienti o addebito diretto SEPA dai "
+"fornitori), selezionare \"Fisso\". Per i metodi di pagamento non sempre "
+"collegati allo stesso conto bancario (come addebito diretto SEPA per i "
+"clienti, bonifico bancario ai fornitori), selezionare \"Variabile\", il che "
+"significa che si selezionerà il conto bancario nell'ordine di pagamento. Se "
+"l'azienda ha un solo conto bancario, selezionare sempre \"Fisso\"."
 
 #. module: account_payment_base_oca
 #: model:ir.model.fields.selection,name:account_payment_base_oca.selection__account_payment_method_line__show_bank_account__full
@@ -254,7 +261,7 @@ msgstr "Metodo di pagamento"
 #. module: account_payment_base_oca
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__refund_payment_method_line_id
 msgid "Payment Method for Refunds"
-msgstr ""
+msgstr "Metodi di pagamento per i rimborsi"
 
 #. module: account_payment_base_oca
 #: model:ir.actions.act_window,name:account_payment_base_oca.account_payment_method_line_action
@@ -323,7 +330,7 @@ msgstr "Visualizza conto banca cliente"
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__payment_method_id
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_search
 msgid "Technical Payment Method"
-msgstr ""
+msgstr "Metodi di pagamento tecnici"
 
 #. module: account_payment_base_oca
 #: model:ir.model.constraint,message:account_payment_base_oca.constraint_account_payment_method_line_show_bank_account_chars_positive
@@ -340,6 +347,8 @@ msgid ""
 "This payment method will be used when doing refunds coming from the current "
 "payment method."
 msgstr ""
+"Questo metodo di pagamento verrà utilizzato quando si eseguono rimborsi che "
+"derivano dal metodo di pagamento attuale."
 
 #. module: account_payment_base_oca
 #: model:ir.model.fields.selection,name:account_payment_base_oca.selection__account_payment_method_line__bank_account_link__variable
