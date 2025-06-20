@@ -18,23 +18,30 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. module: account_payment_sale
-#: model_terms:ir.ui.view,arch_db:account_payment_sale.report_sale_payment_mode
+#. module: account_payment_base_oca_sale
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.report_sale_payment_mode
 msgid "<strong>Payment Mode:</strong>"
 msgstr ""
 
-#. module: account_payment_sale
-#: model:ir.model.fields,field_description:account_payment_sale.field_sale_order__payment_mode_id
-#: model:ir.model.fields,field_description:account_payment_sale.field_sale_report__payment_mode_id
-msgid "Payment Mode"
+#. module: account_payment_base_oca_sale
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.report_sale_payment_mode
+msgid "Here are the instructions for your payment"
+msgstr ""
+
+#. module: account_payment_base_oca_sale
+#: model:ir.model.fields,field_description:account_payment_base_oca_sale.field_sale_order__payment_method_line_id
+#: model:ir.model.fields,field_description:account_payment_base_oca_sale.field_sale_report__payment_method_line_id
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.view_order_product_search
+#, fuzzy
+msgid "Payment Method"
 msgstr "Betalingsform"
 
-#. module: account_payment_sale
-#: model:ir.model,name:account_payment_sale.model_sale_report
+#. module: account_payment_base_oca_sale
+#: model:ir.model,name:account_payment_base_oca_sale.model_sale_report
 msgid "Sales Analysis Report"
 msgstr ""
 
-#. module: account_payment_sale
-#: model:ir.model,name:account_payment_sale.model_sale_order
+#. module: account_payment_base_oca_sale
+#: model:ir.model,name:account_payment_base_oca_sale.model_sale_order
 msgid "Sales Order"
 msgstr ""
