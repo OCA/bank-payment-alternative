@@ -1,23 +1,17 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * account_payment_order
+# 	* account_payment_batch_oca
 #
-# Translators:
-# OCA Transbot <transbot@odoo-community.org>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-23 03:38+0000\n"
-"PO-Revision-Date: 2017-11-23 03:38+0000\n"
-"Last-Translator: OCA Transbot <transbot@odoo-community.org>, 2017\n"
-"Language-Team: Portuguese (Portugal) (https://www.transifex.com/oca/"
-"teams/23907/pt_PT/)\n"
-"Language: pt_PT\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: \n"
 
 #. module: account_payment_batch_oca
 #. odoo-python
@@ -43,7 +37,8 @@ msgstr ""
 #. module: account_payment_batch_oca
 #: model:ir.model.constraint,message:account_payment_batch_oca.constraint_account_payment_order_name_company_unique
 msgid ""
-"A payment/debit order with the same reference already exists in this company."
+"A payment/debit order with the same reference already exists in this "
+"company."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -179,8 +174,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_line.py:0
 msgid ""
-"Bank account '%(bank_account)s' of partner '%(partner)s' is untrusted. Check "
-"that this bank account can be trusted and activate the option 'Send Money' "
+"Bank account '%(bank_account)s' of partner '%(partner)s' is untrusted. Check"
+" that this bank account can be trusted and activate the option 'Send Money' "
 "on it."
 msgstr ""
 
@@ -194,7 +189,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_order__state__cancel
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_line_create_form
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_order_form
@@ -210,9 +205,9 @@ msgstr ""
 #. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_line_create_form
 msgid ""
-"Click on Add All Journal Items to auto-select the journal items matching the "
-"above criteria or click on Add an item to manually select the journal items "
-"filtered by the above criteria."
+"Click on Add All Journal Items to auto-select the journal items matching the"
+" above criteria or click on Add an item to manually select the journal items"
+" filtered by the above criteria."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -280,7 +275,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__create_uid
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__create_uid
 msgid "Created by"
-msgstr "Criado por"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__create_date
@@ -288,7 +283,7 @@ msgstr "Criado por"
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__create_date
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__create_date
 msgid "Created on"
-msgstr "Criado em"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__company_currency_id
@@ -335,7 +330,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_order__state__draft
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_order_search
 msgid "Draft"
-msgstr "Rascunho"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__default_date_type__due
@@ -415,12 +410,12 @@ msgstr ""
 #: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_order__bank_account_link
 msgid ""
 "For payment methods that are always attached to the same bank account of "
-"your company (such as wire transfer from customers or SEPA direct debit from "
-"suppliers), select 'Fixed'. For payment methods that are not always attached "
-"to the same bank account (such as SEPA Direct debit for customers, wire "
-"transfer to suppliers), you should select 'Variable', which means that you "
-"will select the bank account on the payment order. If your company only has "
-"one bank account, you should always select 'Fixed'."
+"your company (such as wire transfer from customers or SEPA direct debit from"
+" suppliers), select 'Fixed'. For payment methods that are not always "
+"attached to the same bank account (such as SEPA Direct debit for customers, "
+"wire transfer to suppliers), you should select 'Variable', which means that "
+"you will select the bank account on the payment order. If your company only "
+"has one bank account, you should always select 'Fixed'."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -459,7 +454,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__id
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__activity_exception_icon
@@ -491,9 +486,7 @@ msgstr ""
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_method_line__group_lines
 msgid ""
-"If this mark is checked, the transaction lines of the payment order will be "
-"grouped upon confirmation of the payment order.The grouping will be done "
-"only if the following fields matches:\n"
+"If this mark is checked, the transaction lines of the payment order will be grouped upon confirmation of the payment order.The grouping will be done only if the following fields matches:\n"
 "* Partner\n"
 "* Currency\n"
 "* Destination Bank Account\n"
@@ -569,7 +562,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__write_uid
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__write_uid
 msgid "Last Updated by"
-msgstr "Atualizado pela última vez por"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__write_date
@@ -577,7 +570,7 @@ msgstr "Atualizado pela última vez por"
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__write_date
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__write_date
 msgid "Last Updated on"
-msgstr "Atualizado pela última vez em"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_line_create_form
@@ -690,8 +683,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_move.py:0
 msgid ""
-"No Payment Line created for invoice '%(invoice)s' because its payment method "
-"'%(pay_method)s' is not intended for payment/debit orders."
+"No Payment Line created for invoice '%(invoice)s' because its payment method"
+" '%(pay_method)s' is not intended for payment/debit orders."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -776,8 +769,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid ""
-"On payment/debit order %(porder)s, the payment execution date is in the past "
-"(%(exedate)s)."
+"On payment/debit order %(porder)s, the payment execution date is in the past"
+" (%(exedate)s)."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -954,8 +947,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_method_line.py:0
 msgid ""
-"Payment method '%(method)s' cannot be selectable on payment/debit orders but "
-"not selectable on partners/invoices."
+"Payment method '%(method)s' cannot be selectable on payment/debit orders but"
+" not selectable on partners/invoices."
 msgstr ""
 
 #. module: account_payment_batch_oca
@@ -1073,7 +1066,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__state
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__state
 msgid "Status"
-msgstr "Estado"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_order__activity_state
