@@ -23,6 +23,7 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [account_payment_base_oca](account_payment_base_oca/) | 18.0.1.2.1 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | OCA extensions to native payment objects of Odoo
 [account_payment_batch_oca](account_payment_batch_oca/) | 18.0.1.0.0 |  | Add payment orders and debit orders
+[account_payment_sepa_base](account_payment_sepa_base/) | 18.0.1.0.0 |  | Base module for SEPA file generation
 
 [//]: # (end addons)
 
