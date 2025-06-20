@@ -28,6 +28,7 @@ addon | version | maintainers | summary
 [account_payment_mandate_sale](account_payment_mandate_sale/) | 18.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Adds mandates on sale orders
 [account_payment_sepa_base](account_payment_sepa_base/) | 18.0.1.0.0 |  | Base module for SEPA file generation
 [account_payment_sepa_credit_transfer](account_payment_sepa_credit_transfer/) | 18.0.1.0.0 |  | Create SEPA XML files for Credit Transfers
+[account_payment_sepa_direct_debit](account_payment_sepa_direct_debit/) | 18.0.1.0.0 |  | Create SEPA files for Direct Debit
 
 [//]: # (end addons)
 
