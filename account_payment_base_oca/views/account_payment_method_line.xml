@@ -121,17 +121,6 @@
             <search>
                 <field name="name" />
                 <filter
-                    name="inbound"
-                    string="Inbound"
-                    domain="[('payment_type', '=', 'inbound')]"
-                />
-                <filter
-                    name="outbound"
-                    string="Outbound"
-                    domain="[('payment_type', '=', 'outbound')]"
-                />
-                <separator />
-                <filter
                     name="selectable"
                     string="Selectable"
                     domain="[('selectable', '=', True)]"
@@ -140,6 +129,17 @@
                     name="not_selectable"
                     string="Not Selectable"
                     domain="[('selectable', '=', False)]"
+                />
+                <separator />
+                <filter
+                    name="inbound"
+                    string="Inbound"
+                    domain="[('payment_type', '=', 'inbound')]"
+                />
+                <filter
+                    name="outbound"
+                    string="Outbound"
+                    domain="[('payment_type', '=', 'outbound')]"
                 />
                 <separator />
                 <filter
