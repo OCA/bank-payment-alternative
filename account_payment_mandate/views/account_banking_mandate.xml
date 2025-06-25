@@ -283,6 +283,7 @@
         id="mandate_menu"
         parent="account.menu_finance_receivables"
         action="mandate_action"
-        sequence="50"
+        sequence="19"
     />
+    <!-- sequence designed to be right after Debit Orders -->
 </odoo>
