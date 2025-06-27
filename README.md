@@ -21,10 +21,10 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[account_payment_base_oca](account_payment_base_oca/) | 18.0.1.2.1 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | OCA extensions to native payment objects of Odoo
+[account_payment_base_oca](account_payment_base_oca/) | 18.0.1.3.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | OCA extensions to native payment objects of Odoo
 [account_payment_base_oca_sale](account_payment_base_oca_sale/) | 18.0.1.0.0 |  | Adds payment method on sale orders
-[account_payment_batch_oca](account_payment_batch_oca/) | 18.0.1.0.0 |  | Add payment orders and debit orders
-[account_payment_mandate](account_payment_mandate/) | 18.0.1.0.0 |  | Add support for banking mandates used in direct debits
+[account_payment_batch_oca](account_payment_batch_oca/) | 18.0.1.1.0 |  | Add payment orders and debit orders
+[account_payment_mandate](account_payment_mandate/) | 18.0.1.1.0 |  | Add support for banking mandates used in direct debits
 [account_payment_mandate_sale](account_payment_mandate_sale/) | 18.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Adds mandates on sale orders
 [account_payment_sepa_base](account_payment_sepa_base/) | 18.0.1.0.0 |  | Base module for SEPA file generation
 [account_payment_sepa_credit_transfer](account_payment_sepa_credit_transfer/) | 18.0.1.0.0 |  | Create SEPA XML files for Credit Transfers
