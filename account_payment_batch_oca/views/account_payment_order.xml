@@ -338,6 +338,6 @@
         id="account_payment_order_inbound_menu"
         action="account_payment_order_inbound_action"
         parent="account.menu_finance_receivables"
-        sequence="18"
+        sequence="17"
     />
 </odoo>

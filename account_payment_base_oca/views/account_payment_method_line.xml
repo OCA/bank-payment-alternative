@@ -121,17 +121,6 @@
             <search>
                 <field name="name" />
                 <filter
-                    name="inbound"
-                    string="Inbound"
-                    domain="[('payment_type', '=', 'inbound')]"
-                />
-                <filter
-                    name="outbound"
-                    string="Outbound"
-                    domain="[('payment_type', '=', 'outbound')]"
-                />
-                <separator />
-                <filter
                     name="selectable"
                     string="Selectable"
                     domain="[('selectable', '=', True)]"
@@ -140,6 +129,17 @@
                     name="not_selectable"
                     string="Not Selectable"
                     domain="[('selectable', '=', False)]"
+                />
+                <separator />
+                <filter
+                    name="inbound"
+                    string="Inbound"
+                    domain="[('payment_type', '=', 'inbound')]"
+                />
+                <filter
+                    name="outbound"
+                    string="Outbound"
+                    domain="[('payment_type', '=', 'outbound')]"
                 />
                 <separator />
                 <filter
@@ -162,6 +162,7 @@
         <field name="name">Payment Methods</field>
         <field name="res_model">account.payment.method.line</field>
         <field name="view_mode">list,form</field>
+        <field name="context">{'default_selectable': True}</field>
     </record>
 
     <menuitem
