@@ -65,8 +65,8 @@ class AccountPaymentOrder(models.Model):
         for lot in self.payment_lot_ids:
             # B. Payment info
             payment_info = lot._generate_start_payment_info_block(pain_root, gen_args)
-            self._generate_party_block(
-                payment_info, "Dbtr", "B", self.company_partner_bank_id, gen_args
+            self.company_partner_bank_id._generate_party_block(
+                payment_info, "B", gen_args
             )
             self._generate_charge_bearer(payment_info)
             for payment in lot.payment_ids:
@@ -84,12 +84,14 @@ class AccountPaymentOrder(models.Model):
                     payment_ident_val,
                     35,
                     gen_args,
+                    raise_if_oversized=True,
                 )
                 payment_identification.EndToEndId = self._prepare_field(
                     "End to End Identification",
                     payment_ident_val,
                     35,
                     gen_args,
+                    raise_if_oversized=True,
                 )
                 amount = objectify.SubElement(credit_transfer_transaction_info, "Amt")
                 amount.InstdAmt = payment.currency_id._pain_format(payment.amount)
@@ -105,11 +107,9 @@ class AccountPaymentOrder(models.Model):
                         )
                     )
 
-                self._generate_party_block(
+                payment.partner_bank_id._generate_party_block(
                     credit_transfer_transaction_info,
-                    "Cdtr",
                     "C",
-                    payment.partner_bank_id,
                     gen_args,
                     payment,
                 )
