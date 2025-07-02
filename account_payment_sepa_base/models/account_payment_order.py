@@ -331,7 +331,7 @@ class AccountPaymentOrder(models.Model):
 
     @api.model
     def _generate_party_agent(
-        self, parent_node, party_type, order, partner_bank, gen_args, bank_line=None
+        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
     ):
         """Generate the piece of the XML file corresponding to BIC
         This code is mutualized between TRF and DD
@@ -340,7 +340,7 @@ class AccountPaymentOrder(models.Model):
         http://www.europeanpaymentscouncil.eu/index.cfm/
         sepa-credit-transfer/iban-and-bic/
         In some localization (l10n_ch_sepa for example), they need the
-        bank_line argument"""
+        payment argument"""
         assert order in ("B", "C"), "Order can be 'B' or 'C'"
         if partner_bank.bank_bic:
             party_agent = objectify.SubElement(parent_node, f"{party_type}Agt")
@@ -375,7 +375,7 @@ class AccountPaymentOrder(models.Model):
 
     @api.model
     def _generate_party_acc_number(
-        self, parent_node, party_type, order, partner_bank, gen_args, bank_line=None
+        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
     ):
         party_account = objectify.SubElement(parent_node, f"{party_type}Acct")
         party_account_id = objectify.SubElement(party_account, "Id")
@@ -389,12 +389,12 @@ class AccountPaymentOrder(models.Model):
 
     @api.model
     def _generate_party_block(
-        self, parent_node, party_type, order, partner_bank, gen_args, bank_line=None
+        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
     ):
         """Generate the piece of the XML file corresponding to Name+IBAN+BIC
         This code is mutualized between TRF and DD
         In some localization (l10n_ch_sepa for example), they need the
-        bank_line argument"""
+        payment argument"""
         assert order in ("B", "C"), "Order can be 'B' or 'C'"
         party_type_label = _("Partner name")
         if party_type == "Cdtr":
@@ -414,7 +414,7 @@ class AccountPaymentOrder(models.Model):
                 order,
                 partner_bank,
                 gen_args,
-                bank_line=bank_line,
+                payment=payment,
             )
         party = objectify.SubElement(parent_node, party_type)
         party.Nm = party_name
@@ -425,7 +425,7 @@ class AccountPaymentOrder(models.Model):
         self._generate_party_id(party, party_type, partner)
 
         self._generate_party_acc_number(
-            parent_node, party_type, order, partner_bank, gen_args, bank_line=bank_line
+            parent_node, party_type, order, partner_bank, gen_args, payment=payment
         )
 
         if order == "B":
@@ -435,47 +435,7 @@ class AccountPaymentOrder(models.Model):
                 order,
                 partner_bank,
                 gen_args,
-                bank_line=bank_line,
-            )
-
-    @api.model
-    def _generate_remittance_info_block(self, parent_node, line, gen_args):
-        remittance_info = objectify.SubElement(parent_node, "RmtInf")
-        communication_type = line.payment_line_ids[:1].communication_type
-        if communication_type == "free":
-            remittance_info.Ustrd = self._prepare_field(
-                "Remittance Unstructured Information",
-                line.payment_reference,
-                140,
-                gen_args,
-            )
-        elif communication_type == "structured":
-            remittance_info_structured = objectify.SubElement(remittance_info, "Strd")
-            creditor_ref_information = objectify.SubElement(
-                remittance_info_structured, "CdtrRefInf"
-            )
-            if gen_args.get("structured_remittance_issuer", True):
-                creditor_ref_info_type = objectify.SubElement(
-                    creditor_ref_information, "Tp"
-                )
-                creditor_ref_info_type_or = objectify.SubElement(
-                    creditor_ref_info_type, "CdOrPrtry"
-                )
-                creditor_ref_info_type_or.Cd = "SCOR"
-                creditor_ref_info_type.Issr = "ISO"
-
-            ref_tag = "Ref"
-
-            setattr(
-                creditor_ref_information,
-                ref_tag,
-                self._prepare_field(
-                    "Creditor Structured Reference",
-                    line.payment_reference,
-                    35,
-                    gen_args,
-                    raise_if_oversized=True,
-                ),
+                payment=payment,
             )
 
     @api.model
