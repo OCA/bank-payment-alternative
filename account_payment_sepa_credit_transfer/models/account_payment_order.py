@@ -24,6 +24,9 @@ class AccountPaymentOrder(models.Model):
         if not pain_flavor:
             raise UserError(_("PAIN version '%s' is not supported.") % pain_flavor)
         elif pain_flavor.startswith(("pain.001.001.03", "pain.001.003.03")):
+            # pain.001.003.03 is for German Banks
+            # it is not in the offical ISO 20022 documentations, but nearly all
+            # german banks are working with this instead 001.001.03
             bic_xml_tag = "BIC"
             # size 70 -> 140 for <Nm> with pain.001.001.03
             # BUT the European Payment Council, in the document
@@ -37,9 +40,6 @@ class AccountPaymentOrder(models.Model):
         elif pain_flavor.startswith("pain.001.001.09"):
             bic_xml_tag = "BICFI"
             name_maxsize = 140
-        # added pain.001.003.03 for German Banks
-        # it is not in the offical ISO 20022 documentations, but nearly all
-        # german banks are working with this instead 001.001.03
         else:
             raise UserError(_("PAIN version '%s' is not supported.") % pain_flavor)
         xsd_file = self.payment_method_id._get_xsd_file_path()
@@ -60,8 +60,6 @@ class AccountPaymentOrder(models.Model):
         group_header = self._generate_group_header_block(pain_root, gen_args)
         transactions_count_a = 0
         amount_control_sum_a = 0.0
-        # key = (requested_date, priority, local_instrument, categ_purpose)
-        # values = list of lines as object
         for lot in self.payment_lot_ids:
             # B. Payment info
             payment_info = lot._generate_start_payment_info_block(pain_root, gen_args)
