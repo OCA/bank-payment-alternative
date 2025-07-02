@@ -104,6 +104,7 @@ class TestSDDBase(AccountTestInvoicingCommon):
                 "journal_id": cls.bank_journal.id,
                 "payment_account_id": cls.payment_account.id,
                 "selectable": True,
+                "mail_notif": True,
             }
         )
         cls.partner1_mandate = cls.mandate_model.create(
