@@ -30,6 +30,13 @@ class AccountPayment(models.Model):
             raise_if_oversized=True,
         )
 
+    def _generate_amount_block(self, parent_node, amount_control_sum_a):
+        self.ensure_one()
+        parent_node.InstdAmt = self.currency_id._pain_format(self.amount)
+        parent_node.InstdAmt.set("Ccy", self.currency_id.name)
+        amount_control_sum_a += self.amount
+        return amount_control_sum_a
+
     def _generate_remittance_info_block(self, parent_node, gen_args):
         self.ensure_one()
         order_obj = self.env["account.payment.order"]
