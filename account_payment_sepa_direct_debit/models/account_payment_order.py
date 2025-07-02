@@ -66,11 +66,9 @@ class AccountPaymentOrder(models.Model):
                 payment._generate_payment_identification_block(
                     dd_transaction_info, gen_args
                 )
-                dd_transaction_info.InstdAmt = payment.currency_id._pain_format(
-                    payment.amount
+                amount_control_sum_a = payment._generate_amount_block(
+                    dd_transaction_info, amount_control_sum_a
                 )
-                dd_transaction_info.InstdAmt.set("Ccy", payment.currency_id.name)
-                amount_control_sum_a += payment.amount
                 dd_transaction = objectify.SubElement(dd_transaction_info, "DrctDbtTx")
                 mandate_related_info = objectify.SubElement(
                     dd_transaction, "MndtRltdInf"
