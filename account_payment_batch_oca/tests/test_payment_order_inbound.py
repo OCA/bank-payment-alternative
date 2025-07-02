@@ -83,7 +83,6 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
 
     def _create_customer_invoice(self):
         line_vals = {
-            "product_id": self.env.ref("product.product_product_4").id,
             "name": "product that cost 100",
             "quantity": 1,
             "account_id": self.company_data["default_account_revenue"].id,
