@@ -54,24 +54,9 @@ class AccountPaymentOrder(models.Model):
                 payment_info, "B", gen_args
             )
             self._generate_charge_bearer(payment_info)
-            sepa_creditor_identifier = (
-                self.payment_method_line_id.sepa_creditor_identifier
-                or self.company_id.sepa_creditor_identifier
-            )
-            if not sepa_creditor_identifier:
-                raise UserError(
-                    _(
-                        "Missing SEPA Creditor Identifier on company %(company)s "
-                        "(or on payment method %(payment_method)s).",
-                        company=self.company_id.display_name,
-                        payment_method=self.payment_method_line_id.display_name,
-                    )
-                )
-            self._generate_creditor_scheme_identification(
+            self.payment_method_line_id._generate_creditor_scheme_identification(
                 payment_info,
-                sepa_creditor_identifier,
-                "SEPA Creditor Identifier",
-                "SEPA",
+                self.sepa and "SEPA" or False,
                 gen_args,
             )
             for payment in lot.payment_ids:
