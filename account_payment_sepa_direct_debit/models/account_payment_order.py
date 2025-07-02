@@ -134,7 +134,7 @@ class AccountPaymentOrder(models.Model):
                     dd_transaction_info,
                     "Dbtr",
                     "C",
-                    line.partner_bank_id,
+                    mandate.partner_bank_id,
                     gen_args,
                     line,
                 )
