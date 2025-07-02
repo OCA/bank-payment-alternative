@@ -76,10 +76,10 @@ class AccountPaymentOrder(models.Model):
                 payment._generate_payment_identification_block(
                     trf_transaction_info, gen_args
                 )
-                amount = objectify.SubElement(trf_transaction_info, "Amt")
-                amount.InstdAmt = payment.currency_id._pain_format(payment.amount)
-                amount.InstdAmt.set("Ccy", payment.currency_id.name)
-                amount_control_sum_a += payment.amount
+                amount_node = objectify.SubElement(trf_transaction_info, "Amt")
+                amount_control_sum_a = payment._generate_amount_block(
+                    amount_node, amount_control_sum_a
+                )
                 if not payment.partner_bank_id:
                     raise UserError(
                         _(
