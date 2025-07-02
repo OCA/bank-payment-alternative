@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-09-20 20:03+0000\n"
+"PO-Revision-Date: 2025-07-02 12:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,34 +14,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_payment_method_code_payment_type_unique
-#, fuzzy
 msgid ""
 "A payment method of the same type already exists with this code and PAIN "
 "version"
 msgstr ""
-"Un metodo di pagamento dello stesso tipo già esiste con lo stesso codice e "
+"Esiste già un metodo di pagamento dello stesso tipo con questo codice e "
 "versione PAIN"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__acct
-#, fuzzy
 msgid "Account Management"
-msgstr "Gestione dei conti"
+msgstr "Gestione conto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_lot
-#, fuzzy
 msgid "Account Payment Lot"
-msgstr "Gestione dei conti"
+msgstr "Conto lotto pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__active
 msgid "Active"
-msgstr ""
+msgstr "Attivo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__adva
@@ -50,15 +47,13 @@ msgstr "Pagamento Anticipato"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__agrt
-#, fuzzy
 msgid "Agricultural Transfer"
-msgstr "Agricultural Transfer"
+msgstr "Trasferimento agricolo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__airb
-#, fuzzy
 msgid "Air"
-msgstr "Air"
+msgstr "Aereo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__almy
@@ -67,9 +62,8 @@ msgstr "Pagamento Alimenti"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ants
-#, fuzzy
 msgid "Anesthesia Services"
-msgstr "Anesthesia Services"
+msgstr "Servizi di anestesia"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__anni
@@ -80,13 +74,12 @@ msgstr "Annualità"
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_pain_regulatory_reporting_form
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_pain_regulatory_reporting_search
 msgid "Archived"
-msgstr ""
+msgstr "In archivio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__batch_booking
-#, fuzzy
 msgid "Batch Booking"
-msgstr "Batch Booking"
+msgstr "Addebito unico"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__bonu
@@ -100,15 +93,13 @@ msgstr "Pagamento di bonus."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_order__charge_bearer__cred
-#, fuzzy
 msgid "Borne by Creditor"
-msgstr "Borne by Creditor"
+msgstr "Sostenuto dal creditore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_order__charge_bearer__debt
-#, fuzzy
 msgid "Borne by Debtor"
-msgstr "Borne by Debtor"
+msgstr "Sostenuto dal debitore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__busb
@@ -132,35 +123,30 @@ msgstr "Spese di cancellazione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__clpr
-#, fuzzy
 msgid "Car Loan Principal Repayment"
-msgstr "Car Loan Principal Repayment"
+msgstr "Rimborso principale noleggio auto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__cblk
-#, fuzzy
 msgid "Card Bulk Clearing"
-msgstr "Card Bulk Clearing"
+msgstr "Cancellazione carte"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__cash
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__cash
-#, fuzzy
 msgid "Cash Management Transfer"
-msgstr "Cash Management Transfer"
+msgstr "Trasferimento gestione contanti"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__category_purpose
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_lot__category_purpose
-#, fuzzy
 msgid "Category Purpose"
-msgstr "Category Purpose"
+msgstr "Utilizzo categoria"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__charge_bearer
-#, fuzzy
 msgid "Charge Bearer"
-msgstr "Charge Bearer"
+msgstr "Debitore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__char
@@ -169,25 +155,23 @@ msgstr "Pagamento Beneficenza"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__bech
-#, fuzzy
 msgid "Child Benefit"
-msgstr "Child Benefit"
+msgstr "Benefit derivato"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__code
 msgid "Code"
-msgstr ""
+msgstr "Codice"
 
 #. module: account_payment_sepa_base
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_pain_regulatory_reporting_search
 msgid "Code or Name"
-msgstr ""
+msgstr "Codice o nome"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__coll
-#, fuzzy
 msgid "Collection Payment"
-msgstr "Collection Payment"
+msgstr "Pagamento riscossione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__comc
@@ -221,24 +205,21 @@ msgstr "Impostazioni configurazione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__comt
-#, fuzzy
 msgid "Consumer Third Party Consolidated Payment"
-msgstr "Consumer Third Party Consolidated Payment"
+msgstr "Pagamento consolidato intermediario cliente"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Contatto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__cvcf
-#, fuzzy
 msgid "Convalescent Care Facility"
-msgstr "Convalescent Care Facility"
+msgstr "Aiuto assistenza convalescenza"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__cpyr
-#, fuzzy
 msgid "Copyright"
 msgstr "Copyright"
 
@@ -252,17 +233,17 @@ msgstr "Costi"
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__company_country_id
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_pain_regulatory_reporting_search
 msgid "Country"
-msgstr ""
+msgstr "Nazione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__ccrd
@@ -277,14 +258,13 @@ msgstr "Pagamento con Carta di Credito "
 #. module: account_payment_sepa_base
 #. odoo-python
 #: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-#, fuzzy
 msgid "Creditor name"
-msgstr "Pagamento con Carta di Credito"
+msgstr "Nome creditore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_res_currency
 msgid "Currency"
-msgstr ""
+msgstr "Valuta"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__dcrd
@@ -300,7 +280,7 @@ msgstr "Pagamento con Carta di Debito"
 #. odoo-python
 #: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
 msgid "Debtor name"
-msgstr ""
+msgstr "Nome debitore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__dvpm
@@ -309,9 +289,8 @@ msgstr "Consegna dietro pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__dnts
-#, fuzzy
 msgid "Dental Services"
-msgstr "Dental Services"
+msgstr "Servizi odontoiatrici"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__deri
@@ -321,7 +300,7 @@ msgstr "Derivati"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__divi
@@ -331,9 +310,8 @@ msgstr "Dividendi"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__dmeq
-#, fuzzy
 msgid "Durable Medicale Equipment"
-msgstr "Durable Medicale Equipment"
+msgstr "Attrezzatura medica durevole"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__elec
@@ -361,6 +339,8 @@ msgid ""
 "Error in the generation of the XML payment file: '%(field)s' should be a "
 "string, but it is %(value_type)s (value: %(value)s)."
 msgstr ""
+"Errore nella generazione del file XML di pagamento: '%(field)s' dovrebbe "
+"essere una stringa, ma è %(value_type)s (value: %(value)s)."
 
 #. module: account_payment_sepa_base
 #. odoo-python
@@ -370,6 +350,9 @@ msgid ""
 "'%(value)s' has %(count)s caracters, but the maximum is %(max_size)s "
 "caracters."
 msgstr ""
+"Errore nella generazione del file XML di pagamento: '%(field_name)s' con "
+"valore '%(value)s' ha %(count)s caratteri, ma il massimo è %(max_size)s "
+"caratteri."
 
 #. module: account_payment_sepa_base
 #. odoo-python
@@ -378,24 +361,23 @@ msgid ""
 "Error in the generation of the XML payment file: '%s' is empty. It should "
 "have a non-null value."
 msgstr ""
+"Errore nella generazione del file XML di pagamento: '%s' è vuoto. Dovrebbe "
+"avere un valore diverso da null."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__estx
-#, fuzzy
 msgid "Estate Tax"
-msgstr "Estate Tax"
+msgstr "Imposta di successione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__fcol
-#, fuzzy
 msgid "Fee Collection"
-msgstr "Fee Collection"
+msgstr "Riscossione tariffa"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ferb
-#, fuzzy
 msgid "Ferry"
-msgstr "Ferry"
+msgstr "Traghetto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_order__charge_bearer__slev
@@ -413,6 +395,14 @@ msgid ""
 "the creditor. Borne by debtor : all transaction charges are to be borne by "
 "the debtor."
 msgstr ""
+"Livello di servizio seguente: le spese di transazione devono essere "
+"applicate seguendo le regole concordate nel livello di servizio e/o nello "
+"schema (i messaggi SEPA Core devono utilizzarlo). Condiviso: le spese di "
+"transazione dal lato debitore sono a carico del debitore, le spese di "
+"transazione dal lato creditore sono a carico del creditore. A carico del "
+"creditore: tutte le spese di transazione sono a carico del creditore. A "
+"carico del debitore: tutte le spese di transazione sono a carico del "
+"debitore."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__frex
@@ -432,9 +422,8 @@ msgstr "Assicurazione"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__govt
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__govt
-#, fuzzy
 msgid "Government Payment"
-msgstr "Government Payment"
+msgstr "Pagamento governativo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hlti
@@ -444,9 +433,8 @@ msgstr "Assicurazione sulla salute"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__hedg
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hedg
-#, fuzzy
 msgid "Hedging"
-msgstr "Hedging"
+msgstr "Copertura"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__priority__high
@@ -455,21 +443,18 @@ msgstr "Alto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hltc
-#, fuzzy
 msgid "Home Health Care"
-msgstr "Home Health Care"
+msgstr "Assistenza a domicilio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hspc
-#, fuzzy
 msgid "Hospital Care"
-msgstr "Hospital Care"
+msgstr "Assistenza ospedaliera"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hlrp
-#, fuzzy
 msgid "Housing Loan Repayment"
-msgstr "Housing Loan Repayment"
+msgstr "Rimborso del prestito immobiliare"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__hstx
@@ -479,7 +464,7 @@ msgstr "Tassa sulla casa"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_account_payment_line__category_purpose
@@ -505,43 +490,43 @@ msgstr ""
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__intx
 msgid "Income Tax"
-msgstr ""
+msgstr "Imposta sul reddito"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__initiating_party_identifier
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_company__initiating_party_identifier
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__initiating_party_identifier
 msgid "Initiating Party Identifier"
-msgstr ""
+msgstr "Identificatore della parte promotrice"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__initiating_party_issuer
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_company__initiating_party_issuer
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__initiating_party_issuer
 msgid "Initiating Party Issuer"
-msgstr ""
+msgstr "Emittente parte promotrice"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__initiating_party_scheme
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_company__initiating_party_scheme
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__initiating_party_scheme
 msgid "Initiating Party Scheme"
-msgstr ""
+msgstr "Schema parte promotrice"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__insm
 msgid "Installment"
-msgstr ""
+msgstr "Rata"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ihrp
 msgid "Instalment Hire Purchase Agreement"
-msgstr ""
+msgstr "Contratto di acquisto rateale"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__insu
 msgid "Insurance Premium"
-msgstr ""
+msgstr "Premio assicurazione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__inte
@@ -552,18 +537,17 @@ msgstr "Interessi"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__icrf
 msgid "Intermediate Care Facility"
-msgstr ""
+msgstr "Servizio di assistenza intermedio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__intc
-#, fuzzy
 msgid "Intra Company Payment"
-msgstr "Pagamento Stipendi"
+msgstr "Pagamento tra aziende"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__intc
 msgid "Intra-Company Payment"
-msgstr ""
+msgstr "Pagamento tra aziende"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__iccp
@@ -588,17 +572,17 @@ msgstr "Assicurazione sul lavoro"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__licf
 msgid "License Fee"
-msgstr ""
+msgstr "Tariffa licenza"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__lifi
@@ -619,23 +603,23 @@ msgstr "Mutuo"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__loar
 msgid "Loan Repayment"
-msgstr ""
+msgstr "Rimborso del prestito"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__local_instrument
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_lot__local_instrument
 msgid "Local Instrument"
-msgstr ""
+msgstr "Strumento locale"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ltcf
 msgid "Long Term Care Facility"
-msgstr ""
+msgstr "Servizio di assistenza a lungo termine"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__mdcs
 msgid "Medical Services"
-msgstr ""
+msgstr "Servizi medici"
 
 #. module: account_payment_sepa_base
 #. odoo-python
@@ -644,134 +628,133 @@ msgid ""
 "Missing 'Initiating Party Issuer' and/or 'Initiating Party Identifier' for "
 "the company '%s'. Both fields must have a value."
 msgstr ""
+"'Emittente parte promotrice' e/o 'Identificatore della parte promotrice' "
+"mancante per l'azienda '%s'. Entrambi i campi devono essere valorizzati."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__msvc
 msgid "Multiple Service Types"
-msgstr ""
+msgstr "Tipi di servizio multiplo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__group_pain_multiple_identifier
 msgid "Multiple identifiers"
-msgstr ""
+msgstr "Identificativi multipli"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__name
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__nett
 msgid "Netting"
-msgstr ""
+msgstr "Netto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__nwch
 msgid "Network Charge"
-msgstr ""
+msgstr "Tariffa di rete"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__nwcm
 msgid "Network Communication"
-msgstr ""
+msgstr "Comunicazione di rete"
 
 #. module: account_payment_sepa_base
 #. odoo-python
 #: code:addons/account_payment_sepa_base/models/account_payment_method.py:0
 msgid "No XSD file path found for payment method '%s'"
-msgstr ""
+msgstr "Nessun percorso XSD trovato per il metodo di pagamento '%s'"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__priority__norm
 msgid "Normal"
-msgstr ""
+msgstr "Normale"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__nows
 msgid "Not Otherwise Specified"
-msgstr ""
+msgstr "Non altrimenti specificato"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ofee
 msgid "Opening Fee"
-msgstr ""
+msgstr "Tariffa di apertura"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__othr
 msgid "Other"
-msgstr ""
+msgstr "Altro"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__othr
 msgid "Other Payment"
-msgstr ""
+msgstr "Altro pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__otlc
 msgid "Other Telecom Related Bill"
-msgstr ""
+msgstr "Altra fattura relativa alle telecomunicazioni"
 
 #. module: account_payment_sepa_base
 #: model:ir.actions.act_window,name:account_payment_sepa_base.account_pain_regulatory_reporting_action
 #: model:ir.ui.menu,name:account_payment_sepa_base.account_pain_regulatory_reporting_menu
 msgid "PAIN Regulatory Reporting"
-msgstr ""
+msgstr "Segnalazione normativa PAIN"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method__pain_version
 msgid "PAIN Version"
-msgstr ""
+msgstr "Versione PAIN"
 
 #. module: account_payment_sepa_base
 #. odoo-python
 #: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
 msgid "Partner name"
-msgstr ""
+msgstr "Nome partner"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_line
 msgid "Payment Lines"
-msgstr ""
+msgstr "Righe di pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_method
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_method_line
 msgid "Payment Methods"
-msgstr ""
+msgstr "Metodi di pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ptsp
-#, fuzzy
 msgid "Payment Terms"
-msgstr "Ordini di pagamento"
+msgstr "Termini di pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_order
-#, fuzzy
 msgid "Payment/Debit Order"
-msgstr "Ordini di pagamento"
+msgstr "Ordine pagamento/debito"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__pens
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__pens
 msgid "Pension Payment"
-msgstr ""
+msgstr "Pagamento pensione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__padd
 msgid "Preauthorized debit"
-msgstr ""
+msgstr "Debito preautorizzato"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__prme
 msgid "Precious Metal"
-msgstr ""
+msgstr "Metallo prezioso"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__prcp
-#, fuzzy
 msgid "Price Payment"
-msgstr "Pagamento SEPA"
+msgstr "Pagamento del prezzo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__priority
@@ -782,62 +765,62 @@ msgstr "Priorità"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ppti
 msgid "Property Insurance"
-msgstr ""
+msgstr "Assicurazione proprietà"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__gdds
 msgid "Purchase Sale Of Goods"
-msgstr ""
+msgstr "Acquisto vendita di beni"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__scve
 msgid "Purchase Sale Of Services"
-msgstr ""
+msgstr "Acquisto vendita di servizi"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__purpose
 msgid "Purpose"
-msgstr ""
+msgstr "Scopo"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__rlwy
 msgid "Railway"
-msgstr ""
+msgstr "Ferrovia"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__rcpt
 msgid "Receipt Payment"
-msgstr ""
+msgstr "Pagamento ricevuta"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__rvpm
 msgid "Receive Against Payment"
-msgstr ""
+msgstr "Ricezione dietro pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__rinp
 msgid "Recurring Installment Payment"
-msgstr ""
+msgstr "Pagamento rateale ricorrente"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__regulatory_reporting_id
 msgid "Regulatory Reporting"
-msgstr ""
+msgstr "Segnalazione normativa"
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_pain_regulatory_reporting
 msgid "Regulatory Reporting Codes for ISO 20022/PAIN banking standard"
-msgstr ""
+msgstr "Codici segnalazione normativa per lo standard bancario ISO 20022/PAIN"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__rent
 msgid "Rent"
-msgstr ""
+msgstr "Affitto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__roya
 msgid "Royalties"
-msgstr ""
+msgstr "Diritti d'autore"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__sepa
@@ -847,17 +830,17 @@ msgstr "Pagamento SEPA"
 #. module: account_payment_sepa_base
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_payment_order_form
 msgid "SEPA zone"
-msgstr ""
+msgstr "Area SEPA"
 
 #. module: account_payment_sepa_base
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.view_account_config_settings
 msgid "SEPA/PAIN"
-msgstr ""
+msgstr "SEPA/PAIN"
 
 #. module: account_payment_sepa_base
 #: model:res.groups,name:account_payment_sepa_base.group_pain_multiple_identifier
 msgid "SEPA/PAIN Identifiers on Payment Methods"
-msgstr ""
+msgstr "Identificatori SEPA/PAIN nei metodi di pagamento"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__sala
@@ -868,39 +851,39 @@ msgstr "Pagamento Stipendi"
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__savg
 msgid "Savings"
-msgstr ""
+msgstr "Risparmi"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__secu
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__secu
 msgid "Securities"
-msgstr ""
+msgstr "Titoli"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_order__charge_bearer__shar
 msgid "Shared"
-msgstr ""
+msgstr "Condiviso"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__show_warning_not_sepa
 msgid "Show Warning Not Sepa"
-msgstr ""
+msgstr "Visualizza avviso non SEPA"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__ssbe
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__ssbe
 msgid "Social Security Benefit"
-msgstr ""
+msgstr "Benefit della previdenza sociale"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__stdy
 msgid "Study"
-msgstr ""
+msgstr "Studio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__subs
 msgid "Subscription"
-msgstr ""
+msgstr "Sottoscrizione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__supp
@@ -912,12 +895,12 @@ msgstr "Pagamento Fornitore"
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__taxs
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__taxs
 msgid "Tax Payment"
-msgstr ""
+msgstr "Pagamento imposte"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__phon
 msgid "Telephone Bill"
-msgstr ""
+msgstr "Bolletta del telefono"
 
 #. module: account_payment_sepa_base
 #. odoo-python
@@ -928,17 +911,23 @@ msgid ""
 "the server logs. Here is the error, which may give you an idea on the cause "
 "of the problem : %s"
 msgstr ""
+"Il file XML generato non è valido per la definizione dello schema XML "
+"ufficiale. Il file XML generato e l'errore completo sono stati scritti nel "
+"log del server. Qui c'è l'errore, che potrebbe aiutare a capire la causa del "
+"problema: %s"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_pain_regulatory_reporting_code_country_unique
 msgid "This code already exists for that country."
-msgstr ""
+msgstr "Questo codice esiste già per quella nazione."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_account_payment_line__priority
 msgid ""
 "This field will be used as 'Instruction Priority' in the generated PAIN file."
 msgstr ""
+"Questo campo verrà utilizzato come 'Priorità istruzioni' nel file PAIN "
+"generato."
 
 #. module: account_payment_sepa_base
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_base.account_payment_order_form
@@ -947,6 +936,9 @@ msgid ""
 "payment lines are in € and that all bank accounts are valid IBANs with a "
 "country prefix in the"
 msgstr ""
+"Questo ordine di pagamento <b>non è SEPA</b>. Se non è voluto, controllare "
+"che tutte le righe del pagamento siano in € e tutti i conti bancari abbiano "
+"un IBAN valido con un prefisso nazione nel"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_account_payment_method_line__initiating_party_identifier
@@ -959,6 +951,13 @@ msgid ""
 "- Company idenfier (N, VAT)\n"
 "- Service suffix (N, issued by bank)"
 msgstr ""
+"Questo verrà utilizzato come 'Identificatore della parte promotrice' nel "
+"file PAIN generato da Odoo. Se non definito, verrà utilizzato "
+"l'identificatore della parte promotrice dell'azienda.\n"
+"Formato comune (13): \n"
+"- Codice nazione (2, opzionale)\n"
+"- Identificatore azienda (N, VAT)\n"
+"- Suffisso servizio (N, fornito dalla banca)"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_res_company__initiating_party_identifier
@@ -967,6 +966,8 @@ msgid ""
 "This will be used as the 'Initiating Party Identifier' in the SEPA XML files "
 "generated by Odoo."
 msgstr ""
+"Verrà utilizzato come 'Identificativo della parte promotrice' nei file XML "
+"SEPA generati da Odoo."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_account_payment_method_line__initiating_party_issuer
@@ -979,6 +980,13 @@ msgid ""
 "- Company idenfier (N, VAT)\n"
 "- Service suffix (N, issued by bank)"
 msgstr ""
+"Questo verrà utilizzato come 'Emittente parte promotrice' nel file PAIN "
+"generato da Odoo. Se non definito, verrà utilizzato l'emittente parte "
+"promotrice dell'azienda.\n"
+"Formato comune (13): \n"
+"- Codice nazione (2, opzionale)\n"
+"- Identificatore azienda (N, VAT)\n"
+"- Suffisso servizio (N, fornito dalla banca)"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_res_company__initiating_party_issuer
@@ -987,6 +995,8 @@ msgid ""
 "This will be used as the 'Initiating Party Issuer' in the SEPA XML files "
 "generated by Odoo."
 msgstr ""
+"Verrà utilizzato come 'Emittente parte promotrice' nei file XML SEPA "
+"generati da Odoo."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_account_payment_method_line__initiating_party_scheme
@@ -995,6 +1005,9 @@ msgid ""
 "generated by Odoo. This value is determined by the financial institution "
 "that will process the file. If not defined, no scheme will be used.\n"
 msgstr ""
+"Questo verrà utilizzato come 'Nome schema parte promotrice' nel file PAIN "
+"generato da Odoo. Questo valore è definito dall'istituzione finanziaria che "
+"elaborerà il file. Se non definito, non verrà utilizzato uno schema.\n"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,help:account_payment_sepa_base.field_res_company__initiating_party_scheme
@@ -1003,72 +1016,74 @@ msgid ""
 "This will be used as the 'Initiating Party Scheme Name' in the SEPA XML "
 "files generated by Odoo."
 msgstr ""
+"Questo verrà utilizzato come \"Nome dello schema della parte promotrice\" "
+"nei file XML SEPA generati da Odoo."
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__trad
 msgid "Trade"
-msgstr ""
+msgstr "Commercio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__trad
 msgid "Trade Services"
-msgstr ""
+msgstr "Servizi di commercio"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__cort
 msgid "Trade Settlement Payment"
-msgstr ""
+msgstr "Pagamento della transazione commerciale"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__trea
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__trea
 msgid "Treasury Payment"
-msgstr ""
+msgstr "Pagamento Ministero del tesoro"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__trfd
 msgid "Trust Fund"
-msgstr ""
+msgstr "Fondo fiduciario"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__bene
 msgid "Unemployment Disability Benefit"
-msgstr ""
+msgstr "Indennità di invalidità di disoccupazione"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__vatx
 msgid "VAT Payment"
-msgstr ""
+msgstr "Pagamento IVA"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__vatx
 msgid "Value Added Tax Payment"
-msgstr ""
+msgstr "Pagamento Imposta Valore Aggiunto"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__view
 msgid "Vision Care"
-msgstr ""
+msgstr "Cura della vista"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method__warn_not_sepa
 msgid "Warn If Not SEPA"
-msgstr ""
+msgstr "Avvisa se non SEPA"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__wter
 msgid "Water Bill"
-msgstr ""
+msgstr "Bolletta dell'acqua"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__whld
 msgid "WithHolding"
-msgstr ""
+msgstr "Ritenuta"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__epay
 msgid "ePayment"
-msgstr ""
+msgstr "Pagamento elettronico"
 
 #~ msgid "Bank"
 #~ msgstr "Banca"
