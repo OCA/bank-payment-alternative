@@ -54,6 +54,7 @@ class TestPaymentOrderInboundBase(AccountTestInvoicingCommon):
                 "payment_method_id": cls.payment_method_in.id,
                 "company_id": cls.company.id,
                 "selectable": True,
+                "mail_notif": True,
             }
         )
         cls.journal = cls.company_data["default_journal_bank"]
