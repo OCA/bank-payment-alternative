@@ -10,7 +10,28 @@ from odoo import models
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
+    def _generate_payment_identification_block(self, parent_node, gen_args):
+        self.ensure_one()
+        order_obj = self.env["account.payment.order"]
+        payment_identification = objectify.SubElement(parent_node, "PmtId")
+        payment_ident_val = self.memo or str(self.id)
+        payment_identification.InstrId = order_obj._prepare_field(
+            "Instruction Identification",
+            payment_ident_val,
+            35,
+            gen_args,
+            raise_if_oversized=True,
+        )
+        payment_identification.EndToEndId = order_obj._prepare_field(
+            "End to End Identification",
+            payment_ident_val,
+            35,
+            gen_args,
+            raise_if_oversized=True,
+        )
+
     def _generate_remittance_info_block(self, parent_node, gen_args):
+        self.ensure_one()
         order_obj = self.env["account.payment.order"]
         remittance_info = objectify.SubElement(parent_node, "RmtInf")
         communication_type = self.payment_line_ids[:1].communication_type
@@ -45,12 +66,14 @@ class AccountPayment(models.Model):
             )
 
     def _generate_purpose(self, parent_node):
+        self.ensure_one()
         payment_line = self.payment_line_ids[:1]
         if payment_line.purpose:
             purpose = objectify.SubElement(parent_node, "Purp")
             purpose.Cd = payment_line.purpose
 
     def _generate_regulatory_reporting(self, parent_node, gen_args):
+        self.ensure_one()
         order_obj = self.env["account.payment.order"]
         payment_line = self.payment_line_ids[:1]
         if payment_line.regulatory_reporting_id:
