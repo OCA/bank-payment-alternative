@@ -115,6 +115,7 @@ class TestSCT(AccountTestInvoicingCommon):
                     "default_account_assets"
                 ].id,
                 "selectable": True,
+                "mail_notif": True,
             }
         )
 

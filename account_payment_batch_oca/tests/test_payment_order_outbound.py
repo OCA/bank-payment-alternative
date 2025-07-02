@@ -55,6 +55,7 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
                 "journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.payment_method_out.id,
                 "selectable": True,
+                "mail_notif": True,
             }
         )
         cls.creation_mode = cls.env["account.payment.method.line"].create(
