@@ -69,7 +69,7 @@ class AccountPaymentOrder(models.Model):
                 payment_info, "Dbtr", "B", self.company_partner_bank_id, gen_args
             )
             self._generate_charge_bearer(payment_info)
-            for line in lot.payment_ids:
+            for payment in lot.payment_ids:
                 # C. Credit Transfer Transaction Info
                 transactions_count_a += 1
                 credit_transfer_transaction_info = objectify.SubElement(
@@ -78,42 +78,47 @@ class AccountPaymentOrder(models.Model):
                 payment_identification = objectify.SubElement(
                     credit_transfer_transaction_info, "PmtId"
                 )
+                payment_ident_val = payment.memo or str(payment.id)
                 payment_identification.InstrId = self._prepare_field(
                     "Instruction Identification",
-                    line.memo or str(line.id),
+                    payment_ident_val,
                     35,
                     gen_args,
                 )
                 payment_identification.EndToEndId = self._prepare_field(
-                    "End to End Identification", line.memo or str(line.id), 35, gen_args
+                    "End to End Identification",
+                    payment_ident_val,
+                    35,
+                    gen_args,
                 )
                 amount = objectify.SubElement(credit_transfer_transaction_info, "Amt")
-                amount.InstdAmt = line.currency_id._pain_format(line.amount)
-                amount.InstdAmt.set("Ccy", line.currency_id.name)
-                amount_control_sum_a += line.amount
-                if not line.partner_bank_id:
+                amount.InstdAmt = payment.currency_id._pain_format(payment.amount)
+                amount.InstdAmt.set("Ccy", payment.currency_id.name)
+                amount_control_sum_a += payment.amount
+                if not payment.partner_bank_id:
                     raise UserError(
                         _(
-                            "Bank account is missing on the bank payment line "
-                            "of partner '{partner}' (reference '{reference}')."
-                        ).format(partner=line.partner_id.name, reference=line.name)
+                            "Bank account is missing on the payment {payment} "
+                            "of partner '{partner}'.",
+                            partner=payment.partner_id.display_name,
+                            payment=payment.display_name,
+                        )
                     )
 
                 self._generate_party_block(
                     credit_transfer_transaction_info,
                     "Cdtr",
                     "C",
-                    line.partner_bank_id,
+                    payment.partner_bank_id,
                     gen_args,
-                    line,
+                    payment,
                 )
-                payment_line = line.payment_line_ids[0]
-                payment_line._generate_purpose(credit_transfer_transaction_info)
-                payment_line._generate_regulatory_reporting(
+                payment._generate_purpose(credit_transfer_transaction_info)
+                payment._generate_regulatory_reporting(
                     credit_transfer_transaction_info, gen_args
                 )
-                self._generate_remittance_info_block(
-                    credit_transfer_transaction_info, line, gen_args
+                payment._generate_remittance_info_block(
+                    credit_transfer_transaction_info, gen_args
                 )
         group_header.NbOfTxs = str(transactions_count_a)
         group_header.CtrlSum = self._format_control_sum(amount_control_sum_a)
