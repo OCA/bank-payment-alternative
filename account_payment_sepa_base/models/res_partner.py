@@ -172,3 +172,12 @@ class ResPartner(models.Model):
                 postal_address.AdrLine = apoo._prepare_field(
                     "Zip and City as Address Line 2", zipcity, 70, gen_args
                 )
+
+    def _generate_party_id(self, parent_node, party_type):
+        """Generate an Id element for partner inside the parent node.
+        party_type can currently be Cdtr or Dbtr. Notably, the initiating
+        party orgid is generated with another mechanism and configured
+        at the company or payment method level.
+        """
+        self.ensure_one()
+        return

@@ -8,3 +8,4 @@ from . import res_company
 from . import res_currency
 from . import account_payment_method
 from . import res_partner
+from . import res_partner_bank
