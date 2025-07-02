@@ -4,11 +4,16 @@
 # Copyright 2016-2022 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+import logging
 from collections import defaultdict
+
+from markupsafe import Markup
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import format_date
+
+logger = logging.getLogger(__name__)
 
 
 class AccountPaymentOrder(models.Model):
@@ -45,6 +50,7 @@ class AccountPaymentOrder(models.Model):
     payment_method_code = fields.Char(
         related="payment_method_line_id.payment_method_id.code", store=True
     )
+    mail_notif = fields.Boolean(related="payment_method_line_id.mail_notif")
     company_id = fields.Many2one(
         "res.company",
         ondelete="cascade",
@@ -522,7 +528,11 @@ class AccountPaymentOrder(models.Model):
         return action
 
     def generated2uploaded(self):
+        self.ensure_one()
         self.payment_ids.action_post()
+        method_line = self.payment_method_line_id
+        mail_notif = method_line.mail_notif
+        partner2mail = {}
         # Perform the reconciliation of payments and source journal items
         # Reminder : in v18, account.payment doesn't always have a move_id
         for payment in self.payment_ids:
@@ -534,6 +544,69 @@ class AccountPaymentOrder(models.Model):
                     if line.account_id.id == payment.destination_account_id.id:
                         lines_to_rec |= line
                 lines_to_rec.reconcile()
+            if mail_notif:
+                if payment.partner_id not in partner2mail:
+                    partner2mail[payment.partner_id] = {
+                        "payments": payment,
+                        "dest_partners": self.env["res.partner"],
+                    }
+                else:
+                    partner2mail[payment.partner_id]["payments"] |= payment
+                for line in payment.payment_line_ids:
+                    if line.mail_notif_partner_id:
+                        partner2mail[payment.partner_id]["dest_partners"] |= (
+                            line.mail_notif_partner_id
+                        )
+        if mail_notif:
+            account_number_scrambled_ctx = {
+                "show_bank_account_chars": method_line.show_bank_account_chars,
+                "show_bank_account": method_line.show_bank_account,
+            }
+            for partner, mail_dict in partner2mail.items():
+                if mail_dict["dest_partners"]:
+                    payments, detail_col = mail_dict[
+                        "payments"
+                    ]._prepare_payment_order_mail(
+                        partner.lang, account_number_scrambled_ctx
+                    )
+                    partner_to = ",".join(
+                        [str(p.id) for p in mail_dict["dest_partners"]]
+                    )
+                    try:
+                        self.env.ref(
+                            "account_payment_batch_oca.payment_order_mail_notif"
+                        ).with_context(
+                            payments=payments,
+                            detail_col=detail_col,
+                            partner_lang=partner.lang,
+                            partner_to=partner_to,
+                            partner_display_name=partner.display_name,
+                            partner_name=partner.name,
+                        ).send_mail(self.id)
+                        logger.info(
+                            "mail generated for partner %s", partner.display_name
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "Error in the generation of the payment notif mail "
+                            "for partner %s: %s",
+                            partner.display_name,
+                            e,
+                        )
+                        self.message_post(
+                            body=Markup(
+                                _(
+                                    "Odoo <strong>failed to generate the email"
+                                    "</strong> for partner <a href=# "
+                                    "data-oe-model=res.partner "
+                                    "data-oe-id=%(partner_id)d> "
+                                    "%(partner_name)s</a>: %(error)s",
+                                    partner_id=partner.id,
+                                    partner_name=partner.display_name,
+                                    error=e,
+                                )
+                            )
+                        )
         self.write(
             {"state": "uploaded", "date_uploaded": fields.Date.context_today(self)}
         )

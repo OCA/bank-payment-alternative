@@ -33,6 +33,7 @@ class AccountPaymentLine(models.Model):
     bank_account_required = fields.Boolean(
         related="order_id.payment_method_id.bank_account_required",
     )
+    mail_notif = fields.Boolean(related="order_id.payment_method_line_id.mail_notif")
     state = fields.Selection(related="order_id.state", store=True)
     move_line_id = fields.Many2one(
         comodel_name="account.move.line",
@@ -117,6 +118,16 @@ class AccountPaymentLine(models.Model):
         string="Payment transaction",
         readonly=True,
     )
+    mail_notif_partner_id = fields.Many2one(
+        "res.partner",
+        compute="_compute_mail_notif_partner_id",
+        store=True,
+        precompute=True,
+        readonly=False,
+        string="Partner to Notify",
+        domain="[('email', '!=', False), "
+        "'|', ('parent_id', '=', partner_id), ('id', '=', partner_id)]",
+    )
 
     _sql_constraints = [
         (
@@ -148,6 +159,43 @@ class AccountPaymentLine(models.Model):
                 )
             else:
                 line.amount_company_currency = 0
+
+    @api.depends("partner_id", "order_id.payment_method_line_id")
+    def _compute_mail_notif_partner_id(self):
+        for line in self:
+            mail_notif_partner = False
+            if line.partner_id and line.order_id.payment_method_line_id.mail_notif:
+                mail_partner_policy = (
+                    line.order_id.payment_method_line_id.mail_partner_policy
+                )
+                if mail_partner_policy == "parent":
+                    mail_notif_partner = line.partner_id
+                elif mail_partner_policy == "invoice_partner":
+                    if line.move_line_id and line.move_line_id.move_id.partner_id:
+                        mail_notif_partner = line.move_line_id.move_id.partner_id
+                elif mail_partner_policy == "invoice_contact":
+                    mail_notif_partner_id = line.partner_id.address_get(["invoice"])[
+                        "invoice"
+                    ]
+                    mail_notif_partner = self.env["res.partner"].browse(
+                        mail_notif_partner_id
+                    )
+                elif mail_partner_policy == "last_payment":
+                    last_pay_line = self.search(
+                        [
+                            ("mail_notif_partner_id", "!=", False),
+                            ("order_id", "!=", line.order_id.id),
+                            ("state", "!=", "cancel"),
+                            ("company_id", "=", line.company_id.id),
+                        ],
+                        order="id desc",
+                        limit=1,
+                    )
+                    if last_pay_line:
+                        mail_notif_partner = last_pay_line.mail_notif_partner_id
+                if mail_notif_partner and not mail_notif_partner.email:
+                    mail_notif_partner = False
+            line.mail_notif_partner_id = mail_notif_partner
 
     @api.model
     def _lot_grouping_fields(self):
@@ -253,6 +301,15 @@ class AccountPaymentLine(models.Model):
                 )
         if not self.communication:
             raise UserError(_("Communication is empty on payment line %s.") % self.name)
+        if (
+            self.order_id.payment_method_line_id.mail_notif
+            and self.mail_notif_partner_id
+            and not self.mail_notif_partner_id.email
+        ):
+            raise UserError(
+                _("Missing email on notification partner '%s'.")
+                % self.mail_notif_partner_id.display_name
+            )
 
     def _prepare_account_payment_vals(self, payment_lot, pay_sequence):
         """Prepare the dictionary to create an account payment record from a set of

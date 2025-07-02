@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.tools.misc import format_amount, format_date
 
 
 class AccountPayment(models.Model):
@@ -37,3 +38,37 @@ class AccountPayment(models.Model):
                     if line.code not in to_exclude
                 ]
         return res
+
+    def _prepare_payment_order_mail(self, lang, account_number_scrambled_ctx):
+        res = []
+        detail_col = False
+        for pay in sorted(self, key=lambda p: p.date):
+            pay_dict = {
+                "id": pay.id,
+                "name": pay.name,
+                "memo": pay.memo,
+                "payment_ref": pay.payment_reference,
+                "date": format_date(self.env, pay.date, lang),
+                "amount": format_amount(self.env, pay.amount, pay.currency_id, lang),
+                "currency": pay.currency_id.name,
+                "bank_account_number_scrambled": pay.partner_bank_id.with_context(
+                    **account_number_scrambled_ctx
+                ).acc_number_scrambled,
+                "bank_account_number": pay.partner_bank_id.acc_number,
+                "lines": [],
+            }
+            if len(pay.payment_line_ids) > 1:
+                detail_col = True
+                for line in pay.payment_line_ids:
+                    pay_dict["lines"].append(
+                        {
+                            "communication": line.communication,
+                            "amount": format_amount(
+                                self.env, line.amount_currency, line.currency_id, lang
+                            ),
+                            "currency": line.currency_id.name,
+                            "id": line.id,
+                        }
+                    )
+            res.append(pay_dict)
+        return res, detail_col

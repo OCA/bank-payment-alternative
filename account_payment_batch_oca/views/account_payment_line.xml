@@ -9,6 +9,7 @@
                     <group name="left">
                         <field name="state" invisible="1" />
                         <field name="company_id" invisible="1" />
+                        <field name="mail_notif" invisible="1" />
                         <field
                             name="order_id"
                             invisible="not context.get('account_payment_line_main_view')"
@@ -35,6 +36,10 @@
                         <field name="communication" required="1" />
                     </group>
                     <group name="right">
+                        <field
+                            name="mail_notif_partner_id"
+                            invisible="not mail_notif"
+                        />
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="amount_company_currency" />
                         <field name="company_currency_id" invisible="1" />
@@ -90,6 +95,11 @@
                 <field name="date" />
                 <field name="amount_currency" string="Amount" />
                 <field name="name" optional="show" />
+                <field
+                    name="mail_notif_partner_id"
+                    optional="hide"
+                    column_invisible="not context.get('mail_notif')"
+                />
                 <button
                     name="action_open_related_move"
                     type="object"

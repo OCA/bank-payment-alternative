@@ -38,6 +38,18 @@
                     <field name="default_invoice" />
                     <field name="default_date_type" />
                 </group>
+                <group
+                    name="email"
+                    string="Email Notification"
+                    invisible="not payment_order_ok"
+                >
+                    <field name="mail_notif" />
+                    <field
+                        name="mail_partner_policy"
+                        invisible="not mail_notif"
+                        widget="radio"
+                    />
+                </group>
             </group>
         </field>
     </record>

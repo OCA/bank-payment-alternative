@@ -29,6 +29,7 @@
         "views/account_payment_method.xml",
         "security/payment_security.xml",
         "security/ir.model.access.csv",
+        "data/mail_template.xml",
         "wizard/account_payment_line_create_view.xml",
         "views/account_payment_method_line.xml",
         "views/account_payment.xml",
