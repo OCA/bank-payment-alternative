@@ -327,25 +327,6 @@ class AccountPaymentOrder(models.Model):
                 % self.company_id.name
             )
 
-    @api.model
-    def _generate_creditor_scheme_identification(
-        self,
-        parent_node,
-        identification,
-        identification_label,
-        scheme_name_proprietary,
-        gen_args,
-    ):
-        csi_root = objectify.SubElement(parent_node, "CdtrSchmeId")
-        csi_id = objectify.SubElement(csi_root, "Id")
-        csi_privateid = objectify.SubElement(csi_id, "PrvtId")
-        csi_other = objectify.SubElement(csi_privateid, "Othr")
-        csi_other.Id = self._prepare_field(
-            identification_label, identification, 35, gen_args, raise_if_oversized=True
-        )
-        csi_scheme_name = objectify.SubElement(csi_other, "SchmeNm")
-        csi_scheme_name.Prtry = scheme_name_proprietary
-
     def _generate_charge_bearer(self, parent_node):
         self.ensure_one()
         if self.sepa:
