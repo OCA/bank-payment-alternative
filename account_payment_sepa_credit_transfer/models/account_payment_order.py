@@ -72,28 +72,11 @@ class AccountPaymentOrder(models.Model):
             for payment in lot.payment_ids:
                 # C. Credit Transfer Transaction Info
                 transactions_count_a += 1
-                credit_transfer_transaction_info = objectify.SubElement(
-                    payment_info, "CdtTrfTxInf"
+                trf_transaction_info = objectify.SubElement(payment_info, "CdtTrfTxInf")
+                payment._generate_payment_identification_block(
+                    trf_transaction_info, gen_args
                 )
-                payment_identification = objectify.SubElement(
-                    credit_transfer_transaction_info, "PmtId"
-                )
-                payment_ident_val = payment.memo or str(payment.id)
-                payment_identification.InstrId = self._prepare_field(
-                    "Instruction Identification",
-                    payment_ident_val,
-                    35,
-                    gen_args,
-                    raise_if_oversized=True,
-                )
-                payment_identification.EndToEndId = self._prepare_field(
-                    "End to End Identification",
-                    payment_ident_val,
-                    35,
-                    gen_args,
-                    raise_if_oversized=True,
-                )
-                amount = objectify.SubElement(credit_transfer_transaction_info, "Amt")
+                amount = objectify.SubElement(trf_transaction_info, "Amt")
                 amount.InstdAmt = payment.currency_id._pain_format(payment.amount)
                 amount.InstdAmt.set("Ccy", payment.currency_id.name)
                 amount_control_sum_a += payment.amount
@@ -108,18 +91,14 @@ class AccountPaymentOrder(models.Model):
                     )
 
                 payment.partner_bank_id._generate_party_block(
-                    credit_transfer_transaction_info,
+                    trf_transaction_info,
                     "C",
                     gen_args,
                     payment,
                 )
-                payment._generate_purpose(credit_transfer_transaction_info)
-                payment._generate_regulatory_reporting(
-                    credit_transfer_transaction_info, gen_args
-                )
-                payment._generate_remittance_info_block(
-                    credit_transfer_transaction_info, gen_args
-                )
+                payment._generate_purpose(trf_transaction_info)
+                payment._generate_regulatory_reporting(trf_transaction_info, gen_args)
+                payment._generate_remittance_info_block(trf_transaction_info, gen_args)
         group_header.NbOfTxs = str(transactions_count_a)
         group_header.CtrlSum = self._format_control_sum(amount_control_sum_a)
         return self._finalize_sepa_file_creation(xml_root, gen_args)

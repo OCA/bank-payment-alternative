@@ -63,23 +63,8 @@ class AccountPaymentOrder(models.Model):
                 # C. Direct Debit Transaction Info
                 transactions_count_a += 1
                 dd_transaction_info = objectify.SubElement(payment_info, "DrctDbtTxInf")
-                payment_identification = objectify.SubElement(
-                    dd_transaction_info, "PmtId"
-                )
-                payment_ident_val = payment.memo or str(payment.id)
-                payment_identification.InstrId = self._prepare_field(
-                    "Instruction Identification",
-                    payment_ident_val,
-                    35,
-                    gen_args,
-                    raise_if_oversized=True,
-                )
-                payment_identification.EndToEndId = self._prepare_field(
-                    "End to End Identification",
-                    payment_ident_val,
-                    35,
-                    gen_args,
-                    raise_if_oversized=True,
+                payment._generate_payment_identification_block(
+                    dd_transaction_info, gen_args
                 )
                 dd_transaction_info.InstdAmt = payment.currency_id._pain_format(
                     payment.amount
