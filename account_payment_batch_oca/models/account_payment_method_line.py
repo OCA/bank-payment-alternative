@@ -93,6 +93,26 @@ class AccountPaymentMethodLine(models.Model):
         "(other modules can set additional fields to restrict the "
         "grouping.)",
     )
+    mail_notif = fields.Boolean(
+        string="Notify by Email",
+        help="If enabled, Odoo will automatically notify the partner by email when "
+        "the payment/debit order file is successfully uploaded.",
+    )
+    mail_partner_policy = fields.Selection(
+        [
+            ("invoice_partner", "Partner of the Invoice"),
+            ("last_payment", "Last Payment"),
+            ("parent", "Parent Partner"),
+            ("invoice_contact", "First Invoice Contact"),
+            ("manual", "Manual"),
+        ],
+        string="Partner to Notify",
+        default="invoice_partner",
+        help="This configuration parameter will decide which partner "
+        "is auto-configured as partner to notify on the payment/debit transaction. "
+        "You can always manually change the partner to notify on the payment/debit "
+        "transaction when the payment/debit order is in draft state.",
+    )
 
     @api.depends("payment_method_id", "selectable")
     def _compute_payment_order_ok(self):
