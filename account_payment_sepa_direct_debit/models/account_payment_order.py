@@ -50,8 +50,8 @@ class AccountPaymentOrder(models.Model):
         for lot in self.payment_lot_ids:
             # B. Payment info
             payment_info = lot._generate_start_payment_info_block(pain_root, gen_args)
-            self._generate_party_block(
-                payment_info, "Cdtr", "B", self.company_partner_bank_id, gen_args
+            self.company_partner_bank_id._generate_party_block(
+                payment_info, "B", gen_args
             )
             self._generate_charge_bearer(payment_info)
             sepa_creditor_identifier = (
@@ -87,12 +87,14 @@ class AccountPaymentOrder(models.Model):
                     payment_ident_val,
                     35,
                     gen_args,
+                    raise_if_oversized=True,
                 )
                 payment_identification.EndToEndId = self._prepare_field(
                     "End to End Identification",
                     payment_ident_val,
                     35,
                     gen_args,
+                    raise_if_oversized=True,
                 )
                 dd_transaction_info.InstdAmt = payment.currency_id._pain_format(
                     payment.amount
@@ -134,11 +136,9 @@ class AccountPaymentOrder(models.Model):
                     # After 20/11/2016, SMNDA means
                     # "Same Mandate New Debtor Account"
 
-                self._generate_party_block(
+                mandate.partner_bank_id._generate_party_block(
                     dd_transaction_info,
-                    "Dbtr",
                     "C",
-                    mandate.partner_bank_id,
                     gen_args,
                     payment,
                 )

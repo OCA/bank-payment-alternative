@@ -184,7 +184,7 @@ class AccountPaymentOrder(models.Model):
         # cf section 1.4 "Character set" of the SEPA Credit Transfer
         # Scheme Customer-to-bank guidelines
         # Allowed caracters are: a-z A-Z 0-9 / - ? : ( ) . , ' + space
-        if gen_args.get("convert_to_ascii"):
+        if gen_args["convert_to_ascii"]:
             value = unidecode(value)
             value = re.sub(r"[^a-zA-Z0-9/\-\?:\(\)\.,\'\+\s]", "-", value)
 
@@ -264,7 +264,6 @@ class AccountPaymentOrder(models.Model):
         self.ensure_one()
         return {}
 
-    @api.model
     def _generate_group_header_block(self, parent_node, gen_args):
         group_header = objectify.SubElement(parent_node, "GrpHdr")
         group_header.MsgId = self._prepare_field(
@@ -283,12 +282,11 @@ class AccountPaymentOrder(models.Model):
         countries in which the initiating party is required"""
         return False
 
-    @api.model
     def _generate_initiating_party_block(self, parent_node, gen_args):
         my_company_name = self._prepare_field(
             "Company Name",
             self.company_partner_bank_id.partner_id.name,
-            gen_args.get("name_maxsize"),
+            gen_args["name_maxsize"],
             gen_args,
         )
         initiating_party = objectify.SubElement(parent_node, "InitgPty")
@@ -327,115 +325,6 @@ class AccountPaymentOrder(models.Model):
                     "Both fields must have a value."
                 )
                 % self.company_id.name
-            )
-
-    @api.model
-    def _generate_party_agent(
-        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
-    ):
-        """Generate the piece of the XML file corresponding to BIC
-        This code is mutualized between TRF and DD
-        Starting from Feb 1st 2016, we should be able to do
-        cross-border SEPA transfers without BIC, cf
-        http://www.europeanpaymentscouncil.eu/index.cfm/
-        sepa-credit-transfer/iban-and-bic/
-        In some localization (l10n_ch_sepa for example), they need the
-        payment argument"""
-        assert order in ("B", "C"), "Order can be 'B' or 'C'"
-        if partner_bank.bank_bic:
-            party_agent = objectify.SubElement(parent_node, f"{party_type}Agt")
-            party_agent_institution = objectify.SubElement(party_agent, "FinInstnId")
-            setattr(
-                party_agent_institution,
-                gen_args.get("bic_xml_tag"),
-                partner_bank.bank_bic,
-            )
-        else:
-            if order == "B" or (order == "C" and gen_args["payment_method"] == "DD"):
-                party_agent = objectify.SubElement(parent_node, f"{party_type}Agt")
-                party_agent_institution = objectify.SubElement(
-                    party_agent, "FinInstnId"
-                )
-                party_agent_other = objectify.SubElement(
-                    party_agent_institution, "Othr"
-                )
-                party_agent_other.Id = "NOTPROVIDED"
-            # for Credit Transfers, in the 'C' block, if BIC is not provided,
-            # we should not put the 'Creditor Agent' block at all,
-            # as per the guidelines of the EPC
-
-    @api.model
-    def _generate_party_id(self, parent_node, party_type, partner):
-        """Generate an Id element for partner inside the parent node.
-        party_type can currently be Cdtr or Dbtr. Notably, the initiating
-        party orgid is generated with another mechanism and configured
-        at the company or payment method level.
-        """
-        return
-
-    @api.model
-    def _generate_party_acc_number(
-        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
-    ):
-        party_account = objectify.SubElement(parent_node, f"{party_type}Acct")
-        party_account_id = objectify.SubElement(party_account, "Id")
-        if partner_bank.acc_type == "iban":
-            party_account_id.IBAN = partner_bank.sanitized_acc_number
-        else:
-            party_account_other = objectify.SubElement(party_account_id, "Othr")
-            party_account_other.Id = partner_bank.sanitized_acc_number
-        if party_type == "Dbtr" and partner_bank.currency_id:
-            party_account.Ccy = partner_bank.currency_id.name
-
-    @api.model
-    def _generate_party_block(
-        self, parent_node, party_type, order, partner_bank, gen_args, payment=None
-    ):
-        """Generate the piece of the XML file corresponding to Name+IBAN+BIC
-        This code is mutualized between TRF and DD
-        In some localization (l10n_ch_sepa for example), they need the
-        payment argument"""
-        assert order in ("B", "C"), "Order can be 'B' or 'C'"
-        party_type_label = _("Partner name")
-        if party_type == "Cdtr":
-            party_type_label = _("Creditor name")
-        elif party_type == "Dbtr":
-            party_type_label = _("Debtor name")
-        partner_name = partner_bank.acc_holder_name or partner_bank.partner_id.name
-        party_name = self._prepare_field(
-            party_type_label, partner_name, gen_args.get("name_maxsize"), gen_args
-        )
-        # At C level, the order is : BIC, Name, IBAN
-        # At B level, the order is : Name, IBAN, BIC
-        if order == "C":
-            self._generate_party_agent(
-                parent_node,
-                party_type,
-                order,
-                partner_bank,
-                gen_args,
-                payment=payment,
-            )
-        party = objectify.SubElement(parent_node, party_type)
-        party.Nm = party_name
-        partner = partner_bank.partner_id
-
-        partner._generate_address_block(party, gen_args)
-
-        self._generate_party_id(party, party_type, partner)
-
-        self._generate_party_acc_number(
-            parent_node, party_type, order, partner_bank, gen_args, payment=payment
-        )
-
-        if order == "B":
-            self._generate_party_agent(
-                parent_node,
-                party_type,
-                order,
-                partner_bank,
-                gen_args,
-                payment=payment,
             )
 
     @api.model
