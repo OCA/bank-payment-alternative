@@ -41,6 +41,98 @@ msgstr ""
 "été automatiquement créé."
 
 #. module: account_payment_batch_oca
+#: model:mail.template,body_html:account_payment_batch_oca.payment_order_mail_notif
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                <h2 style=\"text-align: center;\">\n"
+"            <t t-if=\"object.payment_type == 'inbound'\">Debit</t><t t-"
+"if=\"object.payment_type == 'outbound'\">Payment</t> notification\n"
+"        </h2>\n"
+"\n"
+"                <p><t t-out=\"object.company_id.name\">My Company</t> has "
+"sent instructions to its bank to execute a <t t-if=\"object.payment_type == "
+"'inbound'\">debit order</t><t t-if=\"object.payment_type == "
+"'outbound'\">payment order</t> which includes the <t t-if=\"object."
+"payment_type == 'inbound'\">debit(s)</t><t t-if=\"object.payment_type == "
+"'outbound'\">payment(s)</t> below for <strong>\n"
+"                    <t t-out=\"ctx['partner_display_name']\">Azur Interior</"
+"t>\n"
+"                </strong>.</p>\n"
+"                <table style=\"border-spacing: 0; border-collapse: collapse; "
+"width: 100%; text-align: center;\">\n"
+"                    <tr>\n"
+"                        <th style=\"padding: 5px; border: 2px solid black;"
+"\">\n"
+"                            <t t-if=\"object.payment_type == "
+"'inbound'\">Debit Date</t>\n"
+"                            <t t-if=\"object.payment_type == "
+"'outbound'\">Payment Date</t>\n"
+"                        </th>\n"
+"                        <th style=\"padding: 5px; border: 2px solid black;"
+"\">Label</th>\n"
+"                        <th style=\"padding: 5px; border: 2px solid black;"
+"\">Amount</th>\n"
+"                        <th style=\"padding: 5px; border: 2px solid black;\" "
+"t-if=\"ctx['detail_col']\">Details</th>\n"
+"                        <th style=\"padding: 5px; border: 2px solid black;"
+"\">\n"
+"                            <t t-if=\"object.payment_type == "
+"'inbound'\">Debited Bank Account</t>\n"
+"                            <t t-if=\"object.payment_type == "
+"'outbound'\">Destination Bank Account</t>\n"
+"                        </th>\n"
+"                    </tr>\n"
+"                    <t t-foreach=\"ctx['payments']\" t-as=\"payment\">\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 5px; border: 2px solid "
+"black; text-align: center;\">\n"
+"                                <t t-out=\"payment['date']\">02/07/2025</t>\n"
+"                            </td>\n"
+"                            <td style=\"padding: 5px; border: 2px solid "
+"black; text-align: left;\">\n"
+"                                <t t-out=\"payment['payment_ref']\">F250012-"
+"F250042</t>\n"
+"                            </td>\n"
+"                            <td style=\"padding: 5px; border: 2px solid "
+"black; text-align: right;\">\n"
+"                                <t t-out=\"payment['amount']\">2 546,56 €</"
+"t>\n"
+"                            </td>\n"
+"                            <td style=\"padding: 5px; border: 2px solid "
+"black;\" t-if=\"ctx['detail_col']\">\n"
+"                                <table t-if=\"payment['lines']\" "
+"style=\"border-spacing: 0; border-collapse: collapse; width: 100%;\">\n"
+"                                    <t t-foreach=\"payment['lines']\" t-"
+"as=\"line\">\n"
+"                                        <tr>\n"
+"                                            <td style=\"padding: 2px; "
+"border: 1px solid grey; text-align: left;\">\n"
+"                                                <t t-"
+"out=\"line['communication']\">F250012</t>\n"
+"                                            </td>\n"
+"                                            <td style=\"padding: 2px; "
+"border: 1px solid grey; text-align: right;\">\n"
+"                                                <t t-"
+"out=\"line['amount']\">1 400,36 €</t>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </t>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                            <td style=\"padding: 5px; border: 2px solid "
+"black;\">\n"
+"                                <t t-"
+"out=\"payment['bank_account_number_scrambled']\">FR66 **** **** **** **** "
+"***2 121</t>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </t>\n"
+"                </table>\n"
+"            </div>\n"
+"        "
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.constraint,message:account_payment_batch_oca.constraint_account_payment_line_name_company_unique
 msgid "A payment line already exists with this reference in the same company!"
 msgstr ""
@@ -376,6 +468,11 @@ msgid "Eligible Journal Items"
 msgstr "Écriture comptable"
 
 #. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_method_line_form
+msgid "Email Notification"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__date
 #, fuzzy
 msgid "Execution Date"
@@ -409,6 +506,11 @@ msgstr "Date de téléchargement du fichier"
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_order_search
 msgid "File Uploaded"
 msgstr "Fichier téléchargé"
+
+#. module: account_payment_batch_oca
+#: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__invoice_contact
+msgid "First Invoice Contact"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__default_date_prefered__fixed
@@ -511,6 +613,15 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Si coché, certains messages ont une erreur de livraison."
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_line__mail_notif
+#: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_method_line__mail_notif
+#: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_order__mail_notif
+msgid ""
+"If enabled, Odoo will automatically notify the partner by email when the "
+"payment/debit order file is successfully uploaded."
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_method_line__specific_sequence_id
 msgid ""
 "If left empty, the payment orders with this payment method will use the "
@@ -610,6 +721,11 @@ msgid "Label of the payment that will be seen by the destinee"
 msgstr "Nom du paiement qui sera vu par le destinataire"
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__last_payment
+msgid "Last Payment"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__write_uid
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line_create__write_uid
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__write_uid
@@ -660,6 +776,11 @@ msgid "Lots"
 msgstr ""
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__manual
+msgid "Manual"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__message_has_error
 msgid "Message Delivery error"
 msgstr "Erreur d'envoi du message"
@@ -686,6 +807,12 @@ msgstr "Compte bancaire du partenaire manquant sur la ligne de paiement %s"
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid "Missing bank account on bank journal '%s'."
 msgstr "Journal bancaire manquant sur le journal '%s'."
+
+#. module: account_payment_batch_oca
+#. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_line.py:0
+msgid "Missing email on notification partner '%s'."
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__default_date_type__move
@@ -791,6 +918,13 @@ msgid "Not Selectable in Payment Orders"
 msgstr "Sélectionnable dans les Ordres de paiement"
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__mail_notif
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_method_line__mail_notif
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__mail_notif
+msgid "Notify by Email"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Nombre d'actions"
@@ -825,6 +959,15 @@ msgstr "Nombre de messages avec des erreurs d'envoi"
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid ""
+"Odoo <strong>failed to generate the email</strong> for partner <a href=# "
+"data-oe-model=res.partner data-oe-id=%(partner_id)d> %(partner_name)s</a>: "
+"%(error)s"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
+msgid ""
 "On payment/debit order %(order)s, the payment type is %(order_ptype)s, but "
 "the payment method %(method)s is configured with payment type "
 "%(method_ptype)s."
@@ -853,6 +996,11 @@ msgid "Outbound"
 msgstr "Sortant"
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__parent
+msgid "Parent Partner"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__partner_id
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__search_partner_id
 msgid "Partner"
@@ -862,6 +1010,17 @@ msgstr "Partenaire"
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__partner_bank_id
 msgid "Partner Bank Account"
 msgstr "Compte bancaire partenaire"
+
+#. module: account_payment_batch_oca
+#: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__invoice_partner
+msgid "Partner of the Invoice"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__mail_notif_partner_id
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_method_line__mail_partner_policy
+msgid "Partner to Notify"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line_create__partner_ids
@@ -1038,6 +1197,11 @@ msgstr "Transaction de paiement"
 #, fuzzy
 msgid "Payment/Debit Order"
 msgstr "Ajouter à l'ordre de paiement/débit"
+
+#. module: account_payment_batch_oca
+#: model:mail.template,name:account_payment_batch_oca.payment_order_mail_notif
+msgid "Payment/Debit Order: mail notification"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.model,name:account_payment_batch_oca.model_account_payment
@@ -1237,6 +1401,15 @@ msgid "There are no transactions on payment order %s."
 msgstr "Il n'y a aucune opération sur l'ordre de paiement %s."
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_method_line__mail_partner_policy
+msgid ""
+"This configuration parameter will decide which partner is auto-configured as "
+"partner to notify on the payment/debit transaction. You can always manually "
+"change the partner to notify on the payment/debit transaction when the "
+"payment/debit order is in draft state."
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields,help:account_payment_batch_oca.field_account_payment_line__ml_maturity_date
 msgid ""
 "This field is used for payable and receivable journal entries. You can put "
@@ -1331,6 +1504,13 @@ msgstr ""
 msgid ""
 "bank account(s) is/are untrusted. Click on the button at the top to access "
 "it/them."
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model:mail.template,subject:account_payment_batch_oca.payment_order_mail_notif
+msgid ""
+"{{object.payment_type == \"inbound\" and 'Debit' or 'Payment'}} notification "
+"of {{ object.company_id.name }}"
 msgstr ""
 
 #, python-format
