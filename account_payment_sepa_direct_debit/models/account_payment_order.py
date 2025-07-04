@@ -50,56 +50,30 @@ class AccountPaymentOrder(models.Model):
         for lot in self.payment_lot_ids:
             # B. Payment info
             payment_info = lot._generate_start_payment_info_block(pain_root, gen_args)
-            self._generate_party_block(
-                payment_info, "Cdtr", "B", self.company_partner_bank_id, gen_args
+            self.company_partner_bank_id._generate_party_block(
+                payment_info, "B", gen_args
             )
             self._generate_charge_bearer(payment_info)
-            sepa_creditor_identifier = (
-                self.payment_method_line_id.sepa_creditor_identifier
-                or self.company_id.sepa_creditor_identifier
-            )
-            if not sepa_creditor_identifier:
-                raise UserError(
-                    _(
-                        "Missing SEPA Creditor Identifier on company %(company)s "
-                        "(or on payment mode %(payment_mode)s).",
-                        company=self.company_id.display_name,
-                        payment_mode=self.payment_method_line_id.display_name,
-                    )
-                )
-            self._generate_creditor_scheme_identification(
+            self.payment_method_line_id._generate_creditor_scheme_identification(
                 payment_info,
-                sepa_creditor_identifier,
-                "SEPA Creditor Identifier",
-                "SEPA",
+                self.sepa and "SEPA" or False,
                 gen_args,
             )
-            for line in lot.payment_ids:
+            for payment in lot.payment_ids:
                 # C. Direct Debit Transaction Info
                 transactions_count_a += 1
                 dd_transaction_info = objectify.SubElement(payment_info, "DrctDbtTxInf")
-                payment_identification = objectify.SubElement(
-                    dd_transaction_info, "PmtId"
+                payment._generate_payment_identification_block(
+                    dd_transaction_info, gen_args
                 )
-                payment_identification.InstrId = self._prepare_field(
-                    "Instruction Identification",
-                    line.memo or str(line.id),
-                    35,
-                    gen_args,
+                amount_control_sum_a = payment._generate_amount_block(
+                    dd_transaction_info, amount_control_sum_a
                 )
-                payment_identification.EndToEndId = self._prepare_field(
-                    "End to End Identification", line.memo or str(line.id), 35, gen_args
-                )
-                dd_transaction_info.InstdAmt = line.currency_id._pain_format(
-                    line.amount
-                )
-                dd_transaction_info.InstdAmt.set("Ccy", line.currency_id.name)
-                amount_control_sum_a += line.amount
                 dd_transaction = objectify.SubElement(dd_transaction_info, "DrctDbtTx")
                 mandate_related_info = objectify.SubElement(
                     dd_transaction, "MndtRltdInf"
                 )
-                mandate = line.payment_line_ids[:1].mandate_id
+                mandate = payment.payment_line_ids[:1].mandate_id
                 mandate_related_info.MndtId = self._prepare_field(
                     "Unique Mandate Reference",
                     mandate.unique_mandate_reference,
@@ -130,22 +104,15 @@ class AccountPaymentOrder(models.Model):
                     # After 20/11/2016, SMNDA means
                     # "Same Mandate New Debtor Account"
 
-                self._generate_party_block(
+                mandate.partner_bank_id._generate_party_block(
                     dd_transaction_info,
-                    "Dbtr",
                     "C",
-                    line.partner_bank_id,
                     gen_args,
-                    line,
+                    payment,
                 )
-                payment_line = line.payment_line_ids[0]
-                payment_line._generate_purpose(dd_transaction_info)
-                payment_line._generate_regulatory_reporting(
-                    dd_transaction_info, gen_args
-                )
-                self._generate_remittance_info_block(
-                    dd_transaction_info, line, gen_args
-                )
+                payment._generate_purpose(dd_transaction_info)
+                payment._generate_regulatory_reporting(dd_transaction_info, gen_args)
+                payment._generate_remittance_info_block(dd_transaction_info, gen_args)
 
         group_header.NbOfTxs = str(transactions_count_a)
         group_header.CtrlSum = self._format_control_sum(amount_control_sum_a)

@@ -55,6 +55,7 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
                 "journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.payment_method_out.id,
                 "selectable": True,
+                "mail_notif": True,
             }
         )
         cls.creation_mode = cls.env["account.payment.method.line"].create(
@@ -87,7 +88,6 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
                 "invoice_line_ids": [
                     Command.create(
                         {
-                            "product_id": self.env.ref("product.product_product_4").id,
                             "quantity": 1.0,
                             "price_unit": 100.0,
                             "name": "product that cost 100",
@@ -114,7 +114,6 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
                 "invoice_line_ids": [
                     Command.create(
                         {
-                            "product_id": self.env.ref("product.product_product_4").id,
                             "quantity": 1.0,
                             "price_unit": 90.0,
                             "name": "refund of 90.0",
@@ -351,7 +350,12 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
             "F1242", self.invoice._get_payment_order_communication_direct()
         )
         self.refund = self._create_supplier_refund(self.invoice)
-        self.refund.write({"ref": "R1234"})
+        self.refund.write(
+            {
+                "ref": "R1234",
+                "invoice_date": fields.Date.today(),
+            }
+        )
         self.refund.invoice_line_ids[0].write({"price_unit": 75.0})
 
         self.refund.action_post()
@@ -388,6 +392,7 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
             {
                 "ref": "R1234",
                 "payment_reference": "FR/1234",
+                "invoice_date": fields.Date.today(),
             }
         )
         self.refund.invoice_line_ids[0].write({"price_unit": 75.0})

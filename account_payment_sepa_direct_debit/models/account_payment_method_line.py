@@ -1,10 +1,11 @@
 # Copyright 2016 Tecnativa - Antonio Espinosa
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+from lxml import objectify
 from stdnum.eu.at_02 import is_valid
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -31,3 +32,37 @@ class AccountPaymentMethodLine(models.Model):
                 raise ValidationError(
                     _("The SEPA Creditor Identifier '%s' is invalid.") % ics
                 )
+
+    def _generate_creditor_scheme_identification(
+        self,
+        parent_node,
+        scheme_name_proprietary,
+        gen_args,
+    ):
+        self.ensure_one()
+        sepa_creditor_identifier = (
+            self.sepa_creditor_identifier or self.company_id.sepa_creditor_identifier
+        )
+        if not sepa_creditor_identifier:
+            raise UserError(
+                _(
+                    "Missing SEPA Creditor Identifier on company %(company)s "
+                    "(or on payment method %(payment_method)s).",
+                    company=self.company_id.display_name,
+                    payment_method=self.display_name,
+                )
+            )
+        csi_root = objectify.SubElement(parent_node, "CdtrSchmeId")
+        csi_id = objectify.SubElement(csi_root, "Id")
+        csi_privateid = objectify.SubElement(csi_id, "PrvtId")
+        csi_other = objectify.SubElement(csi_privateid, "Othr")
+        csi_other.Id = self.env["account.payment.order"]._prepare_field(
+            "SEPA Creditor Identifier",
+            sepa_creditor_identifier,
+            35,
+            gen_args,
+            raise_if_oversized=True,
+        )
+        if scheme_name_proprietary:
+            csi_scheme_name = objectify.SubElement(csi_other, "SchmeNm")
+            csi_scheme_name.Prtry = scheme_name_proprietary

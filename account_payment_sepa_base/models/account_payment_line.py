@@ -3,8 +3,6 @@
 # Copyright 2014-2022 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from lxml import objectify
-
 from odoo import api, fields, models
 
 
@@ -208,25 +206,6 @@ class AccountPaymentLine(models.Model):
             }
         )
         return vals
-
-    def _generate_regulatory_reporting(self, parent_node, gen_args):
-        if self.regulatory_reporting_id:
-            regulatory_reporting = objectify.SubElement(parent_node, "RgltryRptg")
-            regulatory_reporting_details = objectify.SubElement(
-                regulatory_reporting, "Dtls"
-            )
-            regulatory_reporting_details.Cd = self.order_id._prepare_field(
-                "Regulatory Details Code",
-                self.regulatory_reporting_id.code,
-                10,
-                gen_args,
-                raise_if_oversized=True,
-            )
-
-    def _generate_purpose(self, parent_node):
-        if self.purpose:
-            purpose = objectify.SubElement(parent_node, "Purp")
-            purpose.Cd = self.purpose
 
     def _compute_sepa_final_hook(self, sepa):
         """This hook is used by the module account_banking_sepa_direct_debit"""
