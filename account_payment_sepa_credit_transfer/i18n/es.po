@@ -23,11 +23,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_sepa_credit_transfer/models/account_payment_order.py:0
 msgid ""
-"Bank account is missing on the bank payment line of partner "
-"'{partner}' (reference '{reference}')."
+"Bank account is missing on the payment {payment} of partner '{partner}'."
 msgstr ""
-"Falta la cuenta bancaria en la línea de pago del partner "
-"'{partner}' (reference '{reference}')."
 
 #. module: account_payment_sepa_credit_transfer
 #: model:ir.model.fields.selection,name:account_payment_sepa_credit_transfer.selection__account_payment_line__local_instrument__inst
@@ -87,6 +84,13 @@ msgstr ""
 #, fuzzy
 msgid "pain.001.003.03 (credit transfer for Germany only)"
 msgstr "pain.001.001.03 (recomendado para pagos por transferencia)"
+
+#~ msgid ""
+#~ "Bank account is missing on the bank payment line of partner "
+#~ "'{partner}' (reference '{reference}')."
+#~ msgstr ""
+#~ "Falta la cuenta bancaria en la línea de pago del partner "
+#~ "'{partner}' (reference '{reference}')."
 
 #~ msgid "pain.001.001.02"
 #~ msgstr "pain.001.001.02"
