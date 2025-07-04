@@ -131,9 +131,9 @@ msgid ""
 msgstr ""
 "TUTTI I CAMPI SONO OBBLIGATORI. UNA VOLTA CHE IL MANDATO è STATO FIRMATO "
 "DEVE ESSERE SPEDITO AL CREDITORE PER ARCHIVIAZIONE.\n"
-"                        TUTTAVIA, LA BANCA DEL DEBITORE RICHIEDE L’"
-"AUTORIZZAZIONE DEL DEBITORE PRIMA DI ADDEBITARE GLI ADDEBITI DIRETTI B2B SUL "
-"CONTO.\n"
+"                        TUTTAVIA, LA BANCA DEL DEBITORE RICHIEDE "
+"L’AUTORIZZAZIONE DEL DEBITORE PRIMA DI ADDEBITARE GLI ADDEBITI DIRETTI B2B "
+"SUL CONTO.\n"
 "                         IL DEBITORE POTRÀ GESTIRE LA MENZIONATA "
 "AUTORIZZAZIONE ATTRAVERSO I MEZZI FORNITI DALLA SUA BANCA."
 
@@ -275,13 +275,11 @@ msgstr "Mandato impostato per scadere dopo %d mesi di inutilizzo."
 
 #. module: account_payment_sepa_direct_debit
 #. odoo-python
-#: code:addons/account_payment_sepa_direct_debit/models/account_payment_order.py:0
+#: code:addons/account_payment_sepa_direct_debit/models/account_payment_method_line.py:0
 msgid ""
-"Missing SEPA Creditor Identifier on company %(company)s (or on payment mode "
-"%(payment_mode)s)."
+"Missing SEPA Creditor Identifier on company %(company)s (or on payment "
+"method %(payment_method)s)."
 msgstr ""
-"Identificatore creditore SEPA mancante per l'azienda %(company)s (o nel "
-"metodo di pagamento %(payment_mode)s)."
 
 #. module: account_payment_sepa_direct_debit
 #. odoo-python
@@ -423,8 +421,8 @@ msgid ""
 "The SEPA mandate '%(mandate)s' is linked to bank account '%(bank_account)s' "
 "which is not an IBAN bank account."
 msgstr ""
-"Il mandato SEPA '%(mandate)s' è collegato al conto bancario '%(bank_account)"
-"s' che non è l'IBAN di un conto bancario."
+"Il mandato SEPA '%(mandate)s' è collegato al conto bancario "
+"'%(bank_account)s' che non è l'IBAN di un conto bancario."
 
 #. module: account_payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_direct_debit.sepa_direct_debit_mandate_document
@@ -487,3 +485,10 @@ msgstr ""
 "per inviare istruzioni alla propria banca per addebitare il vostro conto e "
 "(B) la vostra banca\n"
 "                        addebitare il vostro conto secondo le istruzioni di"
+
+#~ msgid ""
+#~ "Missing SEPA Creditor Identifier on company %(company)s (or on payment "
+#~ "mode %(payment_mode)s)."
+#~ msgstr ""
+#~ "Identificatore creditore SEPA mancante per l'azienda %(company)s (o nel "
+#~ "metodo di pagamento %(payment_mode)s)."
