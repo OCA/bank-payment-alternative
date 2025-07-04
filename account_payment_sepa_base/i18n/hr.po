@@ -80,6 +80,11 @@ msgid "Archived"
 msgstr ""
 
 #. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr ""
+
+#. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__batch_booking
 msgid "Batch Booking"
 msgstr ""
@@ -261,9 +266,9 @@ msgstr "Plaćanja Kreditnim karticama "
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Creditor name"
-msgstr "Naziv dužnika"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Creditor Name"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_res_currency
@@ -282,9 +287,9 @@ msgstr "Plaćanja Debitnom Karticom"
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Debtor name"
-msgstr "Naziv Vjerovnika"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Debtor Name"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__dvpm
@@ -690,12 +695,6 @@ msgid "PAIN Version"
 msgstr "PAIN verzija"
 
 #. module: account_payment_sepa_base
-#. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Partner name"
-msgstr "Naziv partnera"
-
-#. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_line
 msgid "Payment Lines"
 msgstr "Stavke plaćanja"
@@ -716,6 +715,11 @@ msgstr "Uvijeti plaćanja"
 #, fuzzy
 msgid "Payment/Debit Order"
 msgstr "Nalog za plaćanje"
+
+#. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_account_payment
+msgid "Payments"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__pens
@@ -1035,6 +1039,15 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__epay
 msgid "ePayment"
 msgstr "ePlaćanje"
+
+#~ msgid "Creditor name"
+#~ msgstr "Naziv dužnika"
+
+#~ msgid "Debtor name"
+#~ msgstr "Naziv Vjerovnika"
+
+#~ msgid "Partner name"
+#~ msgstr "Naziv partnera"
 
 #~ msgid "Bank"
 #~ msgstr "Banka"

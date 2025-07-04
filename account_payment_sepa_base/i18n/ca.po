@@ -78,6 +78,11 @@ msgid "Archived"
 msgstr ""
 
 #. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr ""
+
+#. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__batch_booking
 msgid "Batch Booking"
 msgstr ""
@@ -258,8 +263,8 @@ msgstr ""
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Creditor name"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Creditor Name"
 msgstr ""
 
 #. module: account_payment_sepa_base
@@ -279,8 +284,8 @@ msgstr ""
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Debtor name"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Debtor Name"
 msgstr ""
 
 #. module: account_payment_sepa_base
@@ -686,12 +691,6 @@ msgid "PAIN Version"
 msgstr ""
 
 #. module: account_payment_sepa_base
-#. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Partner name"
-msgstr ""
-
-#. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_line
 msgid "Payment Lines"
 msgstr ""
@@ -710,6 +709,11 @@ msgstr ""
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_order
 msgid "Payment/Debit Order"
+msgstr ""
+
+#. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_account_payment
+msgid "Payments"
 msgstr ""
 
 #. module: account_payment_sepa_base
