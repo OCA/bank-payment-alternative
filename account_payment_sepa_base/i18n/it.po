@@ -77,6 +77,11 @@ msgid "Archived"
 msgstr "In archivio"
 
 #. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr ""
+
+#. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__batch_booking
 msgid "Batch Booking"
 msgstr "Addebito unico"
@@ -257,9 +262,9 @@ msgstr "Pagamento con Carta di Credito "
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Creditor name"
-msgstr "Nome creditore"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Creditor Name"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_res_currency
@@ -278,9 +283,9 @@ msgstr "Pagamento con Carta di Debito"
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Debtor name"
-msgstr "Nome debitore"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Debtor Name"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__dvpm
@@ -709,12 +714,6 @@ msgid "PAIN Version"
 msgstr "Versione PAIN"
 
 #. module: account_payment_sepa_base
-#. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Partner name"
-msgstr "Nome partner"
-
-#. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_line
 msgid "Payment Lines"
 msgstr "Righe di pagamento"
@@ -734,6 +733,11 @@ msgstr "Termini di pagamento"
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_order
 msgid "Payment/Debit Order"
 msgstr "Ordine pagamento/debito"
+
+#. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_account_payment
+msgid "Payments"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__pens
@@ -1084,6 +1088,15 @@ msgstr "Ritenuta"
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__epay
 msgid "ePayment"
 msgstr "Pagamento elettronico"
+
+#~ msgid "Creditor name"
+#~ msgstr "Nome creditore"
+
+#~ msgid "Debtor name"
+#~ msgstr "Nome debitore"
+
+#~ msgid "Partner name"
+#~ msgstr "Nome partner"
 
 #~ msgid "Bank"
 #~ msgstr "Banca"

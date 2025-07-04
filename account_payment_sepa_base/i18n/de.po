@@ -81,6 +81,11 @@ msgid "Archived"
 msgstr ""
 
 #. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr ""
+
+#. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__batch_booking
 msgid "Batch Booking"
 msgstr "Batch-Buchung"
@@ -266,10 +271,9 @@ msgstr "Kreditkarten Zahlung"
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-#, fuzzy
-msgid "Creditor name"
-msgstr "Kreditkarten Zahlung"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Creditor Name"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_res_currency
@@ -289,8 +293,8 @@ msgstr "Debitkartenzahlung"
 
 #. module: account_payment_sepa_base
 #. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Debtor name"
+#: code:addons/account_payment_sepa_base/models/res_partner_bank.py:0
+msgid "Debtor Name"
 msgstr ""
 
 #. module: account_payment_sepa_base
@@ -719,12 +723,6 @@ msgid "PAIN Version"
 msgstr "PAIN Verzion"
 
 #. module: account_payment_sepa_base
-#. odoo-python
-#: code:addons/account_payment_sepa_base/models/account_payment_order.py:0
-msgid "Partner name"
-msgstr ""
-
-#. module: account_payment_sepa_base
 #: model:ir.model,name:account_payment_sepa_base.model_account_payment_line
 msgid "Payment Lines"
 msgstr "Zahlungszeilen"
@@ -746,6 +744,11 @@ msgstr "Zahlungszeilen"
 #, fuzzy
 msgid "Payment/Debit Order"
 msgstr "Zahlungsauftrag"
+
+#. module: account_payment_sepa_base
+#: model:ir.model,name:account_payment_sepa_base.model_account_payment
+msgid "Payments"
+msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__pens
@@ -1099,6 +1102,10 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__epay
 msgid "ePayment"
 msgstr "elektronische Zahlung"
+
+#, fuzzy
+#~ msgid "Creditor name"
+#~ msgstr "Kreditkarten Zahlung"
 
 #, fuzzy, python-format
 #~ msgid "Cannot compute the field '{field_name}'."
