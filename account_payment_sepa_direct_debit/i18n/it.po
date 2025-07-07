@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-30 13:25+0000\n"
+"PO-Revision-Date: 2025-07-07 09:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -280,6 +280,8 @@ msgid ""
 "Missing SEPA Creditor Identifier on company %(company)s (or on payment "
 "method %(payment_method)s)."
 msgstr ""
+"Identificativo del creditore SEPA mancante sulla società %(company)s (o sul "
+"metodo di pagamento %(payment_method)s)."
 
 #. module: account_payment_sepa_direct_debit
 #. odoo-python
