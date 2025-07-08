@@ -11,7 +11,6 @@
     "author": "Akretion, Tecnativa, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/bank-payment-alternative",
     "depends": ["sale", "account_payment_base_oca"],
-    "excludes": ["account_payment_sale"],
     "data": [
         "views/sale_order.xml",
         "views/sale_report.xml",
