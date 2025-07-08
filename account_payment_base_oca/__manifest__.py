@@ -13,7 +13,6 @@
     "development_status": "Mature",
     "website": "https://github.com/OCA/bank-payment-alternative",
     "depends": ["account_payment_method_base"],
-    "excludes": ["account_payment_mode"],
     "data": [
         "views/account_payment_method.xml",
         "views/account_payment_method_line.xml",
