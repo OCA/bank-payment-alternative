@@ -271,7 +271,7 @@ class AccountPaymentLine(models.Model):
                 and not partner_bank_id
                 and partner.bank_ids
             ):
-                partner_bank_id = partner.bank_ids[0]
+                partner_bank_id = partner.bank_ids[0].id
             line.communication = communication
             line.communication_type = communication_type
             line.currency_id = currency_id
@@ -288,20 +288,45 @@ class AccountPaymentLine(models.Model):
                 errors.append(
                     _("Missing Partner Bank Account on payment line %s") % self.name
                 )
-            if (
-                order.payment_type == "outbound"
-                and order._enforce_allow_out_payment()
-                and not self.partner_bank_id.allow_out_payment
-            ):
-                errors.append(
-                    _(
-                        "Bank account '%(bank_account)s' of partner '%(partner)s' "
-                        "is untrusted. Check that this bank account can be trusted "
-                        "and activate the option 'Send Money' on it.",
-                        bank_account=self.partner_bank_id.display_name,
-                        partner=self.partner_id.display_name,
+            else:
+                if self.partner_bank_id.partner_id != self.partner_id:
+                    errors.append(
+                        _(
+                            "On payment line %(name)s with partner '%(partner)s', "
+                            "the bank account '%(bank_account)s' belongs to partner "
+                            "'%(bank_account_partner)s'.",
+                            name=self.name,
+                            partner=self.partner_id.display_name,
+                            bank_account=self.partner_bank_id.display_name,
+                            bank_account_partner=self.partner_bank_id.partner_id.display_name,
+                        )
                     )
-                )
+
+                if (
+                    order.payment_type == "outbound"
+                    and order._enforce_allow_out_payment()
+                    and not self.partner_bank_id.allow_out_payment
+                ):
+                    errors.append(
+                        _(
+                            "Bank account '%(bank_account)s' of partner '%(partner)s' "
+                            "is untrusted. Check that this bank account can be trusted "
+                            "and activate the option 'Send Money' on it.",
+                            bank_account=self.partner_bank_id.display_name,
+                            partner=self.partner_id.display_name,
+                        )
+                    )
+                # internal transfers: check source account != dest account
+                if self.partner_bank_id == order.company_partner_bank_id:
+                    errors.append(
+                        _(
+                            "On payment line %(name)s, the bank account "
+                            "'%(bank_account)s' is the same as the company "
+                            "bank account of the payment order.",
+                            name=self.name,
+                            bank_account=self.partner_bank_id.display_name,
+                        )
+                    )
         if not self.communication:
             errors.append(_("Communication is empty on payment line %s.") % self.name)
         if (
