@@ -20,8 +20,29 @@
         <field name="arch" type="xml">
             <group name="group2" position="inside">
                 <field name="payment_reference" invisible="not payment_reference" />
+                <field name="payment_order_id" invisible="not payment_order_id" />
                 <field name="payment_lot_id" invisible="not payment_lot_id" />
             </group>
+            <!-- Field partner_bank_id is displayed 3 times the view!
+            We want to set the field string="Vendor Bank Account" as readonly -->
+            <xpath
+                expr="//group[@name='group2']/field[@name='partner_bank_id'][1]"
+                position="attributes"
+            >
+                <attribute name="readonly">payment_order_id</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='group2']/field[@name='partner_bank_id'][2]"
+                position="attributes"
+            >
+                <attribute name="readonly">payment_order_id</attribute>
+            </xpath>
+            <field name="memo" position="attributes">
+                <attribute name="readonly">payment_order_id</attribute>
+            </field>
+            <field name="payment_reference" position="attributes">
+                <attribute name="readonly">payment_order_id</attribute>
+            </field>
         </field>
     </record>
 </odoo>

@@ -9,9 +9,13 @@ from odoo.tools.misc import format_amount, format_date
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
-    payment_order_id = fields.Many2one(comodel_name="account.payment.order")
-    payment_lot_id = fields.Many2one(comodel_name="account.payment.lot")
-    payment_line_ids = fields.Many2many(comodel_name="account.payment.line")
+    payment_order_id = fields.Many2one(
+        comodel_name="account.payment.order", readonly=True
+    )
+    payment_lot_id = fields.Many2one(comodel_name="account.payment.lot", readonly=True)
+    payment_line_ids = fields.Many2many(
+        comodel_name="account.payment.line", readonly=True
+    )
     order_state = fields.Selection(
         related="payment_order_id.state", string="Payment Order State"
     )
@@ -37,6 +41,16 @@ class AccountPayment(models.Model):
                     for line in pay.available_payment_method_line_ids
                     if line.code not in to_exclude
                 ]
+        return res
+
+    # Don't generate a journal entry when the account.payment is an "internal transfer"
+    # of the company i.e. a money transfer between 2 bank accounts of the company
+    @api.depends("partner_id", "company_id")
+    def _compute_outstanding_account_id(self):
+        res = super()._compute_outstanding_account_id()
+        for pay in self:
+            if pay.company_id.partner_id == self.partner_id or not self.partner_id:
+                pay.outstanding_account_id = False
         return res
 
     def _prepare_payment_order_mail(self, lang, account_number_scrambled_ctx):

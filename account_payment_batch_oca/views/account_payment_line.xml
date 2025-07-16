@@ -24,8 +24,9 @@
                         <field
                             name="partner_bank_id"
                             context="{'default_partner_id': partner_id}"
-                            domain="[('partner_id', '=', partner_id)]"
+                            domain="[('partner_id', '=', partner_id), ('id', '!=', parent.company_partner_bank_id)]"
                             required="bank_account_required"
+                            invisible="not partner_id"
                         />
                         <field name="bank_account_required" invisible="1" />
                         <field name="date" />
