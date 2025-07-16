@@ -54,6 +54,17 @@
             <search>
                 <field name="name" />
                 <separator />
+                <filter
+                    name="inbound"
+                    string="Inbound"
+                    domain="[('payment_type', '=', 'inbound')]"
+                />
+                <filter
+                    name="outbound"
+                    string="Outbound"
+                    domain="[('payment_type', '=', 'outbound')]"
+                />
+                <separator />
                 <filter name="date" date="date" />
                 <group name="groupby">
                     <filter
