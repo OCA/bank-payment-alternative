@@ -36,17 +36,18 @@ class AccountPaymentLine(models.Model):
                     mandate = move.mandate_id
                 elif line.partner_id:
                     mandate = line.partner_id.valid_mandate_id
-            line.mandate_id = mandate and mandate.id or False
+            line.mandate_id = mandate
 
     @api.depends("mandate_id")
-    def _compute_payment_line(self):
-        res = super()._compute_payment_line()
+    def _compute_partner_bank_id(self):
+        res = super()._compute_partner_bank_id()
         for line in self:
-            if line.mandate_id and (
-                not line.partner_bank_id
-                or line.partner_bank_id != line.mandate_id.partner_bank_id
-            ):
-                line.partner_bank_id = line.mandate_id.partner_bank_id.id
+            payment_method = line.order_id.payment_method_id
+            if payment_method.mandate_required:
+                if line.mandate_id:
+                    line.partner_bank_id = line.mandate_id.partner_bank_id
+                else:
+                    line.partner_bank_id = False
         return res
 
     @api.constrains("mandate_id", "partner_bank_id")

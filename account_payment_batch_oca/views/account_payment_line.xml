@@ -15,10 +15,7 @@
                             invisible="not context.get('account_payment_line_main_view')"
                         />
                         <field name="name" />
-                        <field
-                            name="move_line_id"
-                            domain="[('reconciled','=', False), ('account_id.reconcile', '=', True)] "
-                        />
+                        <field name="move_line_id" />
                         <!-- we removed the filter on amount_to_pay, because we want to be able to select refunds -->
                         <field name="partner_id" />
                         <field
