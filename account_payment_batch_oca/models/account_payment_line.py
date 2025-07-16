@@ -41,6 +41,8 @@ class AccountPaymentLine(models.Model):
         string="Journal Item",
         ondelete="restrict",
         check_company=True,
+        domain="[('reconciled','=', False), ('account_id.reconcile', '=', True), "
+        "('partner_id', '!=', False)]",
     )
     ml_maturity_date = fields.Date(related="move_line_id.date_maturity")
     currency_id = fields.Many2one(
@@ -78,7 +80,7 @@ class AccountPaymentLine(models.Model):
     )
     partner_bank_id = fields.Many2one(
         comodel_name="res.partner.bank",
-        compute="_compute_payment_line",
+        compute="_compute_partner_bank_id",
         store=True,
         readonly=False,
         precompute=True,
@@ -244,7 +246,7 @@ class AccountPaymentLine(models.Model):
             key.append(str(self[field]))
         return tuple(key)
 
-    @api.depends("partner_id", "move_line_id")
+    @api.depends("move_line_id")
     def _compute_payment_line(self):
         for line in self:
             communication = False
@@ -252,9 +254,9 @@ class AccountPaymentLine(models.Model):
             currency_id = line.company_id.currency_id.id
             amount_currency = 0.0
             move_line = line.move_line_id
-            partner = line.partner_id
-            partner_bank_id = False
-            if move_line:
+            partner_id = False
+            if move_line and move_line.partner_id:
+                partner_id = move_line.partner_id.id
                 communication_type = move_line.move_id.reference_type
                 communication = (
                     move_line.move_id._get_payment_order_communication_full()
@@ -263,21 +265,41 @@ class AccountPaymentLine(models.Model):
                 amount_currency = move_line.amount_residual_currency
                 if line.order_id.payment_type == "outbound":
                     amount_currency *= -1
-                    partner_bank_id = move_line.move_id.partner_bank_id.id
-                partner = move_line.partner_id
-            if (
-                partner
-                and line.order_id.payment_method_id.bank_account_required
-                and not partner_bank_id
-                and partner.bank_ids
-            ):
-                partner_bank_id = partner.bank_ids[0].id
             line.communication = communication
             line.communication_type = communication_type
             line.currency_id = currency_id
             line.amount_currency = amount_currency
-            line.partner_id = partner and partner.id or False
-            line.partner_bank_id = partner_bank_id
+            line.partner_id = partner_id
+
+    @api.depends(
+        "partner_id",
+        "move_line_id",
+        "order_id.journal_id",
+        "order_id.company_id",
+        "order_id.payment_method_id",
+    )
+    def _compute_partner_bank_id(self):
+        for line in self:
+            partner_bank = False
+            partner = line.partner_id
+            order = line.order_id
+            move = line.move_line_id.move_id
+            if order.payment_method_id.bank_account_required:
+                if (
+                    move
+                    and move.move_type in ("in_invoice", "in_refund")
+                    and order.payment_type == "outbound"
+                ):
+                    partner_bank = move.partner_bank_id
+                elif partner:
+                    if partner == order.company_id.partner_id:  # internal transfer
+                        for bank_account in partner.bank_ids:
+                            if bank_account != order.journal_id.bank_account_id:
+                                partner_bank = bank_account
+                                break
+                    elif partner.bank_ids:
+                        partner_bank = partner.bank_ids[0]
+            line.partner_bank_id = partner_bank
 
     def _draft2open_payment_line_check(self):
         self.ensure_one()
