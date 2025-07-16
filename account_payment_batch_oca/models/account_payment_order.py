@@ -333,6 +333,10 @@ class AccountPaymentOrder(models.Model):
                 order.journal_id = False
 
     def cancel2draft(self):
+        # Delete existing payments
+        self.payment_ids.unlink()
+        # Delete existing lots
+        self.payment_lot_ids.unlink()
         self.write({"state": "draft"})
 
     def action_cancel(self):
@@ -356,9 +360,8 @@ class AccountPaymentOrder(models.Model):
     def draft2open(self):
         """
         Called when you click on the 'Confirm' button
-        Set the 'date' on payment line depending on the 'date_prefered'
-        setting of the payment.order
-        Re-generate the account payments.
+        Set the 'date' on payment line depending on the 'date_prefered' of the order
+        Generate the account payments and lots
         """
         today = fields.Date.context_today(self)
         for order in self:
@@ -378,22 +381,22 @@ class AccountPaymentOrder(models.Model):
                 raise UserError(
                     _("There are no transactions on payment order %s.") % order.name
                 )
-            # Unreconcile, cancel and delete existing account payments
-            order.payment_ids.action_draft()
-            order.payment_ids.action_cancel()
-            order.payment_ids.unlink()
-            # Delete existing lots
-            order.payment_lot_ids.unlink()
+            if order.payment_ids:
+                raise UserError(
+                    _("%s is linked to existing payments. This should never happen.")
+                    % order.name
+                )
+            if order.payment_lot_ids:
+                raise UserError(
+                    _("%s is linked to existing lots. This should never happen.")
+                    % order.name
+                )
             # Prepare account payments from the payment lines
             payline_err_text = set()
             group_paylines = {}  # key = pay_key
             pay_key2lot = {}  # key = pay_key, value = payment_lot
             lot_key2lot = {}  # key = lot_key, value = payment_lot
             for payline in order.payment_line_ids:
-                try:
-                    payline.draft2open_payment_line_check()
-                except UserError as e:
-                    payline_err_text.add(e.args[0])
                 # Compute requested payment date
                 if order.date_prefered == "due":
                     requested_date = payline.ml_maturity_date or payline.date or today
@@ -403,26 +406,9 @@ class AccountPaymentOrder(models.Model):
                     requested_date = today
                 # No payment date in the past
                 requested_date = max(today, requested_date)
-                # inbound: check option no_debit_before_maturity
-                if (
-                    order.payment_type == "inbound"
-                    and order.payment_method_line_id.no_debit_before_maturity
-                    and payline.ml_maturity_date
-                    and requested_date < payline.ml_maturity_date
-                ):
-                    payline_err_text.add(
-                        _(
-                            "The payment method '%(method)s' has the option "
-                            "'Disallow Debit Before Maturity Date'. The "
-                            "payment line %(pline)s has a maturity date %(mdate)s "
-                            "which is after the computed payment date %(pdate)s.",
-                            method=order.payment_method_line_id.display_name,
-                            pline=payline.name,
-                            mdate=format_date(self.env, payline.ml_maturity_date),
-                            pdate=format_date(self.env, requested_date),
-                        )
-                    )
-                payline.date = requested_date
+                payline.write({"date": requested_date})
+                for error in payline._draft2open_payment_line_check():
+                    payline_err_text.add(error)
                 # Group options
                 pay_key = (
                     payline._payment_line_grouping_key()
@@ -447,10 +433,6 @@ class AccountPaymentOrder(models.Model):
             # Raise errors that happened on the validation process
             if payline_err_text:
                 raise UserError("\n".join(payline_err_text))
-
-            # Why do we have to call flush_all() ??? A comment to explain would
-            # be welcomed!
-            order.env.flush_all()
 
             # Create account payments
             lot2pay_seq = defaultdict(int)

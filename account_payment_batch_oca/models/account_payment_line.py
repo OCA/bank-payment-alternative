@@ -3,6 +3,7 @@
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_date
 
 
 class AccountPaymentLine(models.Model):
@@ -278,19 +279,21 @@ class AccountPaymentLine(models.Model):
             line.partner_id = partner and partner.id or False
             line.partner_bank_id = partner_bank_id
 
-    def draft2open_payment_line_check(self):
+    def _draft2open_payment_line_check(self):
         self.ensure_one()
+        order = self.order_id
+        errors = []
         if self.bank_account_required:
             if not self.partner_bank_id:
-                raise UserError(
+                errors.append(
                     _("Missing Partner Bank Account on payment line %s") % self.name
                 )
             if (
-                self.order_id.payment_type == "outbound"
-                and self.order_id._enforce_allow_out_payment()
+                order.payment_type == "outbound"
+                and order._enforce_allow_out_payment()
                 and not self.partner_bank_id.allow_out_payment
             ):
-                raise UserError(
+                errors.append(
                     _(
                         "Bank account '%(bank_account)s' of partner '%(partner)s' "
                         "is untrusted. Check that this bank account can be trusted "
@@ -300,16 +303,36 @@ class AccountPaymentLine(models.Model):
                     )
                 )
         if not self.communication:
-            raise UserError(_("Communication is empty on payment line %s.") % self.name)
+            errors.append(_("Communication is empty on payment line %s.") % self.name)
         if (
-            self.order_id.payment_method_line_id.mail_notif
+            order.payment_method_line_id.mail_notif
             and self.mail_notif_partner_id
             and not self.mail_notif_partner_id.email
         ):
-            raise UserError(
+            errors.append(
                 _("Missing email on notification partner '%s'.")
                 % self.mail_notif_partner_id.display_name
             )
+        # inbound: check option no_debit_before_maturity
+        if (
+            order.payment_type == "inbound"
+            and order.payment_method_line_id.no_debit_before_maturity
+            and self.ml_maturity_date
+            and self.date < self.ml_maturity_date
+        ):
+            errors.append(
+                _(
+                    "The payment method '%(method)s' has the option "
+                    "'Disallow Debit Before Maturity Date'. The "
+                    "payment line %(pline)s has a maturity date %(mdate)s "
+                    "which is after the computed payment date %(pdate)s.",
+                    method=order.payment_method_line_id.display_name,
+                    pline=self.name,
+                    mdate=format_date(self.env, self.ml_maturity_date),
+                    pdate=format_date(self.env, self.date),
+                )
+            )
+        return errors
 
     def _prepare_account_payment_vals(self, payment_lot, pay_sequence):
         """Prepare the dictionary to create an account payment record from a set of
