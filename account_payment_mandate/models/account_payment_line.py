@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 
 class AccountPaymentLine(models.Model):
@@ -72,13 +72,13 @@ class AccountPaymentLine(models.Model):
                     )
                 )
 
-    def draft2open_payment_line_check(self):
-        res = super().draft2open_payment_line_check()
+    def _draft2open_payment_line_check(self):
+        errors = super()._draft2open_payment_line_check()
         if self.mandate_required and not self.mandate_id:
-            raise UserError(
+            errors.append(
                 _("Missing mandate on payment line '%s'.") % self.display_name
             )
-        return res
+        return errors
 
     @api.model
     def _payment_grouping_fields(self):
