@@ -16,7 +16,7 @@
                 <field name="mandate_required" invisible="1" />
                 <field
                     name="mandate_id"
-                    invisible="not mandate_required"
+                    invisible="not mandate_required or not partner_id"
                     required="mandate_required"
                     context="{'default_partner_bank_id': partner_bank_id}"
                 />
