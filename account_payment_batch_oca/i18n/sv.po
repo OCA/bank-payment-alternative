@@ -632,6 +632,7 @@ msgstr "Omedelbart"
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_order__payment_type__inbound
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_lot_search
 msgid "Inbound"
 msgstr "Inkommande"
 
@@ -942,6 +943,7 @@ msgstr "Alternativ för betalningsordrar"
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_order__payment_type__outbound
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_lot_search
 msgid "Outbound"
 msgstr "Utgående"
 
