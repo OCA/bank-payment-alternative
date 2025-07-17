@@ -69,13 +69,17 @@ class TestSDDBase(AccountTestInvoicingCommon):
                 "partner_id": cls.partner2.id,
             }
         )
+        cls.bank1 = cls.env["res.bank"].create(
+            {
+                "name": "Bank Test SDD",
+                "bic": "TESTSDDXXXX",
+            }
+        )
         cls.company_bank = cls.env["res.partner.bank"].create(
             {
                 "company_id": cls.company.id,
                 "partner_id": cls.company.partner_id.id,
-                "bank_id": (
-                    cls.env.ref("account_payment_base_oca.bank_la_banque_postale").id
-                ),
+                "bank_id": cls.bank1.id,
                 "acc_number": "ES52 0182 2782 5688 3882 1868",
             }
         )
