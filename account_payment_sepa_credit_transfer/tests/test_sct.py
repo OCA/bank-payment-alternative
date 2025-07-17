@@ -89,14 +89,18 @@ class TestSCT(AccountTestInvoicingCommon):
                 "allow_out_payment": True,
             }
         )
+        cls.bank1 = cls.env["res.bank"].create(
+            {
+                "name": "Bank Test SCT",
+                "bic": "TESTSEPAXXX",
+            }
+        )
         cls.partner_bank = cls.partner_bank_model.create(
             {
                 "acc_number": "FR0812221333144415551666777",
                 "company_id": cls.company.id,
                 "partner_id": cls.company.partner_id.id,
-                "bank_id": (
-                    cls.env.ref("account_payment_base_oca.bank_la_banque_postale").id
-                ),
+                "bank_id": cls.bank1.id,
                 "allow_out_payment": True,
             }
         )
@@ -139,21 +143,21 @@ class TestSCT(AccountTestInvoicingCommon):
     def check_eur_currency_sct(self):
         invoice1 = self.create_invoice(
             self.partner1.id,
-            "account_payment_base_oca.res_partner_2_iban",
+            self.partner1_bank.id,
             self.eur_currency.id,
             42.0,
             "F1341",
         )
         invoice2 = self.create_invoice(
             self.partner1.id,
-            "account_payment_base_oca.res_partner_2_iban",
+            self.partner1_bank.id,
             self.eur_currency.id,
             12.0,
             "F1342",
         )
         invoice3 = self.create_invoice(
             self.partner1.id,
-            "account_payment_base_oca.res_partner_2_iban",
+            self.partner1_bank.id,
             self.eur_currency.id,
             5.0,
             "A1301",
@@ -161,14 +165,14 @@ class TestSCT(AccountTestInvoicingCommon):
         )
         invoice4 = self.create_invoice(
             self.partner3.id,
-            "account_payment_base_oca.res_partner_12_iban",
+            self.partner3_bank.id,
             self.eur_currency.id,
             11.0,
             "I1642",
         )
         invoice5 = self.create_invoice(
             self.partner3.id,
-            "account_payment_base_oca.res_partner_12_iban",
+            self.partner3_bank.id,
             self.eur_currency.id,
             41.0,
             "I1643",
@@ -254,14 +258,14 @@ class TestSCT(AccountTestInvoicingCommon):
     def test_usd_currency_sct(self):
         invoice1 = self.create_invoice(
             self.partner2.id,
-            "account_payment_base_oca.res_partner_2_iban",
+            self.partner2_bank.id,
             self.usd_currency.id,
             2042.0,
             "Inv9032",
         )
         invoice2 = self.create_invoice(
             self.partner2.id,
-            "account_payment_base_oca.res_partner_2_iban",
+            self.partner2_bank.id,
             self.usd_currency.id,
             1012.0,
             "Inv9033",
@@ -355,14 +359,12 @@ class TestSCT(AccountTestInvoicingCommon):
     def create_invoice(
         cls,
         partner_id,
-        partner_bank_xmlid,
+        partner_bank_id,
         currency_id,
         price_unit,
         reference,
         move_type="in_invoice",
     ):
-        partner_bank = cls.env.ref(partner_bank_xmlid)
-        partner_bank.write({"company_id": False})
         line_data = {
             "name": "Great service",
             "account_id": cls.test_company_dict["default_account_expense"].id,
@@ -377,7 +379,7 @@ class TestSCT(AccountTestInvoicingCommon):
             "invoice_date": time.strftime("%Y-%m-%d"),
             "move_type": move_type,
             "preferred_payment_method_line_id": cls.payment_method_line.id,
-            "partner_bank_id": partner_bank.id,
+            "partner_bank_id": partner_bank_id,
             "company_id": cls.company.id,
             "invoice_line_ids": [Command.create(line_data)],
         }
