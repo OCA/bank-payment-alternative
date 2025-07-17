@@ -54,13 +54,28 @@ class CommonTestCase(TransactionCase):
             }
         )
         cls.products = {
-            "prod_order": cls.env.ref("product.product_order_01"),
-            "prod_del": cls.env.ref("product.product_delivery_01"),
+            "prod_order": cls.env["product.product"].create(
+                {
+                    "name": "Test consu invoice on order",
+                    "type": "consu",
+                    "invoice_policy": "order",
+                    "list_price": 12.42,
+                }
+            ),
+            "prod_del": cls.env["product.product"].create(
+                {
+                    "name": "Test consu invoice on delivery",
+                    "type": "consu",
+                    "invoice_policy": "delivery",
+                    "list_price": 13.13,
+                }
+            ),
             "serv_order": cls.env["product.product"].create(
                 {
                     "name": "Test service product order",
                     "type": "service",
                     "invoice_policy": "order",
+                    "list_price": 42.12,
                 }
             ),
             "serv_del": cls.env["product.product"].create(
@@ -68,6 +83,7 @@ class CommonTestCase(TransactionCase):
                     "name": "Test service product delivery",
                     "type": "service",
                     "invoice_policy": "delivery",
+                    "list_price": 12.34,
                 }
             ),
         }
