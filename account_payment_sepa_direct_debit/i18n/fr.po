@@ -291,16 +291,6 @@ msgid ""
 msgstr ""
 
 #. module: account_payment_sepa_direct_debit
-#. odoo-python
-#: code:addons/account_payment_sepa_direct_debit/models/account_payment_line.py:0
-msgid ""
-"Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
-"(reference {reference})."
-msgstr ""
-"Absence du mandat de prélèvement SEPA sur la ligne de paiement bancaire avec "
-"le partenaire {partner_name} (référence {reference})."
-
-#. module: account_payment_sepa_direct_debit
 #: model:ir.model.fields.selection,name:account_payment_sepa_direct_debit.selection__account_payment_lot__sequence_type__ooff
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_direct_debit.sepa_direct_debit_mandate_document
 msgid "One-Off"
@@ -493,6 +483,13 @@ msgstr ""
 "à envoyer des instructions à votre banque pour débiter votre compte et (B) "
 "votre banque à\n"
 "                       débiter votre compte conformément aux instructions du"
+
+#~ msgid ""
+#~ "Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
+#~ "(reference {reference})."
+#~ msgstr ""
+#~ "Absence du mandat de prélèvement SEPA sur la ligne de paiement bancaire "
+#~ "avec le partenaire {partner_name} (référence {reference})."
 
 #, python-format
 #~ msgid ""
