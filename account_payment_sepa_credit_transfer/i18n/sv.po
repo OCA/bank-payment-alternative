@@ -61,6 +61,11 @@ msgid "Payment/Debit Order"
 msgstr "Betalningsorder"
 
 #. module: account_payment_sepa_credit_transfer
+#: model:ir.model,name:account_payment_sepa_credit_transfer.model_account_payment
+msgid "Payments"
+msgstr ""
+
+#. module: account_payment_sepa_credit_transfer
 #: model:account.payment.method,name:account_payment_sepa_credit_transfer.sepa_credit_transfer
 msgid "SEPA Credit Transfer to suppliers"
 msgstr "SEPA-kreditöverföring till leverantörer"
