@@ -4,7 +4,7 @@
 
 {
     "name": "Account Payment Base OCA - Sale",
-    "version": "18.0.1.1.0",
+    "version": "18.0.2.0.0",
     "category": "Banking addons",
     "license": "AGPL-3",
     "summary": "Adds payment method on sale orders",
