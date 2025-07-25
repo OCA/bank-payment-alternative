@@ -287,16 +287,6 @@ msgid ""
 msgstr ""
 
 #. module: account_payment_sepa_direct_debit
-#. odoo-python
-#: code:addons/account_payment_sepa_direct_debit/models/account_payment_line.py:0
-msgid ""
-"Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
-"(reference {reference})."
-msgstr ""
-"Falta el mandato de adeudo directo SEPA en la linea de pago bancario de la "
-"empresa {partner_name} (referencia {reference})."
-
-#. module: account_payment_sepa_direct_debit
 #: model:ir.model.fields.selection,name:account_payment_sepa_direct_debit.selection__account_payment_lot__sequence_type__ooff
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_direct_debit.sepa_direct_debit_mandate_document
 msgid "One-Off"
@@ -488,6 +478,13 @@ msgstr ""
 "a enviar instrucciones a la entidad del deudor para adeudar su cuenta y (B) "
 "a la entidad para efectuar los adeudos en su cuenta siguiendo las "
 "instrucciones del acreedor"
+
+#~ msgid ""
+#~ "Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
+#~ "(reference {reference})."
+#~ msgstr ""
+#~ "Falta el mandato de adeudo directo SEPA en la linea de pago bancario de "
+#~ "la empresa {partner_name} (referencia {reference})."
 
 #, python-format
 #~ msgid ""

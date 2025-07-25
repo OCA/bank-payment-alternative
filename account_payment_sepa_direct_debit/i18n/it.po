@@ -284,16 +284,6 @@ msgstr ""
 "metodo di pagamento %(payment_method)s)."
 
 #. module: account_payment_sepa_direct_debit
-#. odoo-python
-#: code:addons/account_payment_sepa_direct_debit/models/account_payment_line.py:0
-msgid ""
-"Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
-"(reference {reference})."
-msgstr ""
-"Mandato di addebito diretto SEPA non trovato sulla riga con partner "
-"{partner_name} (reference {reference})."
-
-#. module: account_payment_sepa_direct_debit
 #: model:ir.model.fields.selection,name:account_payment_sepa_direct_debit.selection__account_payment_lot__sequence_type__ooff
 #: model_terms:ir.ui.view,arch_db:account_payment_sepa_direct_debit.sepa_direct_debit_mandate_document
 msgid "One-Off"
@@ -487,6 +477,13 @@ msgstr ""
 "per inviare istruzioni alla propria banca per addebitare il vostro conto e "
 "(B) la vostra banca\n"
 "                        addebitare il vostro conto secondo le istruzioni di"
+
+#~ msgid ""
+#~ "Missing SEPA Direct Debit mandate on the line with partner {partner_name} "
+#~ "(reference {reference})."
+#~ msgstr ""
+#~ "Mandato di addebito diretto SEPA non trovato sulla riga con partner "
+#~ "{partner_name} (reference {reference})."
 
 #~ msgid ""
 #~ "Missing SEPA Creditor Identifier on company %(company)s (or on payment "
