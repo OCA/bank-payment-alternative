@@ -42,6 +42,18 @@ msgstr ""
 "esborrany que s'ha creat automàticament."
 
 #. module: account_payment_batch_oca
+#. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
+msgid "%s is linked to existing lots. This should never happen."
+msgstr ""
+
+#. module: account_payment_batch_oca
+#. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
+msgid "%s is linked to existing payments. This should never happen."
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:mail.template,body_html:account_payment_batch_oca.payment_order_mail_notif
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
@@ -967,6 +979,22 @@ msgstr ""
 
 #. module: account_payment_batch_oca
 #. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_line.py:0
+msgid ""
+"On payment line %(name)s with partner '%(partner)s', the bank account "
+"'%(bank_account)s' belongs to partner '%(bank_account_partner)s'."
+msgstr ""
+
+#. module: account_payment_batch_oca
+#. odoo-python
+#: code:addons/account_payment_batch_oca/models/account_payment_line.py:0
+msgid ""
+"On payment line %(name)s, the bank account '%(bank_account)s' is the same as "
+"the company bank account of the payment order."
+msgstr ""
+
+#. module: account_payment_batch_oca
+#. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid ""
 "On payment/debit order %(order)s, the payment type is %(order_ptype)s, but "
@@ -1379,7 +1407,7 @@ msgstr "La factura %s no està en estat Obert"
 
 #. module: account_payment_batch_oca
 #. odoo-python
-#: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
+#: code:addons/account_payment_batch_oca/models/account_payment_line.py:0
 #, fuzzy
 msgid ""
 "The payment method '%(method)s' has the option 'Disallow Debit Before "
