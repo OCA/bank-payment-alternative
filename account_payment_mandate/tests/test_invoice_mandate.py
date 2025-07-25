@@ -22,6 +22,12 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
         )
         cls.company = cls.company_data["company"]
         cls.company_2 = cls.test_company["company"]
+        cls.product = cls.env["product.product"].create(
+            {
+                "name": "Test Product Mandate",
+                "type": "service",
+            }
+        )
         cls.env.user.write(
             {
                 "groups_id": [
@@ -99,7 +105,7 @@ class TestInvoiceMandate(AccountTestInvoicingCommon):
                 "invoice_line_ids": [
                     Command.create(
                         {
-                            "product_id": cls.env.ref("product.product_product_4").id,
+                            "product_id": cls.product.id,
                             "quantity": 1.0,
                             "price_unit": 200.00,
                         }

@@ -3,6 +3,7 @@
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_date
 
 
 class AccountPaymentLine(models.Model):
@@ -40,6 +41,8 @@ class AccountPaymentLine(models.Model):
         string="Journal Item",
         ondelete="restrict",
         check_company=True,
+        domain="[('reconciled','=', False), ('account_id.reconcile', '=', True), "
+        "('partner_id', '!=', False)]",
     )
     ml_maturity_date = fields.Date(related="move_line_id.date_maturity")
     currency_id = fields.Many2one(
@@ -77,7 +80,7 @@ class AccountPaymentLine(models.Model):
     )
     partner_bank_id = fields.Many2one(
         comodel_name="res.partner.bank",
-        compute="_compute_payment_line",
+        compute="_compute_partner_bank_id",
         store=True,
         readonly=False,
         precompute=True,
@@ -243,7 +246,7 @@ class AccountPaymentLine(models.Model):
             key.append(str(self[field]))
         return tuple(key)
 
-    @api.depends("partner_id", "move_line_id")
+    @api.depends("move_line_id")
     def _compute_payment_line(self):
         for line in self:
             communication = False
@@ -251,9 +254,9 @@ class AccountPaymentLine(models.Model):
             currency_id = line.company_id.currency_id.id
             amount_currency = 0.0
             move_line = line.move_line_id
-            partner = line.partner_id
-            partner_bank_id = False
-            if move_line:
+            partner_id = False
+            if move_line and move_line.partner_id:
+                partner_id = move_line.partner_id.id
                 communication_type = move_line.move_id.reference_type
                 communication = (
                     move_line.move_id._get_payment_order_communication_full()
@@ -262,54 +265,121 @@ class AccountPaymentLine(models.Model):
                 amount_currency = move_line.amount_residual_currency
                 if line.order_id.payment_type == "outbound":
                     amount_currency *= -1
-                    partner_bank_id = move_line.move_id.partner_bank_id.id
-                partner = move_line.partner_id
-            if (
-                partner
-                and line.order_id.payment_method_id.bank_account_required
-                and not partner_bank_id
-                and partner.bank_ids
-            ):
-                partner_bank_id = partner.bank_ids[0]
             line.communication = communication
             line.communication_type = communication_type
             line.currency_id = currency_id
             line.amount_currency = amount_currency
-            line.partner_id = partner and partner.id or False
-            line.partner_bank_id = partner_bank_id
+            line.partner_id = partner_id
 
-    def draft2open_payment_line_check(self):
+    @api.depends(
+        "partner_id",
+        "move_line_id",
+        "order_id.journal_id",
+        "order_id.company_id",
+        "order_id.payment_method_id",
+    )
+    def _compute_partner_bank_id(self):
+        for line in self:
+            partner_bank = False
+            partner = line.partner_id
+            order = line.order_id
+            move = line.move_line_id.move_id
+            if order.payment_method_id.bank_account_required:
+                if (
+                    move
+                    and move.move_type in ("in_invoice", "in_refund")
+                    and order.payment_type == "outbound"
+                ):
+                    partner_bank = move.partner_bank_id
+                elif partner:
+                    if partner == order.company_id.partner_id:  # internal transfer
+                        for bank_account in partner.bank_ids:
+                            if bank_account != order.journal_id.bank_account_id:
+                                partner_bank = bank_account
+                                break
+                    elif partner.bank_ids:
+                        partner_bank = partner.bank_ids[0]
+            line.partner_bank_id = partner_bank
+
+    def _draft2open_payment_line_check(self):
         self.ensure_one()
+        order = self.order_id
+        errors = []
         if self.bank_account_required:
             if not self.partner_bank_id:
-                raise UserError(
+                errors.append(
                     _("Missing Partner Bank Account on payment line %s") % self.name
                 )
-            if (
-                self.order_id.payment_type == "outbound"
-                and self.order_id._enforce_allow_out_payment()
-                and not self.partner_bank_id.allow_out_payment
-            ):
-                raise UserError(
-                    _(
-                        "Bank account '%(bank_account)s' of partner '%(partner)s' "
-                        "is untrusted. Check that this bank account can be trusted "
-                        "and activate the option 'Send Money' on it.",
-                        bank_account=self.partner_bank_id.display_name,
-                        partner=self.partner_id.display_name,
+            else:
+                if self.partner_bank_id.partner_id != self.partner_id:
+                    errors.append(
+                        _(
+                            "On payment line %(name)s with partner '%(partner)s', "
+                            "the bank account '%(bank_account)s' belongs to partner "
+                            "'%(bank_account_partner)s'.",
+                            name=self.name,
+                            partner=self.partner_id.display_name,
+                            bank_account=self.partner_bank_id.display_name,
+                            bank_account_partner=self.partner_bank_id.partner_id.display_name,
+                        )
                     )
-                )
+
+                if (
+                    order.payment_type == "outbound"
+                    and order._enforce_allow_out_payment()
+                    and not self.partner_bank_id.allow_out_payment
+                ):
+                    errors.append(
+                        _(
+                            "Bank account '%(bank_account)s' of partner '%(partner)s' "
+                            "is untrusted. Check that this bank account can be trusted "
+                            "and activate the option 'Send Money' on it.",
+                            bank_account=self.partner_bank_id.display_name,
+                            partner=self.partner_id.display_name,
+                        )
+                    )
+                # internal transfers: check source account != dest account
+                if self.partner_bank_id == order.company_partner_bank_id:
+                    errors.append(
+                        _(
+                            "On payment line %(name)s, the bank account "
+                            "'%(bank_account)s' is the same as the company "
+                            "bank account of the payment order.",
+                            name=self.name,
+                            bank_account=self.partner_bank_id.display_name,
+                        )
+                    )
         if not self.communication:
-            raise UserError(_("Communication is empty on payment line %s.") % self.name)
+            errors.append(_("Communication is empty on payment line %s.") % self.name)
         if (
-            self.order_id.payment_method_line_id.mail_notif
+            order.payment_method_line_id.mail_notif
             and self.mail_notif_partner_id
             and not self.mail_notif_partner_id.email
         ):
-            raise UserError(
+            errors.append(
                 _("Missing email on notification partner '%s'.")
                 % self.mail_notif_partner_id.display_name
             )
+        # inbound: check option no_debit_before_maturity
+        if (
+            order.payment_type == "inbound"
+            and order.payment_method_line_id.no_debit_before_maturity
+            and self.ml_maturity_date
+            and self.date < self.ml_maturity_date
+        ):
+            errors.append(
+                _(
+                    "The payment method '%(method)s' has the option "
+                    "'Disallow Debit Before Maturity Date'. The "
+                    "payment line %(pline)s has a maturity date %(mdate)s "
+                    "which is after the computed payment date %(pdate)s.",
+                    method=order.payment_method_line_id.display_name,
+                    pline=self.name,
+                    mdate=format_date(self.env, self.ml_maturity_date),
+                    pdate=format_date(self.env, self.date),
+                )
+            )
+        return errors
 
     def _prepare_account_payment_vals(self, payment_lot, pay_sequence):
         """Prepare the dictionary to create an account payment record from a set of
