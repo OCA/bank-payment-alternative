@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-23 03:38+0000\n"
-"PO-Revision-Date: 2025-07-08 10:25+0000\n"
+"PO-Revision-Date: 2025-07-28 09:25+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian (https://www.transifex.com/oca/teams/23907/it/)\n"
 "Language: it\n"
@@ -43,13 +43,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid "%s is linked to existing lots. This should never happen."
-msgstr ""
+msgstr "%s è collegato a lotti esistenti. Questo non dovrebbe mai accadere."
 
 #. module: account_payment_batch_oca
 #. odoo-python
 #: code:addons/account_payment_batch_oca/models/account_payment_order.py:0
 msgid "%s is linked to existing payments. This should never happen."
 msgstr ""
+"%s è collegato con pagamenti esistenti. Questo non dovrebbe mai accadere."
 
 #. module: account_payment_batch_oca
 #: model:mail.template,body_html:account_payment_batch_oca.payment_order_mail_notif
@@ -1071,6 +1072,8 @@ msgid ""
 "On payment line %(name)s with partner '%(partner)s', the bank account "
 "'%(bank_account)s' belongs to partner '%(bank_account_partner)s'."
 msgstr ""
+"Sulla riga di pagamento %(name)s con partner '%(partner)s', il conto "
+"bancario '%(bank_account)s' appartiene al partner '%(bank_account_partner)s'."
 
 #. module: account_payment_batch_oca
 #. odoo-python
@@ -1079,6 +1082,8 @@ msgid ""
 "On payment line %(name)s, the bank account '%(bank_account)s' is the same as "
 "the company bank account of the payment order."
 msgstr ""
+"Sulla riga di pagamento %(name)s, il conto bancario '%(bank_account)s' è lo "
+"stesso del conto bancario dell'azienda del pagamento dell'ordine."
 
 #. module: account_payment_batch_oca
 #. odoo-python
