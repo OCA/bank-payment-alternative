@@ -1,0 +1,1 @@
+This module adds an exception for pos_payment in compute_outstanding_account_id for using force_outstanding_account_id

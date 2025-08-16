@@ -1,0 +1,2 @@
+- [Akretion](http://www.akretion.com)
+  - Thomas Bonnerue \<<thomas.bonnerue@akretion.com>\>
