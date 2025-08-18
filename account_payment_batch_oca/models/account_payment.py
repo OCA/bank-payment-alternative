@@ -45,11 +45,14 @@ class AccountPayment(models.Model):
 
     # Don't generate a journal entry when the account.payment is an "internal transfer"
     # of the company i.e. a money transfer between 2 bank accounts of the company
-    @api.depends("partner_id", "company_id")
+    @api.depends("partner_id", "company_id", "payment_type")
     def _compute_outstanding_account_id(self):
         res = super()._compute_outstanding_account_id()
         for pay in self:
-            if pay.company_id.partner_id == self.partner_id or not self.partner_id:
+            if (
+                pay.company_id.partner_id == pay.partner_id
+                and pay.payment_type == "outbound"
+            ):
                 pay.outstanding_account_id = False
         return res
 
