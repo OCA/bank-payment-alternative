@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
 
 {
-    "name": "Account Banking SEPA Credit Transfer",
+    "name": "Account Payment SEPA Credit Transfer",
     "summary": "Create SEPA XML files for Credit Transfers",
     "version": "18.0.3.0.0",
     "license": "AGPL-3",
