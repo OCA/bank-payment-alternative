@@ -19,10 +19,12 @@ class AccountPaymentLot(models.Model):
         required=True,
         check_company=True,
         index=True,
+        readonly=True,
     )
     payment_type = fields.Selection(related="order_id.payment_type", store=True)
     state = fields.Selection(related="order_id.state", store=True)
     company_id = fields.Many2one(related="order_id.company_id", store=True)
+    journal_id = fields.Many2one(related="order_id.journal_id", store=True)
     date = fields.Date(required=True, string="Execution Date", readonly=True)
     currency_id = fields.Many2one("res.currency", readonly=True)
     amount = fields.Monetary(compute="_compute_payment_lot", store=True)
