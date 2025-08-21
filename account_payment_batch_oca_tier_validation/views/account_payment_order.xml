@@ -2,7 +2,6 @@
 <!-- Copyright 2021 - TODAY, Marcel Savegnago <marcel.savegnago@escodoo.com.br>
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
-
     <record model="ir.ui.view" id="account_payment_order_search_view">
         <field
             name="name"
@@ -10,10 +9,11 @@
         <field name="model">account.payment.order</field>
         <field
             name="inherit_id"
-            ref="account_payment_order.account_payment_order_search"
+            ref="account_payment_batch_oca.account_payment_order_search"
         />
         <field name="arch" type="xml">
             <filter name="uploaded" position="after">
+                <separator />
                 <filter
                     name="needs_review"
                     string="Needs my Review"
@@ -29,5 +29,4 @@
             </filter>
         </field>
     </record>
-
 </odoo>

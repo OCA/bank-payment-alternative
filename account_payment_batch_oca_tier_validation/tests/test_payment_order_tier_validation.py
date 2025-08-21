@@ -2,6 +2,7 @@
 # Copyright 2023, XCG Consulting
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import common, tagged
 
@@ -14,19 +15,19 @@ class TestPaymentOrderTierValidation(common.TransactionCase):
 
         # Get payment order model
         cls.payment_order_model = cls.env.ref(
-            "account_payment_order.model_account_payment_order"
+            "account_payment_batch_oca.model_account_payment_order"
         )
 
         # Create users
         group_ids = (
             cls.env.ref("base.group_system")
-            | cls.env.ref("account_payment_order.group_account_payment")
+            | cls.env.ref("account_payment_batch_oca.group_account_payment")
         ).ids
         cls.test_user_1 = cls.env["res.users"].create(
             {
                 "name": "John",
                 "login": "test1",
-                "groups_id": [(6, 0, group_ids)],
+                "groups_id": [Command.set(group_ids)],
                 "email": "test@examlple.com",
             }
         )
@@ -49,27 +50,23 @@ class TestPaymentOrderTierValidation(common.TransactionCase):
         cls.journal_c1 = cls.env["account.journal"].create(
             {
                 "name": "Journal 1",
-                "code": "J1",
+                "code": "TESTJ1",
                 "type": "bank",
                 "company_id": cls.company.id,
             }
         )
 
         # Create Payment Mode
-        cls.mode = cls.env["account.payment.mode"].create(
+        cls.method_line = cls.env["account.payment.method.line"].create(
             {
                 "name": "Test Credit Transfer to Suppliers",
                 "company_id": cls.company.id,
-                "bank_account_link": "variable",
+                "journal_id": cls.journal_c1.id,
+                "bank_account_link": "fixed",
                 "payment_method_id": cls.env.ref(
                     "account.account_payment_method_manual_out"
                 ).id,
             }
-        )
-
-        # Get Bank Journal
-        cls.bank_journal = cls.env["account.journal"].search(
-            [("company_id", "=", cls.company.id), ("type", "=", "bank")], limit=1
         )
 
     def test_tier_validation_model_name(self):
@@ -81,19 +78,16 @@ class TestPaymentOrderTierValidation(common.TransactionCase):
     def test_validation_payment_order(self):
         po = self.env["account.payment.order"].create(
             {
-                "payment_mode_id": 1,
+                "company_id": self.company.id,
+                "payment_method_line_id": self.method_line.id,
                 "payment_type": "outbound",
-                "journal_id": self.bank_journal.id,
-                "date_prefered": "now",
                 "payment_line_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "partner_id": self.partner.id,
                             "amount_currency": 1000,
-                            "communication": "normal",
-                        },
+                            "communication": "FAC1242",
+                        }
                     )
                 ],
             }
