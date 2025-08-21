@@ -21,7 +21,6 @@
                         name="add_payment_lot_id"
                         widget="account_reconcile_oca_match"
                         domain="[('company_id', '=', company_id), ('is_matched', '=', False), ('payment_type', '=', 'inbound'), ('state', '=', 'uploaded'), ('journal_id', '=', journal_id)]"
-                        options="{'counterpart_field': 'payment_lot_counterparts'}"
                         context="{'list_view_ref': 'account_payment_batch_oca_reconcile.account_payment_lot_reconcile_list', 'search_view_ref': 'account_payment_batch_oca_reconcile.account_payment_lot_reconcile_search'}"
                     />
                 </page>
@@ -34,7 +33,6 @@
                         name="add_payment_lot_id"
                         widget="account_reconcile_oca_match"
                         domain="[('company_id', '=', company_id), ('is_matched', '=', False), ('payment_type', '=', 'outbound'), ('state', '=', 'uploaded'), ('journal_id', '=', journal_id)]"
-                        options="{'counterpart_field': 'payment_lot_counterparts'}"
                         context="{'list_view_ref': 'account_payment_batch_oca_reconcile.account_payment_lot_reconcile_list', 'search_view_ref': 'account_payment_batch_oca_reconcile.account_payment_lot_reconcile_search'}"
                     />
                 </page>
