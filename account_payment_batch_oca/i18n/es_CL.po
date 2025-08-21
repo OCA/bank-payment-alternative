@@ -281,7 +281,9 @@ msgid "Bank Account Type"
 msgstr ""
 
 #. module: account_payment_batch_oca
+#: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_lot__journal_id
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_order__journal_id
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_lot_search
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_order_search
 msgid "Bank Journal"
 msgstr "Diario de Banco"
