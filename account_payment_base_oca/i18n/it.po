@@ -252,6 +252,21 @@ msgid "Outbound"
 msgstr "In uscita"
 
 #. module: account_payment_base_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_form
+msgid "Outstanding Payment Account"
+msgstr ""
+
+#. module: account_payment_base_oca
+#: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__payment_account_id
+msgid "Outstanding Payment/Receipt Account"
+msgstr ""
+
+#. module: account_payment_base_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_form
+msgid "Outstanding Receipt Account"
+msgstr ""
+
+#. module: account_payment_base_oca
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_invoice_report__payment_method_line_id
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_account_invoice_report_search
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.view_move_form
@@ -342,6 +357,15 @@ msgstr ""
 "positivo o nullo."
 
 #. module: account_payment_base_oca
+#. odoo-python
+#: code:addons/account_payment_base_oca/models/account_payment_method_line.py:0
+msgid ""
+"The payment method '%(name)s' has a variable link to a bank account, so it "
+"should not have an outstanding payment/receipt account. Only payment methods "
+"with a fixed link to a bank account can have one."
+msgstr ""
+
+#. module: account_payment_base_oca
 #: model:ir.model.fields,help:account_payment_base_oca.field_account_payment_method_line__refund_payment_method_line_id
 msgid ""
 "This payment method will be used when doing refunds coming from the current "
@@ -354,6 +378,15 @@ msgstr ""
 #: model:ir.model.fields.selection,name:account_payment_base_oca.selection__account_payment_method_line__bank_account_link__variable
 msgid "Variable"
 msgstr "Variabile"
+
+#. module: account_payment_base_oca
+#. odoo-python
+#: code:addons/account_payment_base_oca/models/account_payment_method_line.py:0
+msgid ""
+"You should not edit the payment method '%(name)s' to change it from a fixed "
+"bank account link to a variable bank account link. You should create a new "
+"payment method with a variable bank account link."
+msgstr ""
 
 #~ msgid ""
 #~ "For payment modes that are always attached to the same bank account of "
