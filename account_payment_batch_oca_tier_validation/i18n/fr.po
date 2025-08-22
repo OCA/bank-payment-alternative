@@ -35,8 +35,8 @@ msgstr "Masquer les revues"
 #: model:ir.model.fields,help:account_payment_batch_oca_tier_validation.field_account_payment_order__has_comment
 msgid "If set, Allow the reviewer to leave a comment on the review."
 msgstr ""
-"Si cette option est activée, la personne qui fait la revue pourra "
-"laisser un commentaire."
+"Si cette option est activée, la personne qui fait la revue pourra laisser un "
+"commentaire."
 
 #. module: account_payment_batch_oca_tier_validation
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_tier_validation.account_payment_order_search_view
@@ -89,21 +89,6 @@ msgid "Tier Definition"
 msgstr "Niveau de validation"
 
 #. module: account_payment_batch_oca_tier_validation
-#: model:mail.message.subtype,name:account_payment_batch_oca_tier_validation.pay_order_tier_validation_accepted
-msgid "Tier Validation Accepted"
-msgstr "Niveau de validation approuvé"
-
-#. module: account_payment_batch_oca_tier_validation
-#: model:mail.message.subtype,name:account_payment_batch_oca_tier_validation.pay_order_tier_validation_rejected
-msgid "Tier Validation Rejected"
-msgstr "Niveau de validation refusé"
-
-#. module: account_payment_batch_oca_tier_validation
-#: model:mail.message.subtype,name:account_payment_batch_oca_tier_validation.pay_order_tier_validation_requested
-msgid "Tier Validation Requested"
-msgstr "Demande de validation"
-
-#. module: account_payment_batch_oca_tier_validation
 #: model:ir.model.fields,field_description:account_payment_batch_oca_tier_validation.field_account_payment_order__to_validate_message
 msgid "To Validate Message"
 msgstr "Message de la demande de validation"
@@ -128,3 +113,12 @@ msgstr "Statut de validation"
 #: model:ir.model.fields,field_description:account_payment_batch_oca_tier_validation.field_account_payment_order__review_ids
 msgid "Validations"
 msgstr "Validations"
+
+#~ msgid "Tier Validation Accepted"
+#~ msgstr "Niveau de validation approuvé"
+
+#~ msgid "Tier Validation Rejected"
+#~ msgstr "Niveau de validation refusé"
+
+#~ msgid "Tier Validation Requested"
+#~ msgstr "Demande de validation"
