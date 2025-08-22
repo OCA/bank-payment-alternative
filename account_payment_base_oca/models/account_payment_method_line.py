@@ -6,7 +6,7 @@
 
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -27,6 +27,9 @@ class AccountPaymentMethodLine(models.Model):
         store=True,
         precompute=True,
         readonly=False,
+    )
+    payment_account_id = fields.Many2one(  # that field doesn't have a native string
+        string="Outstanding Payment/Receipt Account"
     )
     # END inherit of native fields
     # Here is the strategy to support bank_account_link = variable
@@ -111,6 +114,7 @@ class AccountPaymentMethodLine(models.Model):
         "journal_id",
         "variable_journal_ids",
         "payment_method_id",
+        "payment_account_id",
     )
     def _check_payment_method_line(self):
         for line in self:
@@ -152,6 +156,16 @@ class AccountPaymentMethodLine(models.Model):
                                     journal=journal.display_name,
                                 )
                             )
+            if line.bank_account_link == "variable" and line.payment_account_id:
+                raise ValidationError(
+                    _(
+                        "The payment method '%(name)s' has a variable link to a bank "
+                        "account, so it should not have an outstanding payment/receipt "
+                        "account. Only payment methods with a fixed link to a "
+                        "bank account can have one.",
+                        name=line.display_name,
+                    )
+                )
 
     @api.depends("bank_account_link")
     def _compute_variable_journal_ids(self):
@@ -194,3 +208,19 @@ class AccountPaymentMethodLine(models.Model):
                 line.display_name = f"{line.name} ({line.journal_id.name})"
             else:
                 line.display_name = f"{line.name}"
+
+    def write(self, vals):
+        if vals.get("bank_account_link") == "variable":
+            for line in self:
+                if line.bank_account_link == "fixed":
+                    raise UserError(
+                        _(
+                            "You should not edit the payment method '%(name)s' "
+                            "to change it from a fixed bank account link to "
+                            "a variable bank account link. You should "
+                            "create a new payment method with a variable "
+                            "bank account link.",
+                            name=line.display_name,
+                        )
+                    )
+        return super().write(vals)
