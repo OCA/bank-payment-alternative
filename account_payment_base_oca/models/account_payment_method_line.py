@@ -6,7 +6,7 @@
 
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -159,7 +159,7 @@ class AccountPaymentMethodLine(models.Model):
             if line.bank_account_link == "variable" and line.payment_account_id:
                 raise ValidationError(
                     _(
-                        "The payment method %(name)s has a variable link to a bank "
+                        "The payment method '%(name)s' has a variable link to a bank "
                         "account, so it should not have an outstanding payment/receipt "
                         "account. Only payment methods with a fixed link to a "
                         "bank account can have one.",
@@ -208,3 +208,19 @@ class AccountPaymentMethodLine(models.Model):
                 line.display_name = f"{line.name} ({line.journal_id.name})"
             else:
                 line.display_name = f"{line.name}"
+
+    def write(self, vals):
+        if vals.get("bank_account_link") == "variable":
+            for line in self:
+                if line.bank_account_link == "fixed":
+                    raise UserError(
+                        _(
+                            "You should not edit the payment method '%(name)s' "
+                            "to change it from a fixed bank account link to "
+                            "a variable bank account link. You should "
+                            "create a new payment method with a variable "
+                            "bank account link.",
+                            name=line.display_name,
+                        )
+                    )
+        return super().write(vals)
