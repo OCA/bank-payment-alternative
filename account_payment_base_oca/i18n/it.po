@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-14 09:26+0000\n"
+"PO-Revision-Date: 2025-08-25 13:29+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -254,17 +254,17 @@ msgstr "In uscita"
 #. module: account_payment_base_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_form
 msgid "Outstanding Payment Account"
-msgstr ""
+msgstr "Conto pagamenti in sospeso"
 
 #. module: account_payment_base_oca
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_payment_method_line__payment_account_id
 msgid "Outstanding Payment/Receipt Account"
-msgstr ""
+msgstr "Conto pagamenti/ricevute in sospeso"
 
 #. module: account_payment_base_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca.account_payment_method_line_form
 msgid "Outstanding Receipt Account"
-msgstr ""
+msgstr "Conto ricevute in sospeso"
 
 #. module: account_payment_base_oca
 #: model:ir.model.fields,field_description:account_payment_base_oca.field_account_invoice_report__payment_method_line_id
@@ -364,6 +364,10 @@ msgid ""
 "should not have an outstanding payment/receipt account. Only payment methods "
 "with a fixed link to a bank account can have one."
 msgstr ""
+"Il metodo di pagamento '%(name)s' ha un collegamento variabile a un conto "
+"bancario, quindi non dovrebbe avere un conto di pagamento/ricevuta in "
+"sospeso. Solo i metodi di pagamento con un collegamento fisso a un conto "
+"bancario possono averne uno."
 
 #. module: account_payment_base_oca
 #: model:ir.model.fields,help:account_payment_base_oca.field_account_payment_method_line__refund_payment_method_line_id
@@ -387,6 +391,10 @@ msgid ""
 "bank account link to a variable bank account link. You should create a new "
 "payment method with a variable bank account link."
 msgstr ""
+"Non modificare il metodo di pagamento '%(name)s' per trasformarlo da un "
+"collegamento fisso a un conto bancario a un collegamento variabile. Creare "
+"un nuovo metodo di pagamento con un collegamento variabile a un conto "
+"bancario."
 
 #~ msgid ""
 #~ "For payment modes that are always attached to the same bank account of "
