@@ -15,7 +15,7 @@ class AccountPaymentLot(models.Model):
     @api.depends("payment_ids.state")
     def _compute_matched_info(self):
         for lot in self:
-            lot.is_matched = any([pay.state == "paid" for pay in lot.payment_ids])
+            lot.is_matched = "paid" in lot.payment_ids.mapped("state")
 
     def open_form(self):
         self.ensure_one()
@@ -36,7 +36,7 @@ class AccountPaymentLot(models.Model):
         valid_account_types = self.env[
             "account.payment"
         ]._get_valid_payment_account_types()
-        move_lines = self.env["account.move.line"]
+        move_lines = self.env["account.move.line"].browse(False)
         for payment in self.payment_ids.filtered(lambda r: not r.is_matched):
             if payment.move_id:
                 (
