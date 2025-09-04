@@ -45,6 +45,10 @@ class AccountPaymentOrder(models.Model):
         "debtor.",
     )
     batch_booking = fields.Boolean(
+        compute="_compute_batch_booking",
+        readonly=False,
+        store=True,
+        precompute=True,
         tracking=True,
         help="If true, the bank statement will display only one debit "
         "line for all the wire transfers of the SEPA XML file ; if "
@@ -152,6 +156,14 @@ class AccountPaymentOrder(models.Model):
                     warn_not_sepa = True
             order.sepa = sepa
             order.show_warning_not_sepa = warn_not_sepa
+
+    @api.depends("payment_method_line_id")
+    def _compute_batch_booking(self):
+        for order in self:
+            batch_booking = False
+            if order.payment_method_line_id:
+                batch_booking = order.payment_method_line_id.default_batch_booking
+            order.batch_booking = batch_booking
 
     @api.model
     def _prepare_field(

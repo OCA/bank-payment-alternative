@@ -36,3 +36,4 @@ class AccountPaymentMethodLine(models.Model):
         "financial institution that will process the file. If not defined, "
         "no scheme will be used.\n",
     )
+    default_batch_booking = fields.Boolean()
