@@ -295,6 +295,11 @@ msgid "Debtor Name"
 msgstr ""
 
 #. module: account_payment_sepa_base
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__default_batch_booking
+msgid "Default Batch Booking"
+msgstr ""
+
+#. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__dvpm
 msgid "Deliver Against Payment"
 msgstr "Bezorgen tegen betaling"
