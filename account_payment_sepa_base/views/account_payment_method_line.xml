@@ -26,6 +26,9 @@
                     groups="account_payment_sepa_base.group_pain_multiple_identifier"
                 />
             </group>
+            <field name="default_date_prefered" position="after">
+                <field name="default_batch_booking" />
+            </field>
         </field>
     </record>
 </odoo>
