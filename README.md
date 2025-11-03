@@ -9,13 +9,17 @@
 
 # Bank Payment - Alternative approach based on Odoo native payment methods
 
-This projet is, as its name suggests, an alternative to the [OCA bank-payment project](https://github.com/OCA/bank-payment).
+This projet is, as its name suggests, an alternative to the [OCA bank-payment project](https://github.com/OCA/bank-payment). The code of the 18.0 branch of OCA/bank-payment-alternative originates from [pull request 1174](https://github.com/OCA/bank-payment/pull/1174) entitled **Large refactoring/improvement/cleanup of OCA/bank-payment** for 16.0 by Alexis de Lattre (Akretion). As a consequence, the code of the 18.0 branch of OCA/bank-payment-alternative doesn't contain some of the changes/improvements made in the 16.0 branch after commit [da11fcfd1de2072906a170adc21d2b0cc78c9638](https://github.com/OCA/bank-payment/commit/da11fcfd1de2072906a170adc21d2b0cc78c9638), in 17.0 and 18.0 branches of OCA/bank-payment.
 
 In Odoo 18.0, three new fields were added in the **account** module: two fields on res.partner for *Customer Payment Method* and *Supplier Payment Method* and a field *Payment Method* on invoices. These 3 new fields are *many2one* fields that point to *account.payment.method.line*. These fields are redunant with the equivalent fields definied in the OCA module *account_payment_partner* of the project OCA/bank-payment that point to *account.payment.mode* which is defined in the OCA module *account_payment_mode* from OCA/bank-payment.
 
 On 18.0, the project OCA/bank-payment continues to use the object *account.payment.mode* and, by default, hides the 3 equivalent fields of the **account** module that point to *account.payment.method.line*.
 
 On the contrary, the project [OCA/bank-payment-alternative](https://github.com/OCA/bank-payment-alternative) made the changes in the code base to fully adopt the three new *Payment Method* fields added in the **account** module in Odoo 18.0.
+
+In Odoo 19.0, Odoo added a *many2one* field that point to *account.payment.method.line* on sale orders.
+
+According to the [draft pull request 207284](https://github.com/odoo/odoo/pull/207284) on odoo master branch, Odoo plans to merge the object *account.payment.method.line* into the object *account.payment.method*. The project OCA/bank-payment-alternative plans to follow the evolution of the native datamodel in future versions of Odoo.
 
 In the project OCA/bank-payment-alternative, the modules had to be renamed. In the table below, you will find the correspondance between the modules names of OCA/bank-payment and OCA/bank-payment-alternative:
 
@@ -31,6 +35,10 @@ account_banking_sepa_credit_transfer | account_payment_sepa_credit_transfer
 account_banking_mandate | account_payment_mandate
 account_banking_mandate_sale | account_payment_mandate_sale
 account_banking_sepa_direct_debit | account_payment_sepa_direct_debit
+
+If a developer wants to update an existing OCA module and make it depend on OCA/bank-payment-alternative instead of OCA/bank-payment, the developer should rename the module. That way, the module can continue to evolve under its original name with the dependency on OCA/bank-payment.
+
+For example, in OCA/l10n-france, there is a module named **account_banking_fr_lcr** since 8.0 that adds support for French Letter of Change. This module used to depend on account_payment_order from OCA/bank-payment up to 17.0. An OCA developper migrated this module to 18.0 and switched its dependecy from account_payment_order from OCA/bank-payment to account_payment_batch_oca from OCA/bank-payment-alternative ; he renamed the module to **account_payment_fr_lcr**. That way, the development of the module **account_banking_fr_lcr** can continue with the dependency on account_payment_order from OCA/bank-payment on 18.0 and upper versions.
 
 The project OCA/bank-payment-alternative also introduced several new features and improvements, listed below by order of importance :
 
