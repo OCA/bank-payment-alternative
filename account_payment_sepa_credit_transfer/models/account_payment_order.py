@@ -4,7 +4,7 @@
 
 from lxml import objectify
 
-from odoo import _, models
+from odoo import models
 from odoo.exceptions import UserError
 
 
@@ -22,7 +22,9 @@ class AccountPaymentOrder(models.Model):
         # to support country-specific extensions such as
         # pain.001.001.03.ch.02 (cf l10n_ch_sepa)
         if not pain_flavor:
-            raise UserError(_("PAIN version '%s' is not supported.") % pain_flavor)
+            raise UserError(
+                self.env._("PAIN version '%s' is not supported.", pain_flavor)
+            )
         elif pain_flavor.startswith(("pain.001.001.03", "pain.001.003.03")):
             # pain.001.003.03 is for German Banks
             # it is not in the offical ISO 20022 documentations, but nearly all
@@ -41,7 +43,9 @@ class AccountPaymentOrder(models.Model):
             bic_xml_tag = "BICFI"
             name_maxsize = 140
         else:
-            raise UserError(_("PAIN version '%s' is not supported.") % pain_flavor)
+            raise UserError(
+                self.env._("PAIN version '%s' is not supported.", pain_flavor)
+            )
         xsd_file = self.payment_method_id._get_xsd_file_path()
         gen_args = {
             "bic_xml_tag": bic_xml_tag,
@@ -80,9 +84,10 @@ class AccountPaymentOrder(models.Model):
                 )
                 if not payment.partner_bank_id:
                     raise UserError(
-                        _(
+                        self.env._(
                             "Bank account is missing on the payment {payment} "
-                            "of partner '{partner}'.",
+                            "of partner '{partner}'."
+                        ).format(
                             partner=payment.partner_id.display_name,
                             payment=payment.display_name,
                         )
