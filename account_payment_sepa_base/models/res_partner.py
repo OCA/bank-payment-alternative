@@ -81,4 +81,10 @@ class ResPartner(models.Model):
         at the company or payment method level.
         """
         self.ensure_one()
-        return
+        if self.is_company and self.vat:
+            id_node = objectify.SubElement(parent_node, "Id")
+            org_id_node = objectify.SubElement(id_node, "OrgId")
+            other_node = objectify.SubElement(org_id_node, "Othr")
+            other_node.Id = self.vat
+            scheme_name_node = objectify.SubElement(other_node, "SchmeNm")
+            scheme_name_node.Cd = "TXID"
