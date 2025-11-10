@@ -37,6 +37,8 @@
         "views/account_payment_order.xml",
         "views/account_payment_line.xml",
         "views/account_move.xml",
+        "reports/account_payment_order.xml",
+        "reports/ir_actions_report.xml",
         "data/payment_seq.xml",
     ],
     "installable": True,
