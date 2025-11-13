@@ -140,6 +140,56 @@ msgid ""
 msgstr ""
 
 #. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Amount</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Bank Account</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Communication</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Description</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Execution</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Partner</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Payment Date</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Payment Method</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Total</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "<strong>Used Account</strong>"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.constraint,message:account_payment_batch_oca.constraint_account_payment_line_name_company_unique
 msgid "A payment line already exists with this reference in the same company!"
 msgstr ""
@@ -415,6 +465,11 @@ msgstr "Myntenhet"
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__currency_id
 msgid "Currency of the Payment Transaction"
 msgstr "Betalingstransaksjonens myntenhet"
+
+#. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "Debit Order #"
+msgstr ""
 
 #. module: account_payment_batch_oca
 #: model:ir.actions.act_window,name:account_payment_batch_oca.account_payment_order_inbound_action
@@ -984,6 +1039,11 @@ msgid "Outbound"
 msgstr ""
 
 #. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "PAY001"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model:ir.model.fields.selection,name:account_payment_batch_oca.selection__account_payment_method_line__mail_partner_policy__parent
 msgid "Parent Partner"
 msgstr ""
@@ -1122,6 +1182,11 @@ msgid "Payment Order"
 msgstr "Betalingsordre"
 
 #. module: account_payment_batch_oca
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.print_account_payment_order_document
+msgid "Payment Order #"
+msgstr ""
+
+#. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.view_move_form
 msgid "Payment Order Lines"
 msgstr ""
@@ -1182,6 +1247,7 @@ msgid "Payment transaction"
 msgstr ""
 
 #. module: account_payment_batch_oca
+#: model:ir.actions.report,name:account_payment_batch_oca.action_print_payment_order
 #: model:ir.model,name:account_payment_batch_oca.model_account_payment_order
 #, fuzzy
 msgid "Payment/Debit Order"
