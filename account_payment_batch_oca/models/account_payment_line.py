@@ -470,6 +470,22 @@ class AccountPaymentLine(models.Model):
         }
         return vals
 
+    def _prepare_write_draft2open(self):
+        self.ensure_one()
+        today = fields.Date.context_today(self)
+        order = self.order_id
+        # Compute requested payment date
+        if order.date_prefered == "due":
+            requested_date = self.ml_maturity_date or self.date or today
+        elif order.date_prefered == "fixed":
+            requested_date = order.date_scheduled or today
+        else:
+            requested_date = today
+        # No payment date in the past
+        requested_date = max(today, requested_date)
+        vals = {"date": requested_date}
+        return vals
+
     def action_open_related_move(self):
         self.ensure_one()
         if not self.move_line_id:
