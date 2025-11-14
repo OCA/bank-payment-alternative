@@ -363,7 +363,6 @@ class AccountPaymentOrder(models.Model):
         Set the 'date' on payment line depending on the 'date_prefered' of the order
         Generate the account payments and lots
         """
-        today = fields.Date.context_today(self)
         for order in self:
             if not order.journal_id:
                 raise UserError(
@@ -397,16 +396,7 @@ class AccountPaymentOrder(models.Model):
             pay_key2lot = {}  # key = pay_key, value = payment_lot
             lot_key2lot = {}  # key = lot_key, value = payment_lot
             for payline in order.payment_line_ids:
-                # Compute requested payment date
-                if order.date_prefered == "due":
-                    requested_date = payline.ml_maturity_date or payline.date or today
-                elif order.date_prefered == "fixed":
-                    requested_date = order.date_scheduled or today
-                else:
-                    requested_date = today
-                # No payment date in the past
-                requested_date = max(today, requested_date)
-                payline.write({"date": requested_date})
+                payline.write(payline._prepare_write_draft2open())
                 for error in payline._draft2open_payment_line_check():
                     payline_err_text.add(error)
                 # Group options
