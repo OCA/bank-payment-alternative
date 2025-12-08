@@ -161,7 +161,7 @@
                     name="inactive"
                     domain="[('active', '=', False)]"
                 />
-                <group string="Group By" name="groupby">
+                <group name="groupby">
                     <filter
                         string="Technical Payment Method"
                         name="payment_method_groupby"
@@ -182,7 +182,7 @@
     <menuitem
         id="account_payment_method_line_menu"
         action="account_payment_method_line_action"
-        parent="account.account_management_menu"
+        parent="account.account_account_menu"
         sequence="25"
     />
 </odoo>

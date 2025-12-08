@@ -12,14 +12,14 @@ class ResPartner(models.Model):
     property_outbound_payment_method_line_id = fields.Many2one(
         domain=lambda self: [
             ("payment_type", "=", "outbound"),
-            ("company_id", "=", self.env.company.id),
+            ("company_id", "parent_of", self.env.company.id),
             ("selectable", "=", True),
         ]
     )
     property_inbound_payment_method_line_id = fields.Many2one(
         domain=lambda self: [
             ("payment_type", "=", "inbound"),
-            ("company_id", "=", self.env.company.id),
+            ("company_id", "parent_of", self.env.company.id),
             ("selectable", "=", True),
         ]
     )

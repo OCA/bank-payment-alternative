@@ -4,7 +4,7 @@
 
 import re
 
-from odoo import _, api, models
+from odoo import api, models
 from odoo.exceptions import ValidationError
 
 BIC_REGEX = re.compile(r"[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?$")
@@ -19,7 +19,7 @@ class ResBank(models.Model):
             if bank.bic:
                 if len(bank.bic) not in (8, 11):
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "A valid BIC contains 8 or 11 characters. BIC '%(bic)s' "
                             "contains %(num)d characters, so it is not valid.",
                             bic=bank.bic,
@@ -28,7 +28,7 @@ class ResBank(models.Model):
                     )
                 if not BIC_REGEX.match(bank.bic):
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "BIC '%(bic)s' doesn't respect the standard "
                             "pattern '{pattern}'.",
                             bic=bank.bic,

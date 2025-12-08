@@ -5,8 +5,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Domain
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -100,14 +101,11 @@ class AccountPaymentMethodLine(models.Model):
         check_company=True,
     )
 
-    _sql_constraints = [
-        (
-            "show_bank_account_chars_positive",
-            "CHECK(show_bank_account_chars >= 0)",
-            "The number of digits to show for customer bank account "
-            "must be positive or null.",
-        )
-    ]
+    _show_bank_account_chars_positive = models.Constraint(
+        "CHECK(show_bank_account_chars >= 0)",
+        "The number of digits to show for customer bank account "
+        "must be positive or null.",
+    )
 
     @api.constrains(
         "bank_account_link",
@@ -124,7 +122,7 @@ class AccountPaymentMethodLine(models.Model):
             # but not be configured yet.
             if line.bank_account_link == "fixed" and not line.journal_id:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "On %(name)s, the journal is not set.",
                         name=line.display_name,
                     )
@@ -135,7 +133,7 @@ class AccountPaymentMethodLine(models.Model):
                 and line.journal_id not in line.variable_journal_ids
             ):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "On %(name)s, the default journal '%(default_journal)s' is "
                         "not part of the allowed bank journals.",
                         name=line.display_name,
@@ -147,7 +145,7 @@ class AccountPaymentMethodLine(models.Model):
                     for journal in line.variable_journal_ids:
                         if not journal.bank_account_id:
                             raise ValidationError(
-                                _(
+                                self.env._(
                                     "On %(name)s, the Payment Method %(method)s is "
                                     "configured with Bank Account Required but journal "
                                     "%(journal)s is not linked to a bank account.",
@@ -158,7 +156,7 @@ class AccountPaymentMethodLine(models.Model):
                             )
             if line.bank_account_link == "variable" and line.payment_account_id:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The payment method '%(name)s' has a variable link to a bank "
                         "account, so it should not have an outstanding payment/receipt "
                         "account. Only payment methods with a fixed link to a "
@@ -185,19 +183,19 @@ class AccountPaymentMethodLine(models.Model):
     def _compute_filter_journal_ids(self):
         infos = self.env["account.payment.method"]._get_payment_method_information()
         for line in self:
-            domain = []
+            domain = Domain([])
             if line.company_id:
-                domain.append(("company_id", "=", line.company_id.id))
+                domain &= Domain("company_id", "=", line.company_id.id)
             if line.payment_method_id:
                 journal_types = infos.get(line.payment_method_id.code, {}).get("type")
                 if journal_types:
-                    domain.append(("type", "in", journal_types))
+                    domain &= Domain("type", "in", journal_types)
                 else:
-                    domain.append(("type", "in", ("bank", "cash", "credit")))
+                    domain &= Domain("type", "in", ("bank", "cash", "credit"))
                 if line.payment_method_id.bank_account_required:
-                    domain.append(("bank_account_id", "!=", False))
+                    domain &= Domain("bank_account_id", "!=", False)
             else:
-                domain.append(("type", "in", ("bank", "cash", "credit")))
+                domain &= Domain("type", "in", ("bank", "cash", "credit"))
             line.filter_journal_ids = self.env["account.journal"].search(domain).ids
 
     def _compute_display_name(self):
@@ -214,7 +212,7 @@ class AccountPaymentMethodLine(models.Model):
             for line in self:
                 if line.bank_account_link == "fixed":
                     raise UserError(
-                        _(
+                        self.env._(
                             "You should not edit the payment method '%(name)s' "
                             "to change it from a fixed bank account link to "
                             "a variable bank account link. You should "
