@@ -4,7 +4,7 @@
 
 from lxml import objectify
 
-from odoo import _, models
+from odoo import models
 
 
 class ResPartnerBank(models.Model):
@@ -22,8 +22,8 @@ class ResPartnerBank(models.Model):
         elif gen_args["payment_method"] == "DD":
             party_type = block_level == "B" and "Cdtr" or "Dbtr"
         party_type2label = {
-            "Dbtr": _("Debtor Name"),
-            "Cdtr": _("Creditor Name"),
+            "Dbtr": self.env._("Debtor Name"),
+            "Cdtr": self.env._("Creditor Name"),
         }
         partner = self.partner_id
         partner_name = self.acc_holder_name or partner.name

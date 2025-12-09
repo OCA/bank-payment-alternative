@@ -72,7 +72,7 @@
     <menuitem
         id="account_pain_regulatory_reporting_menu"
         action="account_pain_regulatory_reporting_action"
-        parent="account.account_management_menu"
+        parent="account.account_account_menu"
         sequence="200"
     />
 </odoo>

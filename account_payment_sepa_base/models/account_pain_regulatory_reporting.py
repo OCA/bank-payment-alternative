@@ -16,13 +16,10 @@ class AccountPainRegulatoryReporting(models.Model):
     country_id = fields.Many2one("res.country", ondelete="restrict", required=False)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            "code_country_unique",
-            "unique(code, country_id)",
-            "This code already exists for that country.",
-        )
-    ]
+    _code_country_unique = models.UniqueIndex(
+        "(code, country_id)",
+        "This code already exists for that country.",
+    )
 
     @api.depends("code", "name")
     def _compute_display_name(self):

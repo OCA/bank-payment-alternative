@@ -9,7 +9,7 @@ import re
 
 from lxml import etree, objectify
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
 
 try:
@@ -173,15 +173,15 @@ class AccountPaymentOrder(models.Model):
             gen_args = {}
         if not value:
             raise UserError(
-                _(
+                self.env._(
                     "Error in the generation of the XML payment file: "
-                    "'%s' is empty. It should have a non-null value."
+                    "'%s' is empty. It should have a non-null value.",
+                    field_name,
                 )
-                % field_name
             )
         if not isinstance(value, str):
             raise UserError(
-                _(
+                self.env._(
                     "Error in the generation of the XML payment file: "
                     "'%(field)s' should be a string, "
                     "but it is %(value_type)s (value: %(value)s).",
@@ -203,7 +203,7 @@ class AccountPaymentOrder(models.Model):
         if max_size and len(value) > max_size:
             if raise_if_oversized:
                 raise UserError(
-                    _(
+                    self.env._(
                         "Error in the generation of the XML payment file: "
                         "'%(field_name)s' with value '%(value)s' has %(count)s "
                         "caracters, but the maximum is %(max_size)s caracters.",
@@ -230,14 +230,14 @@ class AccountPaymentOrder(models.Model):
             logger.warning(xml_bytes.decode("utf-8"))
             logger.warning(e)
             raise UserError(
-                _(
+                self.env._(
                     "The generated XML file is not valid against the official "
                     "XML Schema Definition. The generated XML file and the "
                     "full error have been written in the server logs. Here "
                     "is the error, which may give you an idea on the cause "
-                    "of the problem : %s"
+                    "of the problem : %s",
+                    str(e),
                 )
-                % str(e)
             ) from None
 
     def _finalize_sepa_file_creation(self, xml_root, gen_args):
@@ -331,12 +331,12 @@ class AccountPaymentOrder(models.Model):
                 iniparty_org_other.Issr = initiating_party_issuer
         elif self._must_have_initiating_party(gen_args):
             raise UserError(
-                _(
+                self.env._(
                     "Missing 'Initiating Party Issuer' and/or "
                     "'Initiating Party Identifier' for the company '%s'. "
-                    "Both fields must have a value."
+                    "Both fields must have a value.",
+                    self.company_id.name,
                 )
-                % self.company_id.name
             )
 
     def _generate_charge_bearer(self, parent_node):
