@@ -87,6 +87,14 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
+.. |maintainer-alexis-via| image:: https://github.com/alexis-via.png?size=40px
+    :target: https://github.com/alexis-via
+    :alt: alexis-via
+
+Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
+
+|maintainer-alexis-via| 
+
 This module is part of the `OCA/bank-payment-alternative <https://github.com/OCA/bank-payment-alternative/tree/19.0/account_payment_base_oca_sale>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
