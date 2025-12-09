@@ -1,7 +1,7 @@
 # Copyright 2016-2020 Akretion (Alexis de Lattre <alexis.delattre@akretion.com>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -18,9 +18,9 @@ class AccountPaymentMethod(models.Model):
         for method in self:
             if method.payment_type != "inbound" and method.mandate_required:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The option 'Mandate Required' cannot be enabled on "
-                        "payment method '%s' which is not an inbound payment method."
+                        "payment method '%s' which is not an inbound payment method.",
+                        method.display_name,
                     )
-                    % method.display_name
                 )

@@ -2,8 +2,9 @@
 # Copyright 2014 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
 
 
 class ResPartnerBank(models.Model):
@@ -23,19 +24,20 @@ class ResPartnerBank(models.Model):
             if rpb.company_id and (
                 self.env["account.banking.mandate"]
                 .sudo()
-                .search(
-                    [
-                        ("partner_bank_id", "=", rpb.id),
-                        ("company_id", "!=", rpb.company_id.id),
-                    ],
-                    limit=1,
+                .search_count(
+                    Domain(
+                        [
+                            ("partner_bank_id", "=", rpb.id),
+                            ("company_id", "!=", rpb.company_id.id),
+                        ]
+                    ),
                 )
             ):
                 raise ValidationError(
-                    _(
-                        "You cannot change the company of Partner Bank %s, "
-                        "as there exists mandates referencing it that "
-                        "belong to another company."
+                    self.env._(
+                        "You cannot change the company of bank account '%s' "
+                        "as there are mandates referencing it that "
+                        "belong to another company.",
+                        rpb.display_name,
                     )
-                    % (rpb.display_name,)
                 )

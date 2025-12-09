@@ -4,8 +4,9 @@
 # Copyright 2020 Tecnativa - Carlos Dauden
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Domain
 
 
 class AccountBankingMandate(models.Model):
@@ -63,7 +64,7 @@ class AccountBankingMandate(models.Model):
         default=lambda self: self.env.company,
     )
     unique_mandate_reference = fields.Char(
-        tracking=10, copy=False, default=lambda self: _("New")
+        tracking=10, copy=False, default=lambda self: self.env._("New")
     )
     signature_date = fields.Date(
         string="Date of Signature",
@@ -92,13 +93,10 @@ class AccountBankingMandate(models.Model):
     )
     payment_line_ids_count = fields.Integer(compute="_compute_payment_line_ids_count")
 
-    _sql_constraints = [
-        (
-            "mandate_ref_company_uniq",
-            "unique(unique_mandate_reference, company_id)",
-            "A Mandate with the same reference already exists for this company!",
-        )
-    ]
+    _mandate_ref_company_uniq = models.UniqueIndex(
+        "(unique_mandate_reference, company_id)",
+        "A Mandate with the same reference already exists for this company!",
+    )
 
     @api.depends("partner_id")
     def _compute_partner_bank_id(self):
@@ -125,24 +123,20 @@ class AccountBankingMandate(models.Model):
     @api.depends("payment_line_ids")
     def _compute_payment_line_ids_count(self):
         payment_line_model = self.env["account.payment.line"]
-        domain = [("mandate_id", "in", self.ids)]
-        res = payment_line_model.read_group(
-            domain=domain, fields=["mandate_id"], groupby=["mandate_id"]
+        domain = Domain("mandate_id", "in", self.ids)
+        res = payment_line_model._read_group(
+            domain=domain, groupby=["mandate_id"], aggregates=["__count"]
         )
-        payment_line_dict = {}
-        for dic in res:
-            mandate_id = dic["mandate_id"][0]
-            payment_line_dict.setdefault(mandate_id, 0)
-            payment_line_dict[mandate_id] += dic["mandate_id_count"]
+        payment_line_dict = {mandate.id: line_count for (mandate, line_count) in res}
         for rec in self:
             rec.payment_line_ids_count = payment_line_dict.get(rec.id, 0)
 
     def show_payment_lines(self):
         self.ensure_one()
         return {
-            "name": _("Payment lines"),
+            "name": self.env._("Payment lines"),
             "type": "ir.actions.act_window",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "res_model": "account.payment.line",
             "domain": [("mandate_id", "=", self.id)],
         }
@@ -153,8 +147,10 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.signature_date and mandate.signature_date > today:
                 raise ValidationError(
-                    _("The date of signature of mandate '%s' is in the future!")
-                    % mandate.display_name
+                    self.env._(
+                        "The date of signature of mandate '%s' is in the future!",
+                        mandate.display_name,
+                    )
                 )
             if (
                 mandate.signature_date
@@ -162,11 +158,11 @@ class AccountBankingMandate(models.Model):
                 and mandate.signature_date > mandate.last_debit_date
             ):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The mandate '%s' can't have a date of last debit "
-                        "before the date of signature."
+                        "before the date of signature.",
+                        mandate.display_name,
                     )
-                    % mandate.display_name
                 )
 
     @api.constrains("state", "partner_bank_id", "partner_id", "signature_date")
@@ -175,19 +171,19 @@ class AccountBankingMandate(models.Model):
             if mandate.state in ("valid", "final"):
                 if not mandate.signature_date:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Cannot validate the mandate '%s' without a date of "
-                            "signature."
+                            "signature.",
+                            mandate.display_name,
                         )
-                        % mandate.display_name
                     )
                 if not mandate.partner_bank_id:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Cannot validate the mandate '%s' because it is not "
-                            "attached to a bank account."
+                            "attached to a bank account.",
+                            mandate.display_name,
                         )
-                        % mandate.display_name
                     )
             if (
                 mandate.partner_bank_id
@@ -195,7 +191,7 @@ class AccountBankingMandate(models.Model):
                 and mandate.partner_bank_id.partner_id != mandate.partner_id
             ):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Mandate %(mandate)s is configured with partner %(partner)s "
                         "and bank account %(bank_account)s, but this bank account "
                         "belongs to partner %(partner_bank_account)s.",
@@ -209,18 +205,22 @@ class AccountBankingMandate(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            unique_mandate_reference = vals.get("unique_mandate_reference", _("New"))
-            if unique_mandate_reference == _("New"):
+            unique_mandate_reference = vals.get(
+                "unique_mandate_reference", self.env._("New")
+            )
+            if unique_mandate_reference == self.env._("New"):
                 vals["unique_mandate_reference"] = self.env["ir.sequence"].with_company(
                     vals.get("company_id")
-                ).next_by_code("account.banking.mandate") or _("New")
+                ).next_by_code("account.banking.mandate") or self.env._("New")
         return super().create(vals_list)
 
     def validate(self):
         for mandate in self:
             if mandate.state != "draft":
                 raise UserError(
-                    _("Mandate '%s' should be in draft state.") % mandate.display_name
+                    self.env._(
+                        "Mandate '%s' should be in draft state.", mandate.display_name
+                    )
                 )
         self.write({"state": "valid"})
 
@@ -228,8 +228,10 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state not in ("draft", "valid", "final"):
                 raise UserError(
-                    _("Mandate '%s' should be in draft, valid or final debit state.")
-                    % mandate.display_name
+                    self.env._(
+                        "Mandate '%s' should be in draft, valid or final debit state.",
+                        mandate.display_name,
+                    )
                 )
         self.write({"state": "cancel"})
 
@@ -240,7 +242,9 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "cancel":
                 raise UserError(
-                    _("Mandate '%s' should be in cancel state.") % mandate.display_name
+                    self.env._(
+                        "Mandate '%s' should be in cancel state.", mandate.display_name
+                    )
                 )
         self.write({"state": "draft"})
 
@@ -248,7 +252,9 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "valid":
                 raise UserError(
-                    _("Mandate '%s' should be in valid state.") % mandate.display_name
+                    self.env._(
+                        "Mandate '%s' should be in valid state.", mandate.display_name
+                    )
                 )
         self.write({"state": "final"})
 
@@ -257,7 +263,9 @@ class AccountBankingMandate(models.Model):
         for mandate in self:
             if mandate.state != "final":
                 raise UserError(
-                    _("Mandate '%s' should be in 'Final Debit' state.")
-                    % mandate.display_name
+                    self.env._(
+                        "Mandate '%s' should be in 'Final Debit' state.",
+                        mandate.display_name,
+                    )
                 )
         self.write({"state": "valid"})

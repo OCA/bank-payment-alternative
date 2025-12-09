@@ -236,7 +236,7 @@
                 />
                 <separator />
                 <filter name="signature_date" date="signature_date" />
-                <group string="Group By" name="groupby">
+                <group name="groupby">
                     <filter
                         name="state_groupby"
                         string="State"

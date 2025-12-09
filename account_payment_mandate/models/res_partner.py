@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, fields, models
+from odoo.fields import Domain
 
 
 class ResPartner(models.Model):
@@ -20,7 +21,12 @@ class ResPartner(models.Model):
     @api.depends_context("company")
     def _compute_mandate_count(self):
         mandate_data = self.env["account.banking.mandate"]._read_group(
-            [("partner_id", "in", self.ids), ("company_id", "=", self.env.company.id)],
+            Domain(
+                [
+                    ("partner_id", "in", self.ids),
+                    ("company_id", "=", self.env.company.id),
+                ]
+            ),
             groupby=["partner_id"],
             aggregates=["__count"],
         )

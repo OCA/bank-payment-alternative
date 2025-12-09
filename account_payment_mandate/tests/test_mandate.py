@@ -23,7 +23,7 @@ class TestMandate(AccountTestInvoicingCommon):
         cls.company_2 = cls.test_company["company"]
         cls.env.user.write(
             {
-                "groups_id": [
+                "group_ids": [
                     Command.link(
                         cls.env.ref(
                             "account_payment_batch_oca.group_account_payment"

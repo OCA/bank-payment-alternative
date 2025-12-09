@@ -3,7 +3,7 @@
 # Copyright 2015-16 Akretion - Alexis de Lattre <alexis.delattre@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -59,13 +59,12 @@ class AccountPaymentLine(models.Model):
                 and pline.mandate_id.partner_bank_id != pline.partner_bank_id
             ):
                 raise ValidationError(
-                    _(
-                        "The payment line number {line_number} has "
-                        "the bank account '{line_bank_account}' which "
-                        "is not attached to the mandate '{mandate_ref}' "
+                    self.env._(
+                        "The payment line number %(line_number)s has "
+                        "the bank account '%(line_bank_account)s' which "
+                        "is not attached to the mandate '%(mandate_ref)s' "
                         "(this mandate is attached to the bank account "
-                        "'{mandate_bank_account}')."
-                    ).format(
+                        "'%(mandate_bank_account)s').",
                         line_number=pline.name,
                         line_bank_account=pline.partner_bank_id.acc_number,
                         mandate_ref=pline.mandate_id.display_name,
@@ -77,7 +76,7 @@ class AccountPaymentLine(models.Model):
         errors = super()._draft2open_payment_line_check()
         if self.mandate_required and not self.mandate_id:
             errors.append(
-                _("Missing mandate on payment line '%s'.") % self.display_name
+                self.env._("Missing mandate on payment line '%s'.", self.display_name)
             )
         return errors
 
