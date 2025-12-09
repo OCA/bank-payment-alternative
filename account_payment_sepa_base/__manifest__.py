@@ -10,6 +10,7 @@
     "version": "19.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion, Noviat, Tecnativa, Odoo Community Association (OCA)",
+    "maintainers": ["alexis-via"],
     "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Hidden",
     "depends": ["account_payment_batch_oca"],
