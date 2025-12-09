@@ -4,7 +4,7 @@
 from lxml import objectify
 from stdnum.eu.at_02 import is_valid
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -30,7 +30,7 @@ class AccountPaymentMethodLine(models.Model):
             ics = pay_method_line.sepa_creditor_identifier
             if ics and not is_valid(ics):
                 raise ValidationError(
-                    _("The SEPA Creditor Identifier '%s' is invalid.") % ics
+                    self.env._("The SEPA Creditor Identifier '%s' is invalid.", ics)
                 )
 
     def _generate_creditor_scheme_identification(
@@ -45,7 +45,7 @@ class AccountPaymentMethodLine(models.Model):
         )
         if not sepa_creditor_identifier:
             raise UserError(
-                _(
+                self.env._(
                     "Missing SEPA Creditor Identifier on company %(company)s "
                     "(or on payment method %(payment_method)s).",
                     company=self.company_id.display_name,

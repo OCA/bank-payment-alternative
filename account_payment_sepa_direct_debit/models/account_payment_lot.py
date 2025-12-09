@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class AccountPaymentLot(models.Model):
@@ -20,5 +20,8 @@ class AccountPaymentLot(models.Model):
     @api.model
     def _local_instrument_selection(self):
         res = super()._local_instrument_selection()
-        res += [("CORE", _("CORE Mandate")), ("B2B", _("B2B Mandate"))]
+        res += [
+            ("CORE", self.env._("CORE Mandate")),
+            ("B2B", self.env._("B2B Mandate")),
+        ]
         return res

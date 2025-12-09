@@ -1,7 +1,7 @@
 # Copyright 2019 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -33,23 +33,21 @@ class AccountPaymentLine(models.Model):
         ):
             if self.mandate_id.state not in ("valid", "final"):
                 errors.append(
-                    _(
+                    self.env._(
                         "The SEPA Direct Debit mandate with reference "
-                        "{mandate_ref} for partner {partner_name} has "
-                        "expired."
-                    ).format(
+                        "%(mandate_ref)s for partner %(partner_name)s has "
+                        "expired.",
                         mandate_ref=self.mandate_id.unique_mandate_reference,
                         partner_name=self.partner_id.name,
                     )
                 )
             if self.mandate_id.type == "oneoff" and self.mandate_id.last_debit_date:
                 errors.append(
-                    _(
+                    self.env._(
                         "The SEPA Direct Debit mandate with reference "
-                        "{mandate_ref} for partner {partner_name} has type set "
+                        "%(mandate_ref)s for partner %(partner_name)s has type set "
                         "to 'One-Off' but has a last debit date set to "
-                        "{last_debit_date}. Therefore, it cannot be used."
-                    ).format(
+                        "%(last_debit_date)s. Therefore, it cannot be used.",
                         mandate_ref=self.mandate_id.unique_mandate_reference,
                         partner_name=self.partner_id.name,
                         last_debit_date=self.mandate_id.last_debit_date,
@@ -88,7 +86,9 @@ class AccountPaymentLine(models.Model):
                     vals["sequence_type"] = "FNAL"
                 else:
                     raise UserError(
-                        _("Mandate '%s' is not in state 'Valid' nor 'Final Debit'.")
-                        % mandate.display_name
+                        self.env._(
+                            "Mandate '%s' is not in state 'Valid' nor 'Final Debit'.",
+                            mandate.display_name,
+                        )
                     )
         return vals

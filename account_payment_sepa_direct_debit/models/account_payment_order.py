@@ -4,7 +4,7 @@
 
 from lxml import objectify
 
-from odoo import _, models
+from odoo import models
 from odoo.exceptions import UserError
 
 
@@ -27,7 +27,9 @@ class AccountPaymentOrder(models.Model):
             bic_xml_tag = "BICFI"
             name_maxsize = 140
         else:
-            raise UserError(_("PAIN version '%s' is not supported.") % pain_flavor)
+            raise UserError(
+                self.env._("PAIN version '%s' is not supported.", pain_flavor)
+            )
         pay_method = self.payment_method_id
         xsd_file = pay_method._get_xsd_file_path()
         gen_args = {
