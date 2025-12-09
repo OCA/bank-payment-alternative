@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.fields import Domain
 from odoo.tools.misc import format_date
 
 
@@ -31,18 +32,15 @@ class AccountPaymentLot(models.Model):
     payment_ids = fields.One2many("account.payment", "payment_lot_id")
     payment_count = fields.Integer(compute="_compute_payment_lot", store=True)
 
-    _sql_constraints = [
-        (
-            "name_company_uniq",
-            "unique(name, company_id)",
-            "This lot name already exists!",
-        )
-    ]
+    _name_company_uniq = models.UniqueIndex(
+        "(name, company_id)",
+        "This lot name already exists!",
+    )
 
     @api.depends("payment_ids")
     def _compute_payment_lot(self):
         rg_res = self.env["account.payment"]._read_group(
-            [("payment_lot_id", "in", self.ids)],
+            Domain("payment_lot_id", "in", self.ids),
             groupby=["payment_lot_id"],
             aggregates=["__count", "amount:sum"],
         )

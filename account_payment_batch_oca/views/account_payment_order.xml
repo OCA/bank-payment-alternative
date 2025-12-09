@@ -265,7 +265,7 @@
                     string="File Uploaded"
                     domain="[('state', '=', 'uploaded')]"
                 />
-                <group string="Group By" name="groupby">
+                <group name="groupby">
                     <filter
                         name="payment_method_line_groupby"
                         string="Payment Method"

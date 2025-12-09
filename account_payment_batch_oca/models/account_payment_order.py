@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from markupsafe import Markup
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import format_date
 
@@ -24,7 +24,10 @@ class AccountPaymentOrder(models.Model):
     _check_company_auto = True
 
     name = fields.Char(
-        string="Reference", readonly=True, copy=False, default=lambda self: _("New")
+        string="Reference",
+        readonly=True,
+        copy=False,
+        default=lambda self: self.env._("New"),
     )
     payment_method_line_id = fields.Many2one(
         comodel_name="account.payment.method.line",
@@ -163,14 +166,10 @@ class AccountPaymentOrder(models.Model):
         related="payment_line_ids.partner_id", string="Partner"
     )
 
-    _sql_constraints = [
-        (
-            "name_company_unique",
-            "unique(name, company_id)",
-            "A payment/debit order with the same reference already exists "
-            "in this company.",
-        )
-    ]
+    _name_company_unique = models.UniqueIndex(
+        "(name, company_id)",
+        "A payment/debit order with the same reference already exists in this company.",
+    )
 
     @api.depends("payment_method_line_id")
     def _compute_allowed_journal_ids(self):
@@ -217,18 +216,19 @@ class AccountPaymentOrder(models.Model):
             order.untrusted_bank_account_count = len(bank_accounts)
             order.untrusted_bank_account_ids = [Command.set(bank_accounts.ids)]
 
-    def unlink(self):
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_uploaded(self):
         for order in self:
             if order.state == "uploaded":
                 raise UserError(
-                    _(
-                        "You cannot delete an uploaded payment/debit order "
-                        "(but you can cancel it)."
+                    self.env._(
+                        "You cannot delete payment/debit order '%s' because it is "
+                        "in 'Uploaded' state, but you can cancel it.",
+                        order.display_name,
                     )
                 )
             if order.payment_file_id:
                 order.payment_file_id.unlink()
-        return super().unlink()
 
     @api.constrains("payment_type", "payment_method_line_id")
     def _payment_order_constraints(self):
@@ -243,7 +243,7 @@ class AccountPaymentOrder(models.Model):
                     )["payment_type"]["selection"]
                 )
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "On payment/debit order %(order)s, the payment type is "
                         "%(order_ptype)s, but the payment method %(method)s "
                         "is configured with payment type %(method_ptype)s.",
@@ -263,7 +263,7 @@ class AccountPaymentOrder(models.Model):
             if order.date_scheduled:
                 if order.date_scheduled < today:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "On payment/debit order %(porder)s, the payment "
                             "execution date is in the past (%(exedate)s).",
                             porder=order.name,
@@ -303,17 +303,17 @@ class AccountPaymentOrder(models.Model):
                 payment_method_line = self.env["account.payment.method.line"].browse(
                     vals["payment_method_line_id"]
                 )
-            if vals.get("name", _("New")) == _("New"):
+            if vals.get("name", self.env._("New")) == self.env._("New"):
                 if payment_method_line and payment_method_line.specific_sequence_id:
                     vals["name"] = payment_method_line.specific_sequence_id.next_by_id()
                 elif payment_method_line.payment_method_id.payment_type == "inbound":
                     vals["name"] = self.env["ir.sequence"].next_by_code(
                         "account.payment.order.inbound"
-                    ) or _("New")
+                    ) or self.env._("New")
                 else:
                     vals["name"] = self.env["ir.sequence"].next_by_code(
                         "account.payment.order"
-                    ) or _("New")
+                    ) or self.env._("New")
         return super().create(vals_list)
 
     @api.depends("payment_method_line_id")
@@ -366,29 +366,37 @@ class AccountPaymentOrder(models.Model):
         for order in self:
             if not order.journal_id:
                 raise UserError(
-                    _("Missing Bank Journal on payment order %s.") % order.name
+                    self.env._("Missing Bank Journal on payment order %s.", order.name)
                 )
             if (
                 order.payment_method_id.bank_account_required
                 and not order.journal_id.bank_account_id
             ):
                 raise UserError(
-                    _("Missing bank account on bank journal '%s'.")
-                    % order.journal_id.display_name
+                    self.env._(
+                        "Missing bank account on bank journal '%s'.",
+                        order.journal_id.display_name,
+                    )
                 )
             if not order.payment_line_ids:
                 raise UserError(
-                    _("There are no transactions on payment order %s.") % order.name
+                    self.env._(
+                        "There are no transactions on payment order %s.", order.name
+                    )
                 )
             if order.payment_ids:
                 raise UserError(
-                    _("%s is linked to existing payments. This should never happen.")
-                    % order.name
+                    self.env._(
+                        "%s is linked to existing payments. This should never happen.",
+                        order.name,
+                    )
                 )
             if order.payment_lot_ids:
                 raise UserError(
-                    _("%s is linked to existing lots. This should never happen.")
-                    % order.name
+                    self.env._(
+                        "%s is linked to existing lots. This should never happen.",
+                        order.name,
+                    )
                 )
             # Prepare account payments from the payment lines
             payline_err_text = set()
@@ -431,7 +439,7 @@ class AccountPaymentOrder(models.Model):
                 # Block generation of negative account.payment
                 if paydict["currency"].compare_amounts(paydict["total"], 0) <= 0:
                     raise UserError(
-                        _(
+                        self.env._(
                             "The amount for Partner '%(partner)s' is negative "
                             "or null (%(amount).2f) !",
                             partner=paydict["paylines"][0].partner_id.name,
@@ -455,11 +463,11 @@ class AccountPaymentOrder(models.Model):
             return (False, False)
         else:
             raise UserError(
-                _(
+                self.env._(
                     "No handler for payment method code '%s'. Maybe you haven't "
-                    "installed the related Odoo module."
+                    "installed the related Odoo module.",
+                    self.payment_method_id.code,
                 )
-                % self.payment_method_id.code
             )
 
     def _prepare_filename(self):
@@ -567,7 +575,7 @@ class AccountPaymentOrder(models.Model):
                         )
                         self.message_post(
                             body=Markup(
-                                _(
+                                self.env._(
                                     "Odoo <strong>failed to generate the email"
                                     "</strong> for partner <a href=# "
                                     "data-oe-model=res.partner "
@@ -612,7 +620,7 @@ class AccountPaymentOrder(models.Model):
                 move_ids.add(line.move_line_id.move_id.id)
         if not move_ids:
             raise UserError(
-                _("None of the payment lines are linked to a journal item.")
+                self.env._("None of the payment lines are linked to a journal item.")
             )
         if len(move_ids) == 1:
             action.update(

@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 
 from odoo import Command, fields
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Domain
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -20,7 +21,7 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.env.user.write(
             {
-                "groups_id": [
+                "group_ids": [
                     Command.link(
                         cls.env.ref(
                             "account_payment_batch_oca.group_account_payment"
@@ -70,11 +71,13 @@ class TestPaymentOrderOutboundBase(AccountTestInvoicingCommon):
         cls.invoice = cls._create_supplier_invoice(cls, "F1242")
         cls.invoice_02 = cls._create_supplier_invoice(cls, "F1243")
         # Make sure no other payment orders are in the DB
-        cls.domain = [
-            ("state", "=", "draft"),
-            ("payment_type", "=", "outbound"),
-            ("company_id", "=", cls.company.id),
-        ]
+        cls.domain = Domain(
+            [
+                ("state", "=", "draft"),
+                ("payment_type", "=", "outbound"),
+                ("company_id", "=", cls.company.id),
+            ]
+        )
         cls.env["account.payment.order"].search(cls.domain).unlink()
 
     def _create_supplier_invoice(self, ref):

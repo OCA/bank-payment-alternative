@@ -1,8 +1,9 @@
 # © 2015-2016 Akretion - Alexis de Lattre <alexis.delattre@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Domain
 from odoo.tools.misc import format_date
 
 
@@ -132,13 +133,10 @@ class AccountPaymentLine(models.Model):
         "'|', ('parent_id', '=', partner_id), ('id', '=', partner_id)]",
     )
 
-    _sql_constraints = [
-        (
-            "name_company_unique",
-            "unique(name, company_id)",
-            "A payment line already exists with this reference in the same company!",
-        )
-    ]
+    _name_company_unique = models.UniqueIndex(
+        "(name, company_id)",
+        "A payment line already exists with this reference in the same company!",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -185,12 +183,14 @@ class AccountPaymentLine(models.Model):
                     )
                 elif mail_partner_policy == "last_payment":
                     last_pay_line = self.search(
-                        [
-                            ("mail_notif_partner_id", "!=", False),
-                            ("order_id", "!=", line.order_id.id),
-                            ("state", "!=", "cancel"),
-                            ("company_id", "=", line.company_id.id),
-                        ],
+                        Domain(
+                            [
+                                ("mail_notif_partner_id", "!=", False),
+                                ("order_id", "!=", line.order_id.id),
+                                ("state", "!=", "cancel"),
+                                ("company_id", "=", line.company_id.id),
+                            ]
+                        ),
                         order="id desc",
                         limit=1,
                     )
@@ -308,12 +308,14 @@ class AccountPaymentLine(models.Model):
         if self.bank_account_required:
             if not self.partner_bank_id:
                 errors.append(
-                    _("Missing Partner Bank Account on payment line %s") % self.name
+                    self.env._(
+                        "Missing Partner Bank Account on payment line %s", self.name
+                    )
                 )
             else:
                 if self.partner_bank_id.partner_id != self.partner_id:
                     errors.append(
-                        _(
+                        self.env._(
                             "On payment line %(name)s with partner '%(partner)s', "
                             "the bank account '%(bank_account)s' belongs to partner "
                             "'%(bank_account_partner)s'.",
@@ -330,7 +332,7 @@ class AccountPaymentLine(models.Model):
                     and not self.partner_bank_id.allow_out_payment
                 ):
                     errors.append(
-                        _(
+                        self.env._(
                             "Bank account '%(bank_account)s' of partner '%(partner)s' "
                             "is untrusted. Check that this bank account can be trusted "
                             "and activate the option 'Send Money' on it.",
@@ -341,7 +343,7 @@ class AccountPaymentLine(models.Model):
                 # internal transfers: check source account != dest account
                 if self.partner_bank_id == order.company_partner_bank_id:
                     errors.append(
-                        _(
+                        self.env._(
                             "On payment line %(name)s, the bank account "
                             "'%(bank_account)s' is the same as the company "
                             "bank account of the payment order.",
@@ -350,15 +352,19 @@ class AccountPaymentLine(models.Model):
                         )
                     )
         if not self.communication:
-            errors.append(_("Communication is empty on payment line %s.") % self.name)
+            errors.append(
+                self.env._("Communication is empty on payment line %s.", self.name)
+            )
         if (
             order.payment_method_line_id.mail_notif
             and self.mail_notif_partner_id
             and not self.mail_notif_partner_id.email
         ):
             errors.append(
-                _("Missing email on notification partner '%s'.")
-                % self.mail_notif_partner_id.display_name
+                self.env._(
+                    "Missing email on notification partner '%s'.",
+                    self.mail_notif_partner_id.display_name,
+                )
             )
         # inbound: check option no_debit_before_maturity
         if (
@@ -368,7 +374,7 @@ class AccountPaymentLine(models.Model):
             and self.date < self.ml_maturity_date
         ):
             errors.append(
-                _(
+                self.env._(
                     "The payment method '%(method)s' has the option "
                     "'Disallow Debit Before Maturity Date'. The "
                     "payment line %(pline)s has a maturity date %(mdate)s "
@@ -391,17 +397,19 @@ class AccountPaymentLine(models.Model):
             method_line_id = order.payment_method_line_id.id
         else:
             method_line = self.env["account.payment.method.line"].search(
-                [
-                    ("company_id", "=", order.company_id.id),
-                    ("journal_id", "=", order.journal_id.id),
-                    ("payment_method_id", "=", order.payment_method_id.id),
-                    ("bank_account_link", "=", "fixed"),
-                ],
+                Domain(
+                    [
+                        ("company_id", "=", order.company_id.id),
+                        ("journal_id", "=", order.journal_id.id),
+                        ("payment_method_id", "=", order.payment_method_id.id),
+                        ("bank_account_link", "=", "fixed"),
+                    ]
+                ),
                 limit=1,
             )
             if not method_line:
                 raise UserError(
-                    _(
+                    self.env._(
                         "No payment method with a fixed link to journal '%(journal)s' "
                         "with technical payment method '%(payment_method)s'. "
                         "You must create one.",
@@ -490,7 +498,9 @@ class AccountPaymentLine(models.Model):
         self.ensure_one()
         if not self.move_line_id:
             raise UserError(
-                _("Payment line %s is not linked to a journal item.")
-                % self.display_name
+                self.env._(
+                    "Payment line %s is not linked to a journal item.",
+                    self.display_name,
+                )
             )
         return self.move_line_id.action_open_business_doc()

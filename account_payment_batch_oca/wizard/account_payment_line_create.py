@@ -4,7 +4,8 @@
 # © 2015-2016 Akretion (<https://www.akretion.com>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
+from odoo.fields import Domain
 
 
 class AccountPaymentLineCreate(models.TransientModel):
@@ -73,51 +74,45 @@ class AccountPaymentLineCreate(models.TransientModel):
 
     def _prepare_move_line_domain(self):
         self.ensure_one()
-        domain = [
-            ("reconciled", "=", False),
-            ("company_id", "=", self.order_id.company_id.id),
-            ("move_id.payment_state", "in", ("not_paid", "partial")),
-        ]
-        if self.journal_ids:
-            domain += [("journal_id", "in", self.journal_ids.ids)]
-        if self.partner_ids:
-            domain += [("partner_id", "in", self.partner_ids.ids)]
-        if self.target_move == "posted":
-            domain += [("move_id.state", "=", "posted")]
-        else:
-            domain += [("move_id.state", "in", ("draft", "posted"))]
-        if self.date_type == "due":
-            domain += [
-                "|",
-                ("date_maturity", "<=", self.due_date),
-                ("date_maturity", "=", False),
+        domain = Domain(
+            [
+                ("reconciled", "=", False),
+                ("company_id", "=", self.order_id.company_id.id),
+                ("move_id.payment_state", "in", ("not_paid", "partial")),
             ]
+        )
+        if self.journal_ids:
+            domain &= Domain("journal_id", "in", self.journal_ids.ids)
+        if self.partner_ids:
+            domain &= Domain("partner_id", "in", self.partner_ids.ids)
+        if self.target_move == "posted":
+            domain &= Domain("move_id.state", "=", "posted")
+        else:
+            domain &= Domain("move_id.state", "in", ("draft", "posted"))
+        if self.date_type == "due":
+            domain &= Domain("date_maturity", "<=", self.due_date) | Domain(
+                "date_maturity", "=", False
+            )
         elif self.date_type == "move":
-            domain.append(("date", "<=", self.move_date))
+            domain &= Domain("date", "<=", self.move_date)
         if self.invoice:
-            domain.append(
-                (
-                    "move_id.move_type",
-                    "in",
-                    ("in_invoice", "out_invoice", "in_refund", "out_refund"),
-                )
+            domain &= Domain(
+                "move_id.move_type",
+                "in",
+                ("in_invoice", "out_invoice", "in_refund", "out_refund"),
             )
         if self.payment_mode:
             if self.payment_mode == "same":
-                domain.append(
-                    (
-                        "move_id.preferred_payment_method_line_id",
-                        "=",
-                        self.order_id.payment_method_line_id.id,
-                    )
+                domain &= Domain(
+                    "move_id.preferred_payment_method_line_id",
+                    "=",
+                    self.order_id.payment_method_line_id.id,
                 )
             elif self.payment_mode == "same_or_null":
-                domain.append(
-                    (
-                        "move_id.preferred_payment_method_line_id",
-                        "in",
-                        (False, self.order_id.payment_method_line_id.id),
-                    )
+                domain &= Domain(
+                    "move_id.preferred_payment_method_line_id",
+                    "in",
+                    (False, self.order_id.payment_method_line_id.id),
                 )
 
         if self.order_id.payment_type == "outbound":
@@ -131,34 +126,40 @@ class AccountPaymentLineCreate(models.TransientModel):
             # Do not propose partially reconciled credit lines,
             # as they are deducted from a customer invoice, and
             # will not be refunded with a payment.
-            domain += [
-                ("credit", ">", 0),
-                (
-                    "account_id.account_type",
-                    "in",
-                    ["liability_payable", "asset_receivable"],
-                ),
-            ]
+            domain &= Domain(
+                [
+                    ("credit", ">", 0),
+                    (
+                        "account_id.account_type",
+                        "in",
+                        ["liability_payable", "asset_receivable"],
+                    ),
+                ]
+            )
         elif self.order_id.payment_type == "inbound":
-            domain += [
-                ("debit", ">", 0),
-                (
-                    "account_id.account_type",
-                    "in",
-                    ["asset_receivable", "liability_payable"],
-                ),
-            ]
+            domain &= Domain(
+                [
+                    ("debit", ">", 0),
+                    (
+                        "account_id.account_type",
+                        "in",
+                        ["asset_receivable", "liability_payable"],
+                    ),
+                ]
+            )
         # Exclude lines that are already in a non-cancelled
         # and non-uploaded payment order; lines that are in a
         # uploaded payment order are proposed if they are not reconciled,
         paylines = self.env["account.payment.line"].search(
-            [
-                ("state", "in", ("draft", "open", "generated")),
-                ("move_line_id", "!=", False),
-            ]
+            Domain(
+                [
+                    ("state", "in", ("draft", "open", "generated")),
+                    ("move_line_id", "!=", False),
+                ]
+            )
         )
         if paylines:
-            domain += [("id", "not in", paylines.move_line_id.ids)]
+            domain &= Domain("id", "not in", paylines.move_line_id.ids)
         return domain
 
     def populate(self):
@@ -166,13 +167,13 @@ class AccountPaymentLineCreate(models.TransientModel):
         lines = self.env["account.move.line"].search(domain)
         self.move_line_ids = lines
         action = {
-            "name": _("Select Journal Items to Create Transactions"),
+            "name": self.env._("Select Journal Items to Create Transactions"),
             "type": "ir.actions.act_window",
             "res_model": "account.payment.line.create",
             "view_mode": "form",
             "target": "new",
             "res_id": self.id,
-            "context": self._context,
+            "context": self.env.context,
         }
         return action
 

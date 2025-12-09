@@ -4,8 +4,9 @@
 # © 2016 Akretion (Alexis de Lattre <alexis.delattre@akretion.com>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
 
 
 class AccountPaymentMethodLine(models.Model):
@@ -144,14 +145,16 @@ class AccountPaymentMethodLine(models.Model):
             ):
                 line.default_journal_ids = list(
                     self.env["account.journal"]._search(
-                        [
-                            (
-                                "type",
-                                "=",
-                                ptype_map[line.payment_method_id.payment_type],
-                            ),
-                            ("company_id", "=", line.company_id.id),
-                        ]
+                        Domain(
+                            [
+                                (
+                                    "type",
+                                    "=",
+                                    ptype_map[line.payment_method_id.payment_type],
+                                ),
+                                ("company_id", "=", line.company_id.id),
+                            ]
+                        )
                     )
                 )
 
@@ -160,7 +163,7 @@ class AccountPaymentMethodLine(models.Model):
         for line in self:
             if line.payment_order_ok and not line.selectable:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Payment method '%(method)s' cannot be selectable on "
                         "payment/debit orders but not selectable on partners/invoices.",
                         method=line.display_name,

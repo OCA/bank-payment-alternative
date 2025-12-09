@@ -5,8 +5,9 @@
 
 from markupsafe import Markup
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Domain
 
 
 class AccountMove(models.Model):
@@ -29,7 +30,7 @@ class AccountMove(models.Model):
     def _compute_payment_line_count(self):
         for move in self:
             move.payment_line_count = self.env["account.payment.line"].search_count(
-                [("move_line_id", "in", self.line_ids.ids)]
+                Domain("move_line_id", "in", self.line_ids.ids)
             )
 
     # Enable support for payment_state = "in_payment" on invoices
@@ -99,10 +100,12 @@ class AccountMove(models.Model):
         return vals
 
     def _get_account_payment_domain(self, payment_method_line):
-        return [
-            ("payment_method_line_id", "=", payment_method_line.id),
-            ("state", "=", "draft"),
-        ]
+        return Domain(
+            [
+                ("payment_method_line_id", "=", payment_method_line.id),
+                ("state", "=", "draft"),
+            ]
+        )
 
     def create_account_payment_line(self):
         apoo = self.env["account.payment.order"]
@@ -111,7 +114,9 @@ class AccountMove(models.Model):
         for move in self:
             if move.state != "posted":
                 raise UserError(
-                    _("The invoice '%s' is not in Posted state.") % move.display_name
+                    self.env._(
+                        "The invoice '%s' is not in Posted state.", move.display_name
+                    )
                 )
             applicable_lines = move.line_ids.filtered(
                 lambda x: (
@@ -122,17 +127,19 @@ class AccountMove(models.Model):
             )
             if not applicable_lines:
                 raise UserError(
-                    _("No pending receivable/payable lines to add on invoice '%s'.")
-                    % move.display_name
+                    self.env._(
+                        "No pending receivable/payable lines to add on invoice '%s'.",
+                        move.display_name,
+                    )
                 )
             payment_mode = move.preferred_payment_method_line_id
             if not payment_mode:
                 raise UserError(
-                    _("No Payment Method on invoice '%s'.") % move.display_name
+                    self.env._("No Payment Method on invoice '%s'.", move.display_name)
                 )
             if not payment_mode.payment_order_ok:
                 raise UserError(
-                    _(
+                    self.env._(
                         "No Payment Line created for invoice '%(invoice)s' because "
                         "its payment method '%(pay_method)s' is not intended for "
                         "payment/debit orders.",
@@ -145,7 +152,7 @@ class AccountMove(models.Model):
             )
             if payment_lines:
                 raise UserError(
-                    _(
+                    self.env._(
                         "The invoice %(move)s is already added in the payment "
                         "order(s) %(order)s.",
                         move=move.display_name,
@@ -173,7 +180,7 @@ class AccountMove(models.Model):
             )
             if new_payorder:
                 move.message_post(
-                    body=_(
+                    body=self.env._(
                         "%(count)d payment lines added to the new draft payment order "
                         "%(pay_order_link)s, which has been automatically created.",
                         count=count,
@@ -182,7 +189,7 @@ class AccountMove(models.Model):
                 )
             else:
                 move.message_post(
-                    body=_(
+                    body=self.env._(
                         "%(count)d payment line(s) added to the existing draft "
                         "payment order %(pay_order_link)s.",
                         count=count,

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="0">
+        <record id="account_payment_privilege" model="res.groups.privilege">
+            <field name="name">Payment and Debit Orders</field>
+            <field name="sequence">60</field>
+            <field name="category_id" ref="base.module_category_accounting" />
+        </record>
         <record id="group_account_payment" model="res.groups">
-            <field name="name">Accounting / Payments</field>
+            <field name="name">Manage</field>
             <field
-                name="users"
+                name="user_ids"
                 eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
             />
-            <field name="category_id" ref="base.module_category_usability" />
+            <field name="privilege_id" ref="account_payment_privilege" />
         </record>
     </data>
     <data noupdate="1">
