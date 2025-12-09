@@ -10,7 +10,7 @@
         <field name="inherit_id" ref="sale.sale_report_view_tree" />
         <field name="arch" type="xml">
             <field name="pricelist_id" position="after">
-                <field name="payment_method_line_id" optional="hide" />
+                <field name="preferred_payment_method_line_id" optional="hide" />
             </field>
         </field>
     </record>
@@ -21,9 +21,9 @@
         <field name="arch" type="xml">
             <filter name="industry_id" position="after">
                 <filter
-                    name="payment_method_line_groupby"
+                    name="preferred_payment_method_line_groupby"
                     string="Payment Method"
-                    context="{'group_by': 'payment_method_line_id'}"
+                    context="{'group_by': 'preferred_payment_method_line_id'}"
                 />
             </filter>
         </field>

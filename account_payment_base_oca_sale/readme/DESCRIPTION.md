@@ -1,3 +1,4 @@
-This modules adds one field on sale orders: *Payment Mode*. This field
-is copied from partner to sale order and then from sale order to
-customer invoice.
+This modules improves the implementation of *Payment Mode* of sale orders:
+
+- it adds the *Payment Mode* field in *Sales > Reporting > Sales*
+- it updates the *Quotation / Order* report with Payment instructions

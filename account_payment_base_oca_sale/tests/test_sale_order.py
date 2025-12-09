@@ -22,18 +22,17 @@ class TestSaleOrder(CommonTestCase):
                     order_line.product_id = p
                     order_line.name = p.name
                     order_line.product_uom_qty = 2
-                    order_line.product_uom = p.uom_id
                     order_line.price_unit = p.list_price
         sale = sale_form.save()
         self.assertEqual(
-            sale.payment_method_line_id,
+            sale.preferred_payment_method_line_id,
             self.base_partner.property_inbound_payment_method_line_id,
         )
         sale_form = Form(sale)
 
         # force payment method
         if payment_method_line:
-            sale_form.payment_method_line_id = payment_method_line
+            sale_form.preferred_payment_method_line_id = payment_method_line
         return sale_form.save()
 
     def create_invoice_and_check(

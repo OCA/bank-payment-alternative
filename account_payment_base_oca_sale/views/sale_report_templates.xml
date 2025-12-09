@@ -6,12 +6,12 @@
             position="after"
         >
             <p
-                t-if="not is_html_empty(doc.payment_method_line_id.report_description)"
+                t-if="not is_html_empty(doc.preferred_payment_method_line_id.report_description)"
                 id="payment_method_line_desc"
             >
                 <strong>Payment Mode:</strong>
                 <span
-                    t-field="doc.payment_method_line_id.report_description"
+                    t-field="doc.preferred_payment_method_line_id.report_description"
                 >Here are the instructions for your payment</span>
             </p>
         </xpath>
