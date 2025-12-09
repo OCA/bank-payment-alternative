@@ -26,7 +26,7 @@ class SaleOrder(models.Model):
         "('company_id', '=', company_id)]",
     )
     mandate_required = fields.Boolean(
-        related="payment_method_line_id.payment_method_id.mandate_required",
+        related="preferred_payment_method_line_id.payment_method_id.mandate_required",
     )
 
     def _prepare_invoice(self):
@@ -36,13 +36,14 @@ class SaleOrder(models.Model):
             vals["mandate_id"] = self.mandate_id.id
         return vals
 
-    @api.depends("partner_invoice_id", "payment_method_line_id")
+    @api.depends("partner_invoice_id", "preferred_payment_method_line_id", "company_id")
     def _compute_mandate_id(self):
         for order in self:
+            pay_method = order.preferred_payment_method_line_id
             if (
                 order.partner_invoice_id
-                and order.payment_method_line_id
-                and order.payment_method_line_id.payment_method_id.mandate_required
+                and pay_method
+                and pay_method.payment_method_id.mandate_required
             ):
                 order.mandate_id = order.with_company(
                     order.company_id.id
