@@ -17,6 +17,7 @@
     "Tecnativa, "
     "Akretion, "
     "Odoo Community Association (OCA)",
+    "maintainers": ["alexis-via"],
     "website": "https://github.com/OCA/bank-payment-alternative",
     "development_status": "Mature",
     "category": "Banking addons",
