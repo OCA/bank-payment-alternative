@@ -85,11 +85,10 @@ class AccountPaymentOrder(models.Model):
                 if not payment.partner_bank_id:
                     raise UserError(
                         self.env._(
-                            "Bank account is missing on the payment {payment} "
-                            "of partner '{partner}'."
-                        ).format(
-                            partner=payment.partner_id.display_name,
+                            "Bank account is missing on the payment %(payment)s "
+                            "of partner '%(partner)s'.",
                             payment=payment.display_name,
+                            partner=payment.partner_id.display_name,
                         )
                     )
 
