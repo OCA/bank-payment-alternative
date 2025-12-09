@@ -142,7 +142,7 @@ class AccountBankingMandate(models.Model):
         return {
             "name": _("Payment lines"),
             "type": "ir.actions.act_window",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "res_model": "account.payment.line",
             "domain": [("mandate_id", "=", self.id)],
         }
