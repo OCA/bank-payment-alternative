@@ -18,8 +18,8 @@ class AccountPaymentMethod(models.Model):
 
     _sql_constraints = [
         (
-            # Extending this constraint from account_payment_mode
-            "code_payment_type_unique",
+            # Inherit native constraint of the 'account' module to add pain_version
+            "name_code_unique",
             "unique(code, payment_type, pain_version)",
             "A payment method of the same type already exists with this code"
             " and PAIN version",
