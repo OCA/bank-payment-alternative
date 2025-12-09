@@ -15,6 +15,7 @@
     "Akretion, "
     "Therp B.V., "
     "Odoo Community Association (OCA)",
+    "maintainers": ["alexis-via"],
     "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Banking addons",
     "depends": ["account_payment_batch_oca"],
