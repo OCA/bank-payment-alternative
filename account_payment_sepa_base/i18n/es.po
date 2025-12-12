@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 4.17\n"
 
 #. module: account_payment_sepa_base
-#: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_payment_method_code_payment_type_unique
+#: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_payment_method_name_code_unique
 msgid ""
 "A payment method of the same type already exists with this code and PAIN "
 "version"
