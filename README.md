@@ -25,6 +25,7 @@ addon | version | maintainers | summary
 [account_payment_base_oca_sale](account_payment_base_oca_sale/) | 19.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Adds payment method on sale orders
 [account_payment_batch_oca](account_payment_batch_oca/) | 19.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Add payment orders and debit orders
 [account_payment_mandate](account_payment_mandate/) | 19.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Add support for banking mandates used in direct debits
+[account_payment_sepa_base](account_payment_sepa_base/) | 19.0.1.0.0 | <a href='https://github.com/alexis-via'><img src='https://github.com/alexis-via.png' width='32' height='32' style='border-radius:50%;' alt='alexis-via'/></a> | Base module for SEPA file generation
 
 [//]: # (end addons)
 
