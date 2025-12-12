@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: account_payment_sepa_base
-#: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_payment_method_code_payment_type_unique
+#: model:ir.model.constraint,message:account_payment_sepa_base.constraint_account_payment_method_name_code_unique
 msgid ""
 "A payment method of the same type already exists with this code and PAIN "
 "version"
@@ -304,6 +304,17 @@ msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_lot__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_currency__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_partner__display_name
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_partner_bank__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -451,6 +462,17 @@ msgstr ""
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_pain_regulatory_reporting__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_line__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_lot__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_method_line__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_account_payment_order__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_company__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_config_settings__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_currency__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_partner__id
+#: model:ir.model.fields,field_description:account_payment_sepa_base.field_res_partner_bank__id
 msgid "ID"
 msgstr ""
 
@@ -610,6 +632,11 @@ msgstr ""
 msgid ""
 "Missing 'Initiating Party Issuer' and/or 'Initiating Party Identifier' for "
 "the company '%s'. Both fields must have a value."
+msgstr ""
+
+#. module: account_payment_sepa_base
+#: model:res.groups.privilege,name:account_payment_sepa_base.pain_multiple_identifier_privilege
+msgid "Multiple SEPA/PAIN Identifiers"
 msgstr ""
 
 #. module: account_payment_sepa_base
@@ -818,11 +845,6 @@ msgid "SEPA/PAIN"
 msgstr ""
 
 #. module: account_payment_sepa_base
-#: model:res.groups,name:account_payment_sepa_base.group_pain_multiple_identifier
-msgid "SEPA/PAIN Identifiers on Payment Methods"
-msgstr ""
-
-#. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__sala
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__purpose__sala
 msgid "Salary Payment"
@@ -1023,6 +1045,11 @@ msgstr ""
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__category_purpose__whld
 msgid "WithHolding"
+msgstr ""
+
+#. module: account_payment_sepa_base
+#: model:res.groups,name:account_payment_sepa_base.group_pain_multiple_identifier
+msgid "Yes"
 msgstr ""
 
 #. module: account_payment_sepa_base
