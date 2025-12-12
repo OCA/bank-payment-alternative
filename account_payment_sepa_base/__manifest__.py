@@ -7,7 +7,7 @@
 {
     "name": "Account Payment SEPA Base",
     "summary": "Base module for SEPA file generation",
-    "version": "18.0.2.1.0",
+    "version": "18.0.2.2.0",
     "license": "AGPL-3",
     "author": "Akretion, Noviat, Tecnativa, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/bank-payment-alternative",
