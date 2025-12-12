@@ -126,14 +126,10 @@ class AccountBankingMandate(models.Model):
     def _compute_payment_line_ids_count(self):
         payment_line_model = self.env["account.payment.line"]
         domain = [("mandate_id", "in", self.ids)]
-        res = payment_line_model.read_group(
-            domain=domain, fields=["mandate_id"], groupby=["mandate_id"]
+        res = payment_line_model._read_group(
+            domain=domain, groupby=["mandate_id"], aggregates=["__count"]
         )
-        payment_line_dict = {}
-        for dic in res:
-            mandate_id = dic["mandate_id"][0]
-            payment_line_dict.setdefault(mandate_id, 0)
-            payment_line_dict[mandate_id] += dic["mandate_id_count"]
+        payment_line_dict = {mandate.id: line_count for (mandate, line_count) in res}
         for rec in self:
             rec.payment_line_ids_count = payment_line_dict.get(rec.id, 0)
 
@@ -142,7 +138,7 @@ class AccountBankingMandate(models.Model):
         return {
             "name": _("Payment lines"),
             "type": "ir.actions.act_window",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "res_model": "account.payment.line",
             "domain": [("mandate_id", "=", self.id)],
         }
