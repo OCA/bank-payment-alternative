@@ -44,12 +44,25 @@ class ResPartner(models.Model):
                 )
             postal_address.Ctry = self.country_id.code
             if self.street:
-                postal_address.AdrLine = apoo._prepare_field(
-                    "Street as Address Line 1", self.street, 70, gen_args
+                adrline1 = objectify.SubElement(postal_address, "AdrLine")
+                adrline1._setText(
+                    apoo._prepare_field(
+                        "Street as Address Line 1", self.street, 70, gen_args
+                    )
                 )
             if self.street2:
-                postal_address.AdrLine = apoo._prepare_field(
-                    "Street2 as Address Line 2", self.street2, 70, gen_args
+                # EPC says in
+                # https://www.europeanpaymentscouncil.eu/sites/default/files/kb/file/2025-10/EPC153-22%20v2.1%20EPC%20guidance%20document%20-%20Provision%20of%20Addresses%20under%20the%20EPC%20Payment%20Schemes.pdf
+                # that we can only have 2 occurences of AdrLine
+                adrline2_val = self.street2
+                # if module OCA/partner-contact/partner_address_street3 is installed
+                if hasattr(self, "street3") and self.street3:
+                    adrline2_val = " - ".join([adrline2_val, self.street3])
+                adrline2 = objectify.SubElement(postal_address, "AdrLine")
+                adrline2._setText(
+                    apoo._prepare_field(
+                        "Street2 as Address Line 2", adrline2_val, 70, gen_args
+                    )
                 )
 
     def _generate_unstructured_address_block(self, parent_node, gen_args):
