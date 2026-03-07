@@ -2,7 +2,7 @@
 
 import json
 
-from openupgradelib import openupgrade
+from openupgradelib import openupgrade, openupgrade_180
 
 
 @openupgrade.migrate()
@@ -96,7 +96,6 @@ def migrate(env, version):
         WHERE account_payment_method_line.old_refund_payment_mode_id IS NOT NULL
         AND account_payment_method_line.old_refund_payment_mode_id = apml2.old_payment_mode_id
     """)  # noqa: E501
-    # TODO migrate supplier_payment_mode_id and customer_payment_mode_id
     env.cr.execute("""
         UPDATE account_move
         SET preferred_payment_method_line_id = apml.id
@@ -105,3 +104,29 @@ def migrate(env, version):
         AND apm.id = apml.old_payment_mode_id
         AND account_move.preferred_payment_method_line_id IS NULL
     """)
+    mapping_expression = """
+        (SELECT apml.id
+         FROM account_payment_method_line apml
+         WHERE apml.old_payment_mode_id = SPLIT_PART(value_reference, ',', 2)::integer
+         LIMIT 1)
+    """
+    old_supplier_field_id = env.ref(
+        "account_payment_base_oca.field_res_partner__supplier_payment_mode_id"
+    ).id
+    old_customer_field_id = env.ref(
+        "account_payment_base_oca.field_res_partner__customer_payment_mode_id"
+    ).id
+    openupgrade_180.convert_company_dependent(
+        env,
+        "res.partner",
+        "property_outbound_payment_method_line_id",
+        value_expression=mapping_expression,
+        old_field_id=old_supplier_field_id,
+    )
+    openupgrade_180.convert_company_dependent(
+        env,
+        "res.partner",
+        "property_inbound_payment_method_line_id",
+        value_expression=mapping_expression,
+        old_field_id=old_customer_field_id,
+    )
