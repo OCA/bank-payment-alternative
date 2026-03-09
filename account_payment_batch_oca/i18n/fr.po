@@ -958,8 +958,8 @@ msgid ""
 "No handler for payment method code '%s'. Maybe you haven't installed the "
 "related Odoo module."
 msgstr ""
-"Aucun gestionnaire pour ce mode de paiement. Vous n'avez peut-être pas "
-"installé le module Odoo associé."
+"Aucun gestionnaire pour le code de méthode de paiement '%s'. Peut-être "
+"n'avez-vous pas installé le module Odoo correspondant."
 
 #. module: account_payment_batch_oca
 #. odoo-python
