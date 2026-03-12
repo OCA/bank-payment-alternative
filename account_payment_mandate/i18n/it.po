@@ -211,6 +211,12 @@ msgstr "Mandati addebito diretto"
 
 #. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_line__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_method__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_order__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner_bank__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
 
@@ -263,17 +269,18 @@ msgid "Format"
 msgstr "Formato"
 
 #. module: account_payment_mandate
-#: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_search
-msgid "Group By"
-msgstr "Raggruppa per"
-
-#. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__has_message
 msgid "Has Message"
 msgstr "Ha un messaggio"
 
 #. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_move__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_line__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_method__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_order__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner_bank__id
 msgid "ID"
 msgstr "ID"
 
@@ -326,13 +333,13 @@ msgstr "Ultimo aggiornamento il"
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
 msgid ""
-"Mandate %(mandate)s is configured with partner %(partner)s and bank account "
-"%(bank_account)s, but this bank account belongs to partner "
-"%(partner_bank_account)s."
+"Mandate %(mandate)s is configured with partner %(partner)s and bank account %"
+"(bank_account)s, but this bank account belongs to partner %"
+"(partner_bank_account)s."
 msgstr ""
-"Il mandato %(mandate)s è configurato con %(partner)s e conto bancario "
-"%(bank_account)s, ma questo conto bancario appartiene al partner "
-"%(partner_bank_account)s."
+"Il mandato %(mandate)s è configurato con %(partner)s e conto bancario %"
+"(bank_account)s, ma questo conto bancario appartiene al partner %"
+"(partner_bank_account)s."
 
 #. module: account_payment_mandate
 #. odoo-python
@@ -356,7 +363,8 @@ msgstr "Il mandato '%s' dovrebbe essere in stato Bozza."
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
 msgid "Mandate '%s' should be in draft, valid or final debit state."
-msgstr "Il mandato '%s' dovrebbe essere in stato Bozza, Valido o Debito finale."
+msgstr ""
+"Il mandato '%s' dovrebbe essere in stato Bozza, Valido o Debito finale."
 
 #. module: account_payment_mandate
 #. odoo-python
@@ -379,7 +387,7 @@ msgid "Mandate Required"
 msgstr "Mandato Richiesto"
 
 #. module: account_payment_mandate
-#: model_terms:ir.ui.view,arch_db:account_payment_mandate.partner_view_buttons
+#: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_partner_property_form
 msgid "Mandate(s)"
 msgstr "Mandato/i"
 
@@ -598,14 +606,10 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_payment_line.py:0
 msgid ""
-"The payment line number {line_number} has the bank account "
-"'{line_bank_account}' which is not attached to the mandate "
-"'{mandate_ref}' (this mandate is attached to the bank account "
-"'{mandate_bank_account}')."
+"The payment line number %(line_number)s has the bank account '%"
+"(line_bank_account)s' which is not attached to the mandate '%(mandate_ref)s' "
+"(this mandate is attached to the bank account '%(mandate_bank_account)s')."
 msgstr ""
-"La riga di pagamento numero {line_number} ha il conto bancario "
-"'{line_bank_account}' che non è collegato al mandato '{mandate_ref}' (questo "
-"mandato è collegato al conto bancario '{mandate_bank_account}')."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -655,11 +659,9 @@ msgstr "Cronologia comunicazioni sito web"
 #. odoo-python
 #: code:addons/account_payment_mandate/models/res_partner_bank.py:0
 msgid ""
-"You cannot change the company of Partner Bank %s, as there exists mandates "
+"You cannot change the company of bank account '%s' as there are mandates "
 "referencing it that belong to another company."
 msgstr ""
-"Non puoi cambiare la company della banca del partner %s, poiché ci sono "
-"mandati collegati che appartengono ad un altra company."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -678,6 +680,32 @@ msgid ""
 msgstr ""
 "Dovresti reimpostare un mandato a Bozza solo se lo hai cancellato per "
 "errore. Vuoi continuare?"
+
+#. module: account_payment_mandate
+#. odoo-python
+#: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
+msgid "mandate_id"
+msgstr ""
+
+#~ msgid "Group By"
+#~ msgstr "Raggruppa per"
+
+#~ msgid ""
+#~ "The payment line number {line_number} has the bank account "
+#~ "'{line_bank_account}' which is not attached to the mandate "
+#~ "'{mandate_ref}' (this mandate is attached to the bank account "
+#~ "'{mandate_bank_account}')."
+#~ msgstr ""
+#~ "La riga di pagamento numero {line_number} ha il conto bancario "
+#~ "'{line_bank_account}' che non è collegato al mandato '{mandate_ref}' "
+#~ "(questo mandato è collegato al conto bancario '{mandate_bank_account}')."
+
+#~ msgid ""
+#~ "You cannot change the company of Partner Bank %s, as there exists "
+#~ "mandates referencing it that belong to another company."
+#~ msgstr ""
+#~ "Non puoi cambiare la company della banca del partner %s, poiché ci sono "
+#~ "mandati collegati che appartengono ad un altra company."
 
 #~ msgid "Banking Mandate"
 #~ msgstr "Mandato Bancario"

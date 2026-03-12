@@ -214,6 +214,12 @@ msgstr "Mandats de prélèvement automatique"
 
 #. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_line__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_method__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_order__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner__display_name
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner_bank__display_name
 msgid "Display Name"
 msgstr "Nom affiché"
 
@@ -266,17 +272,18 @@ msgid "Format"
 msgstr "Format"
 
 #. module: account_payment_mandate
-#: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_search
-msgid "Group By"
-msgstr "Regrouper par"
-
-#. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__has_message
 msgid "Has Message"
 msgstr ""
 
 #. module: account_payment_mandate
 #: model:ir.model.fields,field_description:account_payment_mandate.field_account_banking_mandate__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_move__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_line__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_method__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_account_payment_order__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner__id
+#: model:ir.model.fields,field_description:account_payment_mandate.field_res_partner_bank__id
 msgid "ID"
 msgstr "ID"
 
@@ -330,9 +337,9 @@ msgstr "Mis à jour le"
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
 msgid ""
-"Mandate %(mandate)s is configured with partner %(partner)s and bank account "
-"%(bank_account)s, but this bank account belongs to partner "
-"%(partner_bank_account)s."
+"Mandate %(mandate)s is configured with partner %(partner)s and bank account %"
+"(bank_account)s, but this bank account belongs to partner %"
+"(partner_bank_account)s."
 msgstr ""
 
 #. module: account_payment_mandate
@@ -385,7 +392,7 @@ msgid "Mandate Required"
 msgstr "Mandat requis"
 
 #. module: account_payment_mandate
-#: model_terms:ir.ui.view,arch_db:account_payment_mandate.partner_view_buttons
+#: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_partner_property_form
 msgid "Mandate(s)"
 msgstr "Mandat(s)"
 
@@ -603,15 +610,11 @@ msgstr ""
 #. module: account_payment_mandate
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_payment_line.py:0
-#, fuzzy
 msgid ""
-"The payment line number {line_number} has the bank account "
-"'{line_bank_account}' which is not attached to the mandate "
-"'{mandate_ref}' (this mandate is attached to the bank account "
-"'{mandate_bank_account}')."
+"The payment line number %(line_number)s has the bank account '%"
+"(line_bank_account)s' which is not attached to the mandate '%(mandate_ref)s' "
+"(this mandate is attached to the bank account '%(mandate_bank_account)s')."
 msgstr ""
-"La ligne de paiement %s a le compte bancaire '%s' qui n'est pas attaché au "
-"mandat '%s' (ce mandat est attaché au compte bancaire '%s')."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -661,11 +664,9 @@ msgstr "Historique des échanges sur le site Web"
 #. odoo-python
 #: code:addons/account_payment_mandate/models/res_partner_bank.py:0
 msgid ""
-"You cannot change the company of Partner Bank %s, as there exists mandates "
+"You cannot change the company of bank account '%s' as there are mandates "
 "referencing it that belong to another company."
 msgstr ""
-"Vous ne pouvez pas changer la banque %s de la société du partenaire, car il "
-"y a des mandats d'autres sociétés qui y font référence."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -685,6 +686,32 @@ msgid ""
 msgstr ""
 "Vous ne devez remettre un mandat en brouillon que si vous l'avez annulé par "
 "erreur. Voulez-vous continuer ?"
+
+#. module: account_payment_mandate
+#. odoo-python
+#: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
+msgid "mandate_id"
+msgstr ""
+
+#~ msgid "Group By"
+#~ msgstr "Regrouper par"
+
+#, fuzzy
+#~ msgid ""
+#~ "The payment line number {line_number} has the bank account "
+#~ "'{line_bank_account}' which is not attached to the mandate "
+#~ "'{mandate_ref}' (this mandate is attached to the bank account "
+#~ "'{mandate_bank_account}')."
+#~ msgstr ""
+#~ "La ligne de paiement %s a le compte bancaire '%s' qui n'est pas attaché "
+#~ "au mandat '%s' (ce mandat est attaché au compte bancaire '%s')."
+
+#~ msgid ""
+#~ "You cannot change the company of Partner Bank %s, as there exists "
+#~ "mandates referencing it that belong to another company."
+#~ msgstr ""
+#~ "Vous ne pouvez pas changer la banque %s de la société du partenaire, car "
+#~ "il y a des mandats d'autres sociétés qui y font référence."
 
 #~ msgid "Banking Mandate"
 #~ msgstr "Mandat bancaire"
