@@ -11,11 +11,11 @@
             name="model_id"
             ref="account_payment_batch_oca.model_account_payment_order"
         />
-        <field name="lang">{{ ctx['partner_lang'] }}</field>
+        <field name="lang">{{ ctx.get('partner_lang') }}</field>
         <field
             name="email_from"
         >{{ object.company_id.email_formatted or user.email_formatted }}</field>
-        <field name="partner_to">{{ ctx['partner_to'] }}</field>
+        <field name="partner_to">{{ ctx.get('partner_to') }}</field>
         <field name="auto_delete" eval="True" />
         <field
             name="subject"
@@ -39,7 +39,7 @@
                 >debit(s)</t><t
                     t-if="object.payment_type == 'outbound'"
                 >payment(s)</t> below for <strong>
-                    <t t-out="ctx['partner_display_name']">Azur Interior</t>
+                    <t t-out="ctx.get('partner_display_name')">Azur Interior</t>
                 </strong>.</p>
                 <table
                     style="border-spacing: 0; border-collapse: collapse; width: 100%; text-align: center;"
@@ -53,7 +53,7 @@
                         <th style="padding: 5px; border: 2px solid black;">Amount</th>
                         <th
                             style="padding: 5px; border: 2px solid black;"
-                            t-if="ctx['detail_col']"
+                            t-if="ctx.get('detail_col')"
                         >Details</th>
                         <th style="padding: 5px; border: 2px solid black;">
                             <t
@@ -64,7 +64,7 @@
                             >Destination Bank Account</t>
                         </th>
                     </tr>
-                    <t t-foreach="ctx['payments']" t-as="payment">
+                    <t t-foreach="ctx.get('payments')" t-as="payment">
                         <tr>
                             <td
                                 style="padding: 5px; border: 2px solid black; text-align: center;"
@@ -83,7 +83,7 @@
                             </td>
                             <td
                                 style="padding: 5px; border: 2px solid black;"
-                                t-if="ctx['detail_col']"
+                                t-if="ctx.get('detail_col')"
                             >
                                 <table
                                     t-if="payment['lines']"
