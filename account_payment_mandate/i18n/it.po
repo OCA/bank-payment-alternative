@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: bank-payment (10.0)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-21 10:17+0000\n"
-"PO-Revision-Date: 2025-07-07 09:25+0000\n"
+"PO-Revision-Date: 2026-03-16 10:45+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian (http://www.transifex.com/oca/OCA-bank-payment-10-0/"
 "language/it/)\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: account_payment_mandate
 #: model_terms:ir.actions.act_window,help:account_payment_mandate.mandate_action
@@ -610,6 +610,9 @@ msgid ""
 "(line_bank_account)s' which is not attached to the mandate '%(mandate_ref)s' "
 "(this mandate is attached to the bank account '%(mandate_bank_account)s')."
 msgstr ""
+"La riga di pagamento numero %(line_number)s ha il conto bancario '%"
+"(line_bank_account)s' che non è collegato al mandato '%(mandate_ref)s' "
+"(questo mandato è collegato al conto bancario '%(mandate_bank_account)s')."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -662,6 +665,8 @@ msgid ""
 "You cannot change the company of bank account '%s' as there are mandates "
 "referencing it that belong to another company."
 msgstr ""
+"Non si può modificare l'azienda del conto bancario '%s' perché ci sono "
+"mandati relativi ad esso che appartengono ad un'altra azienda."
 
 #. module: account_payment_mandate
 #: model_terms:ir.ui.view,arch_db:account_payment_mandate.view_mandate_form
@@ -685,7 +690,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment_mandate/models/account_banking_mandate.py:0
 msgid "mandate_id"
-msgstr ""
+msgstr "mandate_id"
 
 #~ msgid "Group By"
 #~ msgstr "Raggruppa per"
