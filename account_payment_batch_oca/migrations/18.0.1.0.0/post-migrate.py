@@ -55,6 +55,14 @@ def migrate(env, version):
         AND account_payment_method.id = apml.payment_method_id
     """)
 
+    env.cr.execute(
+        "UPDATE account_move SET reference_type='free' WHERE reference_type='none'"
+    )
+    env.cr.execute(
+        "UPDATE account_payment_line SET communication_type='free' "
+        "WHERE communication_type='normal'"
+    )
+
     # generate lot for confirmed payment orders
     for order in env["account.payment.order"].search([("state", "=", "open")]):
         lots = {}
