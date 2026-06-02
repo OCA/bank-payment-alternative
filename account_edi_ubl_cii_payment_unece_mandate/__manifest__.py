@@ -16,6 +16,7 @@
         "account_payment_mandate",
     ],
     "data": [
+        "data/cii_22_templates.xml",
         "data/ubl_20_templates.xml",
     ],
     "installable": True,

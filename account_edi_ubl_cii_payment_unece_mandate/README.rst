@@ -30,7 +30,7 @@ Electronic invoices with UBL/CII - UNECE payments with mandates
 
 Integrate payment mandates (module ``account_payment_mandate`` from
 `OCA/bank-payment-alternative <https://github.com/OCA/bank-payment-alternative/>`__)
-with Odoo standard UBL electronic invoices (module
+with Odoo standard UBL/CII electronic invoices (module
 ``account_edi_ubl_cii``).
 
 It is based on UNECE Payment Means (module
