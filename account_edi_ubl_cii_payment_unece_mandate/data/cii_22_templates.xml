@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Extend CII template to support Payment Mandate for Direct Debit
+        (UNECE code 49 and 59) -->
+    <template
+        id="account_invoice_facturx_export_22"
+        inherit_id="account_edi_ubl_cii.account_invoice_facturx_export_22"
+    >
+        <xpath
+            expr="//*[local-name()='SpecifiedTradeSettlementPaymentMeans']"
+            position="inside"
+        >
+            <t
+                xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
+            >
+                <t t-if="record.mandate_id and payment_means_code in ('49', '59')">
+                    <ram:MandateID t-out="record.mandate_id.unique_mandate_reference" />
+                    <ram:PayerPartyDebtorFinancialAccount
+                        t-if="record.mandate_id and record.mandate_id.partner_bank_id"
+                    >
+                        <ram:IBANID
+                            t-if="record.mandate_id.partner_bank_id.acc_type == 'iban'"
+                            t-out="record.mandate_id.partner_bank_id.sanitized_acc_number"
+                        />
+                        <ram:ProprietaryID
+                            t-if="record.mandate_id.partner_bank_id.acc_type != 'iban'"
+                            t-out="record.mandate_id.partner_bank_id.sanitized_acc_number"
+                        />
+                    </ram:PayerPartyDebtorFinancialAccount>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>
