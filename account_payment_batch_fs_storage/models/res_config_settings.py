@@ -1,14 +1,11 @@
 # Copyright 2024 ACSONE SA/NV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import ast
-
-from odoo import Command, _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
 class ResConfigSettings(models.TransientModel):
-
     _inherit = "res.config.settings"
 
     fs_storage_source_payment = fields.Selection(
@@ -17,52 +14,38 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
     )
 
-    fs_storage_ids = fields.Many2many("fs.storage", string="Fs Storage allowed")
+    fs_storage_ids = fields.Many2many(
+        comodel_name="fs.storage",
+        string="Fs Storage allowed",
+        compute="_compute_fs_storage_ids",
+        inverse="_inverse_fs_storage_ids",
+    )
 
-    @api.model
-    def get_values(self):
-        res = super().get_values()
-        fs_storage_ids = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param(
-                "account_payment_batch_fs_storage"
-                f".fs_storage_ids_{self.env.company.id}"
-            )
-        )
-        res.update(
-            fs_storage_ids=[Command.set(ast.literal_eval(fs_storage_ids))]
-            if fs_storage_ids
-            else False
-        )
-        return res
+    @api.depends("company_id")
+    def _compute_fs_storage_ids(self):
+        for rec in self:
+            rec.fs_storage_ids = rec.company_id.fs_storage_ids
 
-    @api.model
-    def set_values(self):
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.env.company.id}",
-            self.fs_storage_ids.ids,
-        )
-        return super().set_values()
+    def _inverse_fs_storage_ids(self):
+        for rec in self:
+            rec.company_id.fs_storage_ids = rec.fs_storage_ids
 
     @api.constrains("fs_storage_ids")
     def _check_fs_storage_ids(self):
         fs_storage_source = self.fs_storage_source_payment
-        if fs_storage_source == "method_line":
-            used_storages = (
-                self.env["account.payment.method.line"].search([]).mapped("storage")
-            )
-        else:
-            used_storages = (
-                self.env["account.payment.method"].search([]).mapped("storage")
-            )
-        if any(used_storages):
-            ids = [int(storage_id) for storage_id in used_storages if storage_id]
-            allowed_storages = self.fs_storage_ids
-            if not set(allowed_storages.ids).issuperset(ids):
-                raise UserError(
-                    _(
-                        "Storage is already used on at least one payment %(source)s",
-                        source=fs_storage_source,
-                    )
+        model = (
+            "account.payment.method.line"
+            if fs_storage_source == "method_line"
+            else "account.payment.method"
+        )
+        allowed_storage_ids = [str(s.id) for s in self.fs_storage_ids]
+        domain = allowed_storage_ids + [False, ""]
+        used_not_allowed = self.env[model].search([("storage", "not in", domain)])
+        if used_not_allowed:
+            raise UserError(
+                self.env._(
+                    "Storage is already used on at least "
+                    "one payment %(payment_source)s",
+                    payment_source=fs_storage_source,
                 )
+            )

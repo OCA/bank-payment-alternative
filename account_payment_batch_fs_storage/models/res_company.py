@@ -5,7 +5,6 @@ from odoo import fields, models
 
 
 class ResCompany(models.Model):
-
     _inherit = "res.company"
 
     fs_storage_source_payment = fields.Selection(
@@ -15,4 +14,9 @@ class ResCompany(models.Model):
             ("method", "Payment Method"),
         ],
         default="method_line",
+    )
+
+    fs_storage_ids = fields.Many2many(
+        comodel_name="fs.storage",
+        string="Allowed FS Storages",
     )

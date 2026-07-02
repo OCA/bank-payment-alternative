@@ -51,7 +51,7 @@ This module depends on :
 - account_payment_order
 - fs_storage
 
-This module is part of the OCA/bank-payment suite.
+This module is part of the OCA/bank-payment-alternative suite.
 
 Configuration
 =============

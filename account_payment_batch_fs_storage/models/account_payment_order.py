@@ -3,7 +3,7 @@
 import base64
 import logging
 
-from odoo import _, api, models
+from odoo import api, models
 from odoo.exceptions import UserError
 from odoo.modules.registry import Registry
 
@@ -11,7 +11,6 @@ _logger = logging.getLogger(__name__)
 
 
 class AccountPaymentOrder(models.Model):
-
     _inherit = "account.payment.order"
 
     def _get_storage(self):
@@ -35,8 +34,9 @@ class AccountPaymentOrder(models.Model):
             details = str(e) or str(type(e))
             _logger.error(details)
             raise UserError(
-                _("Unknown issue to upload the file on the storage:\n{details}").format(
-                    details=details
+                self.env._(
+                    "Unknown issue to upload the file on the storage:\n{details}",
+                    details=details,
                 )
             ) from e
         return True
@@ -62,14 +62,17 @@ class AccountPaymentOrder(models.Model):
                     try:
                         attachment = order._get_payment_attachment_to_export()
                         if not attachment:
-                            raise UserError(_("Attachment to upload not found!"))
+                            raise UserError(
+                                self.env._("Attachment to upload not found!")
+                            )
                         content = base64.b64decode(attachment.datas)
                         order._export_to_storage(content, attachment.name)
                     except UserError:
                         self.action_cancel()
                         self.message_post(
-                            body=_(
-                                "Order set to canceled due to Error while uploading file"
+                            body=self.env._(
+                                "Order set to canceled due to Error "
+                                "while uploading file"
                             )
                         )
 
@@ -78,8 +81,8 @@ class AccountPaymentOrder(models.Model):
                 "tag": "display_notification",
                 "params": {
                     "type": "success",
-                    "title": _("Generate and export"),
-                    "message": _(
+                    "title": self.env._("Generate and export"),
+                    "message": self.env._(
                         "The file has been scheduled to be dropped on the storage."
                     ),
                     "sticky": True,

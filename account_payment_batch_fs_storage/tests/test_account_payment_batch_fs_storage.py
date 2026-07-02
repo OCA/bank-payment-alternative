@@ -4,7 +4,6 @@ from contextlib import contextmanager
 from datetime import date
 from unittest.mock import patch
 
-from odoo import _
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -35,13 +34,15 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
             }
         )
 
-        cls.payment_method = cls.env.ref(
-            "account.account_payment_method_manual_out"
-        ).sudo().copy(
-            {
-                "name": "method test",
-                "code": "test",
-            }
+        cls.payment_method = (
+            cls.env.ref("account.account_payment_method_manual_out")
+            .sudo()
+            .copy(
+                {
+                    "name": "method test",
+                    "code": "test",
+                }
+            )
         )
 
         cls.bank_journal = cls.company_data["default_journal_bank"]
@@ -84,7 +85,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
     @contextmanager
     def with_raise_error_while_exporting(self):
         def dummy_raise():
-            raise UserError(_("Error"))
+            raise UserError(self.env._("Error"))
 
         path = (
             "odoo.addons.account_payment_batch_fs_storage.models"
@@ -116,10 +117,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
     def test_payment_method_fs_storage(self):
         self.env.user.company_id = self.company.id
         self.company.fs_storage_source_payment = "method"
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.company.id}",
-            [self.fs_storage_method.id],
-        )
+        self.company.fs_storage_ids = self.fs_storage_method
         self.payment_method.storage = str(self.fs_storage_method.id)
 
         order = self._make_order(self.payment_method_line, self.bank_journal)
@@ -135,7 +133,8 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
                 "params": {
                     "type": "success",
                     "title": "Generate and export",
-                    "message": "The file has been scheduled to be dropped on the storage.",
+                    "message": "The file has been scheduled to be dropped "
+                    "on the storage.",
                     "sticky": True,
                     "next": {"type": "ir.actions.client", "tag": "reload"},
                 },
@@ -149,11 +148,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
         self.company.fs_storage_source_payment = "method"
         method_config = self.env["res.config.settings"].create({})
         method_config.fs_storage_source_payment = "method"
-        method_config.fs_storage_ids = [self.fs_storage_method.id]
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.company.id}",
-            [self.fs_storage_method.id],
-        )
+        method_config.fs_storage_ids = self.fs_storage_method
 
         self.payment_method.storage = str(self.fs_storage_method.id)
         self.assertEqual(self.payment_method.storage, str(self.fs_storage_method.id))
@@ -169,10 +164,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
     def test_method_fs_storage_other_company(self):
         self.env.user.company_id = self.other_company.id
         self.other_company.fs_storage_source_payment = "method"
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.other_company.id}",
-            [self.fs_storage_method.id],
-        )
+        self.other_company.fs_storage_ids = self.fs_storage_method
         self.payment_method.storage = str(self.fs_storage_method.id)
 
         order = self._make_order(self.payment_method_line2, self.bank_journal2)
@@ -188,7 +180,8 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
                 "params": {
                     "type": "success",
                     "title": "Generate and export",
-                    "message": "The file has been scheduled to be dropped on the storage.",
+                    "message": "The file has been scheduled to be dropped "
+                    "on the storage.",
                     "sticky": True,
                     "next": {"type": "ir.actions.client", "tag": "reload"},
                 },
@@ -200,10 +193,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
     def test_payment_method_line_fs_storage(self):
         self.env.user.company_id = self.company.id
         self.company.fs_storage_source_payment = "method_line"
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.company.id}",
-            [self.fs_storage_method_line.id],
-        )
+        self.company.fs_storage_ids = self.fs_storage_method_line
         self.payment_method_line.storage = str(self.fs_storage_method_line.id)
 
         order = self._make_order(self.payment_method_line, self.bank_journal)
@@ -219,7 +209,8 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
                 "params": {
                     "type": "success",
                     "title": "Generate and export",
-                    "message": "The file has been scheduled to be dropped on the storage.",
+                    "message": "The file has been scheduled to be dropped "
+                    "on the storage.",
                     "sticky": True,
                     "next": {"type": "ir.actions.client", "tag": "reload"},
                 },
@@ -233,11 +224,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
         self.company.fs_storage_source_payment = "method_line"
         line_config = self.env["res.config.settings"].create({})
         line_config.fs_storage_source_payment = "method_line"
-        line_config.fs_storage_ids = [self.fs_storage_method_line.id]
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.company.id}",
-            [self.fs_storage_method_line.id],
-        )
+        line_config.fs_storage_ids = self.fs_storage_method_line
 
         self.payment_method_line.storage = str(self.fs_storage_method_line.id)
         self.assertEqual(
@@ -255,10 +242,7 @@ class TestAccountPaymentBatchFsStorage(AccountTestInvoicingCommon):
     def test_error_while_uploading(self):
         self.env.user.company_id = self.company.id
         self.company.fs_storage_source_payment = "method_line"
-        self.env["ir.config_parameter"].sudo().set_param(
-            f"account_payment_batch_fs_storage.fs_storage_ids_{self.company.id}",
-            [self.fs_storage_method_line.id],
-        )
+        self.company.fs_storage_ids = self.fs_storage_method_line
         self.payment_method_line.storage = str(self.fs_storage_method_line.id)
 
         order = self._make_order(self.payment_method_line, self.bank_journal)
