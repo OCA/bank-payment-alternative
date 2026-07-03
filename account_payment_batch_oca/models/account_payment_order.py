@@ -500,6 +500,7 @@ class AccountPaymentOrder(models.Model):
         return action
 
     def _get_mail_notif_data(self, payment_ids):
+        partner2mail = {}
         for payment in payment_ids:
             if payment.partner_id not in partner2mail:
                 partner2mail[payment.partner_id] = {
@@ -513,11 +514,11 @@ class AccountPaymentOrder(models.Model):
                     partner2mail[payment.partner_id][
                         "dest_partners"
                     ] |= line.mail_notif_partner_id
+        return partner2mail
 
     def _post_and_reconcile_payments(self, payment_ids, mail_notif):
         payment_ids.action_post()
         method_line = self.payment_method_line_id
-        partner2mail = {}
         # Perform the reconciliation of payments and source journal items
         # Reminder : in v18, account.payment doesn't always have a move_id
         for payment in payment_ids:
@@ -584,7 +585,7 @@ class AccountPaymentOrder(models.Model):
         self.ensure_one()
         method_line = self.payment_method_line_id
         mail_notif = method_line.mail_notif
-        partner2mail = self._post_and_reconcile_payments(self.payment_ids, mail_notif)
+        self._post_and_reconcile_payments(self.payment_ids, mail_notif)
         if mail_notif:
             self._send_mail_notif(self.payment_ids, method_line)
         self.write(
