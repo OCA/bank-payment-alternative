@@ -449,3 +449,48 @@ class TestPaymentOrderOutbound(TestPaymentOrderOutboundBase):
         self.assertEqual(len(payment_order.payment_line_ids), 1)
 
         self.assertEqual("F1242 R1234", payment_order.payment_line_ids.communication)
+
+    def test_mail_template_resolution(self):
+        """Check explicit override, method-line default, and cleared default.
+        - new method line defaults to the native OCA template
+        - returns the template configured on the method line when no override is passed
+        - an explicit template (passed by ID) takes over the method-line value
+        - returns False when order_uploaded_mail_template_id is cleared
+        """
+        default_template = self.env.ref(
+            "account_payment_batch_oca.payment_order_mail_notif"
+        )
+        self.assertEqual(self.mode.order_uploaded_mail_template_id, default_template)
+        self.assertEqual(
+            self.env["account.payment.order"]
+            .new({"payment_method_line_id": self.mode.id})
+            ._get_generated_uploaded_notification_template(),
+            default_template,
+        )
+
+        custom_template = self.env["mail.template"].create(
+            {
+                "name": "Custom payment order notification",
+                "model_id": self.env["ir.model"]._get_id("account.payment.order"),
+                "subject": "Custom subject",
+                "body_html": "<p>Custom body</p>",
+            }
+        )
+        self.mode.order_uploaded_mail_template_id = custom_template
+
+        order = self.env["account.payment.order"].new(
+            {
+                "payment_type": "outbound",
+                "payment_method_line_id": self.mode.id,
+            }
+        )
+        self.assertEqual(
+            order._get_generated_uploaded_notification_template(),
+            custom_template,
+        )
+        self.assertEqual(
+            order._get_generated_uploaded_notification_template(default_template.id),
+            default_template,
+        )
+        self.mode.order_uploaded_mail_template_id = False
+        self.assertFalse(order._get_generated_uploaded_notification_template())
