@@ -37,6 +37,22 @@
                     />
                 </page>
             </page>
+            <button name="clean_reconcile" position="before">
+                <button
+                    name="%(account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_action)d"
+                    type="action"
+                    string="Payment Rejection"
+                    invisible="is_reconciled or amount &lt; 0"
+                    class="btn btn-secondary mx-1"
+                />
+                <button
+                    name="%(account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_action)d"
+                    type="action"
+                    string="Debit Rejection"
+                    invisible="is_reconciled or amount &gt; 0"
+                    class="btn btn-secondary mx-1"
+                />
+            </button>
         </field>
     </record>
 </odoo>

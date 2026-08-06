@@ -15,6 +15,8 @@
     "website": "https://github.com/OCA/bank-payment-alternative",
     "depends": ["account_reconcile_oca", "account_payment_batch_oca"],
     "data": [
+        "security/ir.model.access.csv",
+        "wizards/account_payment_reconcile_rejection_view.xml",
         "views/account_payment_lot.xml",
         "views/account_bank_statement_line.xml",
     ],

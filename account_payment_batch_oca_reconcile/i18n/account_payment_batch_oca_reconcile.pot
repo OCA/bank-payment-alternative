@@ -6,6 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-13 09:39+0000\n"
+"PO-Revision-Date: 2026-03-13 09:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,8 +21,18 @@ msgid "Account Payment Lot"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
+#: model:ir.model,name:account_payment_batch_oca_reconcile.model_account_payment_reconcile_rejection
+msgid "Account Payment Reconcile Rejection"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
 #: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_bank_statement_line__add_payment_lot_id
 msgid "Add Payment Lot"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_amount
+msgid "Amount"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
@@ -29,6 +41,32 @@ msgid "Bank Statement Line"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_form
+msgid "Cancel"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__match_method__remittance_info
+msgid "Communication"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__company_id
+msgid "Company"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_date
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.account_payment_lot_reconcile_list
 msgid "Date"
 msgstr ""
@@ -39,8 +77,142 @@ msgid "Debit Lots"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.bank_statement_line_form_reconcile_view
+msgid "Debit Rejection"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.actions.act_window,name:account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_action
+msgid "Debit/Payment Rejection"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__match_method__endtoend_id
+msgid "End to end ID"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid ""
+"Failed to identify the journal item to unreconcile and set as counterpart of"
+" this bank statement line."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__id
+msgid "ID"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__payment_type__inbound
+msgid "Inbound"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
 #: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_lot__is_matched
 msgid "Is Matched"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_currency_id
+msgid "Journal Currency"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_payment_ref
+msgid "Label"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__match_method__partner_last
+msgid "Last payment of partner with that amount"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__match_method
+msgid "Match Method"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__match_method__partner_no_match
+msgid "No payment found."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__match_method__no_partner_no_match
+msgid "No payment found. Select a partner manually."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid ""
+"No sequence detected for payment/debit orders in company %s. This should "
+"never happen."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__payment_id
+msgid "Origin Payment"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__payment_memo
+msgid "Origin Payment Memo"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields.selection,name:account_payment_batch_oca_reconcile.selection__account_payment_reconcile_rejection__payment_type__outbound
+msgid "Outbound"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid "Payment '%s' is not linked to an invoice."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid ""
+"Payment <a href=# data-oe-model=account.payment data-oe-"
+"id=%(pay_id)s>%(pay_name)s</a> of <strong>%(partner)s</strong> amount "
+"%(amount)s rejected."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid ""
+"Payment <a href=# data-oe-model=account.payment data-oe-"
+"id=%(pay_id)s>%(pay_name)s</a> rejected on %(date)s."
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
@@ -49,11 +221,121 @@ msgid "Payment Lots"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.bank_statement_line_form_reconcile_view
+msgid "Payment Rejection"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__payment_type
+msgid "Payment Type"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,help:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__payment_type
+msgid "Payment type of the origin payment"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_bank_statement_line__rejected_payment_max_amount
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_rejected_payment_max_amount
+msgid "Rejected Payment Max Amount"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_bank_statement_line__rejected_payment_min_amount
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_rejected_payment_min_amount
+msgid "Rejected Payment Min Amount"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_bank_statement_line__rejected_payment_min_date
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_rejected_payment_min_date
+msgid "Rejected Payment Min Date"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid ""
+"Sequence '%(seq)s' configured on the payment method '%(pay_method_line)s' "
+"doesn't have a prefix."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid ""
+"Sequence '%(seq)s' configured on the payment method '%(pay_method_line)s' "
+"has a dynamic prefix '%(prefix)s'. Only fixed prefixes are supported for the"
+" moment."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid "Sequence '%(seq)s' for payment/debit orders doesn't have a prefix."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid ""
+"Sequence '%(seq)s' for payment/debit orders has a dynamic prefix "
+"'%(prefix)s'. Only fixed prefixes are supported for the moment."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model:ir.model.fields,field_description:account_payment_batch_oca_reconcile.field_account_payment_reconcile_rejection__statement_line_id
+msgid "Statement Line"
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid "The Origin Payment is not set."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/models/account_bank_statement_line.py:0
+msgid "The amount of the bank statement line %s is zero."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid ""
+"The amount of the rejection (%(rej_amount)s) is different from the amount of"
+" the payment (%(pay_amount)s)."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#. odoo-python
+#: code:addons/account_payment_batch_oca_reconcile/wizards/account_payment_reconcile_rejection.py:0
+msgid ""
+"The currency of the payment (%(cur_payment)s) is different from the currency"
+" of the bank statement line (%(st_line_currency)s)."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
 #. odoo-python
 #: code:addons/account_payment_batch_oca_reconcile/models/account_payment_lot.py:0
 msgid ""
 "The selected payment lot %s is made of payments that are already reconciled "
 "or don't have a journal entry and are not linked to invoices."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_form
+msgid ""
+"This wizard handles rejections of debit orders and payment orders when the "
+"bank statement line correspond to the rejection of a single payment inside a"
+" payment/debit order."
+msgstr ""
+
+#. module: account_payment_batch_oca_reconcile
+#: model_terms:ir.ui.view,arch_db:account_payment_batch_oca_reconcile.account_payment_reconcile_rejection_form
+msgid "Validate"
 msgstr ""
 
 #. module: account_payment_batch_oca_reconcile
