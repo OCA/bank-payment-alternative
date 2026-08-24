@@ -15,7 +15,11 @@ class AccountPaymentMethod(models.Model):
     )
 
     def _get_selection_storage(self):
+        """
+        This is to avoid giving access to the model fs.storage
+        at groups other than base.group_system
+        """
         if self.env.company.fs_storage_source_payment == "method":
-            storages = self.env.company.fs_storage_ids
+            storages = self.env.company.sudo().fs_storage_ids
             return [(str(r.id), r.display_name) for r in storages]
         return []
