@@ -728,7 +728,7 @@ msgid ""
 "error message when you confirm a debit order that has a payment line with a "
 "payment date before the maturity date."
 msgstr ""
-"Si vous activez cette option sur un mode de paiement entrant, un message "
+"Si vous activez cette option sur une méthode de paiement entrant, un message "
 "d'erreur s'affichera lorsque vous confirmez un ordre de prélèvement "
 "comportant une ligne de paiement dont la date de paiement est antérieure à "
 "la date d'échéance."
@@ -951,7 +951,7 @@ msgstr ""
 #: code:addons/account_payment_batch_oca/models/account_move.py:0
 #, fuzzy
 msgid "No Payment Method on invoice '%s'."
-msgstr "Pas de mode de paiement sur la facture %s"
+msgstr "Pas de méthode de paiement sur la facture %s"
 
 #. module: account_payment_batch_oca
 #. odoo-python
@@ -961,7 +961,7 @@ msgid ""
 "No handler for payment method code '%s'. Maybe you haven't installed the "
 "related Odoo module."
 msgstr ""
-"Aucun gestionnaire pour ce mode de paiement. Vous n'avez peut-être pas "
+"Aucun gestionnaire pour cette méthode de paiement. Vous n'avez peut-être pas "
 "installé le module Odoo associé."
 
 #. module: account_payment_batch_oca
@@ -1210,7 +1210,7 @@ msgstr "Méthode de paiement"
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_method_line__default_payment_mode
 #, fuzzy
 msgid "Payment Method on Invoice"
-msgstr "Mode de paiement sur la facture"
+msgstr "Méthode de paiement sur la facture"
 
 #. module: account_payment_batch_oca
 #: model:ir.model,name:account_payment_batch_oca.model_account_payment_method
@@ -1496,7 +1496,7 @@ msgid ""
 "Maturity Date'. The payment line %(pline)s has a maturity date %(mdate)s "
 "which is after the computed payment date %(pdate)s."
 msgstr ""
-"Le mode de paiement '%(pmode)s' a l'option 'Disallow Debit Before Maturity "
+"La méthode de paiement '%(pmode)s' a l'option 'Disallow Debit Before Maturity "
 "Date'. La ligne de paiement %(pline)s a une date d'échéance %(mdate)s qui "
 "est postérieure à la date de paiement calculée %(pdate)s."
 

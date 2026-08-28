@@ -23,7 +23,7 @@ msgstr ""
 #. module: account_payment_base_oca_sale
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.report_sale_payment_mode
 msgid "<strong>Payment Mode:</strong>"
-msgstr "<strong>Mode de paiement :</strong>"
+msgstr "<strong>Méthode de paiement :</strong>"
 
 #. module: account_payment_base_oca_sale
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.report_sale_payment_mode
@@ -36,7 +36,7 @@ msgstr "Voici les instructions pour votre paiement"
 #: model_terms:ir.ui.view,arch_db:account_payment_base_oca_sale.view_order_product_search
 #, fuzzy
 msgid "Payment Method"
-msgstr "Mode de paiement"
+msgstr "Méthode de paiement"
 
 #. module: account_payment_base_oca_sale
 #: model:ir.model,name:account_payment_base_oca_sale.model_sale_report
