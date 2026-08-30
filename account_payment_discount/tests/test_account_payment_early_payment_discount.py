@@ -124,6 +124,12 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
         self.assertEqual(payment_order.payment_count, 1)
         self.assertEqual(payment_order.payment_lot_count, 1)
 
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            10.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+
         payment_order.open2generated()
         payment_order.generated2uploaded()
 
@@ -145,6 +151,22 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 target_amount,
                 places=payment_move_lines.currency_id.decimal_places,
             )
+
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            10.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.discount_amount_currency,
+            90.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.amount_residual_currency,
+            100.0,
+            places=payment_line.currency_id.decimal_places,
+        )
 
     def test_order_with_discount_and_tax(self):
         """One invoice with discount of 10% and tax of 15%"""
@@ -236,6 +258,27 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 target_amount,
                 places=payment_move_lines.currency_id.decimal_places,
             )
+
+        self.assertAlmostEqual(
+            payment_line.amount_residual_currency,
+            100.0 + 15.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.amount_currency,
+            90.0 + 13.50,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.discount_amount_currency,
+            90.0 + 13.50,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            10.0 + 1.50,
+            places=payment_line.currency_id.decimal_places,
+        )
 
     def test_order_with_discount_and_refund(self):
         """Invoice (100$) with discount(10%) and partially paid with refund(90$)"""
@@ -333,6 +376,27 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 target_amount,
                 places=payment_move_lines.currency_id.decimal_places,
             )
+
+        self.assertAlmostEqual(
+            payment_line.amount_residual_currency,
+            10.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.discount_amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            1.0,
+            places=payment_line.currency_id.decimal_places,
+        )
 
     def test_order_with_discount_forced(self):
         """Invoice (100$) with discount(10%) even if
@@ -435,6 +499,27 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 target_amount,
                 places=payment_move_lines.currency_id.decimal_places,
             )
+
+        self.assertAlmostEqual(
+            payment_line.amount_residual_currency,
+            10.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.discount_amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            1.0,
+            places=payment_line.currency_id.decimal_places,
+        )
 
     def test_with_2_nc(self):
         """Invoice (100$) with discount(10%) and partially paid with refunds(40+50)"""
@@ -540,6 +625,27 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 places=payment_move_lines.currency_id.decimal_places,
             )
 
+        self.assertAlmostEqual(
+            payment_line.amount_residual_currency,
+            10.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.discount_amount_currency,
+            9.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+        self.assertAlmostEqual(
+            payment_line.diff_amount_residual_currency_amount_discount_currency,
+            1.0,
+            places=payment_line.currency_id.decimal_places,
+        )
+
     def test_with_2_invoices(self):
         """Two invoices and discount of 10%"""
         self.invoice.invoice_payment_term_id = self.pay_terms_7_days_10_discount
@@ -631,6 +737,28 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                 amount,
                 target_amount,
                 places=payment_move_lines.currency_id.decimal_places,
+            )
+
+        for payment_line in payment_lines:
+            self.assertAlmostEqual(
+                payment_line.amount_residual_currency,
+                100.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.amount_currency,
+                90.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.discount_amount_currency,
+                90.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.diff_amount_residual_currency_amount_discount_currency,
+                10.0,
+                places=payment_line.currency_id.decimal_places,
             )
 
     def test_with_2_invoices_different_partner(self):
@@ -734,3 +862,24 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                     target_amount,
                     places=payment_move_lines.currency_id.decimal_places,
                 )
+
+            self.assertAlmostEqual(
+                payment_line.amount_residual_currency,
+                100.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.amount_currency,
+                90.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.discount_amount_currency,
+                90.0,
+                places=payment_line.currency_id.decimal_places,
+            )
+            self.assertAlmostEqual(
+                payment_line.diff_amount_residual_currency_amount_discount_currency,
+                10.0,
+                places=payment_line.currency_id.decimal_places,
+            )

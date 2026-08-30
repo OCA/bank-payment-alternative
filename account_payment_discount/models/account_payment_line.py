@@ -20,9 +20,11 @@ class AccountPaymentLine(models.Model):
     discount_amount_currency = fields.Monetary(
         compute="_compute_discount_amount_currency",
         help="Total amount discount included",
+        store=True,
     )
     amount_residual_currency = fields.Monetary(
         compute="_compute_amount_residual_currency",
+        store=True,
     )
 
     diff_amount_residual_currency_amount_discount_currency = fields.Monetary(
@@ -61,12 +63,14 @@ class AccountPaymentLine(models.Model):
 
         return ret
 
-    @api.depends(
-        "move_line_id.discount_amount_currency", "amount_currency", "pay_with_discount"
-    )
+    @api.depends("move_line_id", "amount_currency", "pay_with_discount")
     def _compute_discount_amount_currency(self):
         """Get total amount with discount including refunds amount (with discount)"""
         for rec in self:
+            if not rec.can_have_discount:
+                rec.discount_amount_currency = rec.amount_residual_currency
+                continue
+
             refund_lines = rec.move_line_id.reconciled_lines_ids.filtered(
                 lambda r: r.is_refund
             )
@@ -81,7 +85,7 @@ class AccountPaymentLine(models.Model):
 
             rec.discount_amount_currency = total_with_discount
 
-    @api.depends("move_line_id.amount_residual_currency", "payment_type")
+    @api.depends("move_line_id", "payment_type")
     def _compute_amount_residual_currency(self):
         for rec in self:
             rec.amount_residual_currency = rec.move_line_id.amount_residual_currency * (
