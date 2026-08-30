@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Akretion (https://www.akretion.com).
+     @author Sébastien Alix <sebastien.alix@akretion.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <template
+        id="ubl_20_PaymentMeansType"
+        inherit_id="account_edi_ubl_cii.ubl_20_PaymentMeansType"
+    >
+        <xpath expr="//*[local-name()='PaymentMeansCode']" position="after">
+            <t
+                xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            >
+                <cac:PaymentMandate>
+                    <cbc:ID t-out="vals.get('payment_mandate_id')" />
+                    <cac:PayerFinancialAccount>
+                        <cbc:ID t-out="vals.get('payer_financial_account_id')" />
+                    </cac:PayerFinancialAccount>
+                </cac:PaymentMandate>
+            </t>
+        </xpath>
+    </template>
+</odoo>
