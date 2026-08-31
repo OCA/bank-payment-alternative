@@ -26,7 +26,7 @@ msgid ""
 "A payment method of the same type already exists with this code and PAIN "
 "version"
 msgstr ""
-"Un mode de paiement du même type existe déjà avec ce code et cette version "
+"Une méthode de paiement du même type existe déjà avec ce code et cette version "
 "de PAIN"
 
 #. module: account_payment_sepa_base
@@ -676,7 +676,7 @@ msgstr "Communication réseau"
 #: code:addons/account_payment_sepa_base/models/account_payment_method.py:0
 msgid "No XSD file path found for payment method '%s'"
 msgstr ""
-"Aucun chemin de fichier XSD n'a été trouvé pour le mode de paiement '%s'"
+"Aucun chemin de fichier XSD n'a été trouvé pour la méthode de paiement '%s'"
 
 #. module: account_payment_sepa_base
 #: model:ir.model.fields.selection,name:account_payment_sepa_base.selection__account_payment_line__priority__norm
