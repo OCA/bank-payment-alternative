@@ -92,7 +92,7 @@ class AccountPaymentLine(models.Model):
     def _compute_diff_amount_residual_currency_amount_discount_currency(self):
         for rec in self:
             rec.diff_amount_residual_currency_amount_discount_currency = (
-                self.currency_id.round(
+                rec.currency_id.round(
                     rec.amount_residual_currency - rec.discount_amount_currency
                 )
             )
