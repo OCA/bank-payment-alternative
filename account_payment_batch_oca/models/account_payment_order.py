@@ -393,7 +393,6 @@ class AccountPaymentOrder(models.Model):
             # Prepare account payments from the payment lines
             payline_err_text = set()
             group_paylines = {}  # key = pay_key
-            pay_key2lot = {}  # key = pay_key, value = payment_lot
             lot_key2lot = {}  # key = lot_key, value = payment_lot
             for payline in order.payment_line_ids:
                 payline.write(payline._prepare_write_draft2open())
@@ -405,7 +404,6 @@ class AccountPaymentOrder(models.Model):
                     if order.payment_method_line_id.group_lines
                     else payline.id
                 )
-                lot_key = payline._lot_grouping_key()
                 if pay_key in group_paylines:
                     group_paylines[pay_key]["paylines"] |= payline
                     group_paylines[pay_key]["total"] += payline.amount_currency
@@ -414,12 +412,8 @@ class AccountPaymentOrder(models.Model):
                         "paylines": payline,
                         "total": payline.amount_currency,
                         "currency": payline.currency_id,
+                        "lot_key": payline._lot_grouping_key(),
                     }
-                if lot_key not in lot_key2lot:
-                    lot_key2lot[lot_key] = self.env["account.payment.lot"].create(
-                        payline._prepare_account_payment_lot_vals(len(lot_key2lot) + 1)
-                    )
-                pay_key2lot[pay_key] = lot_key2lot[lot_key]
             # Raise errors that happened on the validation process
             if payline_err_text:
                 raise UserError("\n".join(payline_err_text))
@@ -427,18 +421,18 @@ class AccountPaymentOrder(models.Model):
             # Create account payments
             lot2pay_seq = defaultdict(int)
             payment_vals = []
-            for pay_key, paydict in group_paylines.items():
-                # Block generation of negative account.payment
-                if paydict["currency"].compare_amounts(paydict["total"], 0) <= 0:
-                    raise UserError(
-                        _(
-                            "The amount for Partner '%(partner)s' is negative "
-                            "or null (%(amount).2f) !",
-                            partner=paydict["paylines"][0].partner_id.name,
-                            amount=paydict["total"],
+            for paydict in group_paylines.values():
+                order._draft2open_payment_group_check(paydict)
+                if paydict["currency"].is_zero(paydict["total"]):
+                    continue
+                lot_key = paydict["lot_key"]
+                if lot_key not in lot_key2lot:
+                    lot_key2lot[lot_key] = self.env["account.payment.lot"].create(
+                        paydict["paylines"][:1]._prepare_account_payment_lot_vals(
+                            len(lot_key2lot) + 1
                         )
                     )
-                lot = pay_key2lot[pay_key]
+                lot = lot_key2lot[lot_key]
                 lot2pay_seq[lot] += 1
                 payment_vals.append(
                     paydict["paylines"]._prepare_account_payment_vals(
@@ -447,6 +441,18 @@ class AccountPaymentOrder(models.Model):
                 )
             self.env["account.payment"].create(payment_vals)
         self.write({"state": "open"})
+
+    def _draft2open_payment_group_check(self, paydict):
+        # Block generation of negative account.payment
+        if paydict["currency"].compare_amounts(paydict["total"], 0) <= 0:
+            raise UserError(
+                _(
+                    "The amount for Partner '%(partner)s' is negative "
+                    "or null (%(amount).2f) !",
+                    partner=paydict["paylines"][0].partner_id.name,
+                    amount=paydict["total"],
+                )
+            )
 
     def generate_payment_file(self):
         """Returns (payment file as bytes, filename extension without the dot)"""
@@ -505,17 +511,8 @@ class AccountPaymentOrder(models.Model):
         method_line = self.payment_method_line_id
         mail_notif = method_line.mail_notif
         partner2mail = {}
-        # Perform the reconciliation of payments and source journal items
-        # Reminder : in v18, account.payment doesn't always have a move_id
         for payment in self.payment_ids:
-            if payment.move_id:
-                lines_to_rec = self.env["account.move.line"]
-                for line in (
-                    payment.payment_line_ids.move_line_id + payment.move_id.line_ids
-                ):
-                    if line.account_id.id == payment.destination_account_id.id:
-                        lines_to_rec |= line
-                lines_to_rec.reconcile()
+            payment._reconcile_payment_lines()
             if mail_notif:
                 if payment.partner_id not in partner2mail:
                     partner2mail[payment.partner_id] = {

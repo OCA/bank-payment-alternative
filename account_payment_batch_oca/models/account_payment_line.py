@@ -230,7 +230,7 @@ class AccountPaymentLine(models.Model):
         # Don't group the payment lines that are attached to the same supplier
         # but to move lines with different accounts (very unlikely),
         # for easier generation/comprehension of the transfer move
-        key.append(self.move_line_id and self.move_line_id.account_id.id or False)
+        key.append(self._payment_line_grouping_account_key())
         # Don't group the payment lines that use a structured communication
         # otherwise it would break the structured communication system !
         if self.communication_type != "free":
@@ -238,6 +238,10 @@ class AccountPaymentLine(models.Model):
         else:
             key.append(None)
         return tuple(key)
+
+    def _payment_line_grouping_account_key(self):
+        self.ensure_one()
+        return self.move_line_id and self.move_line_id.account_id.id or False
 
     def _lot_grouping_key(self):
         self.ensure_one()

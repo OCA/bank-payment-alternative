@@ -56,6 +56,18 @@ class AccountPayment(models.Model):
                 pay.outstanding_account_id = False
         return res
 
+    def _reconcile_payment_lines(self):
+        # Perform the reconciliation of payments and source journal items
+        # Reminder : in v18, account.payment doesn't always have a move_id
+        self.ensure_one()
+        if not self.move_id:
+            return
+        lines_to_rec = self.env["account.move.line"]
+        for line in self.payment_line_ids.move_line_id + self.move_id.line_ids:
+            if line.account_id.id == self.destination_account_id.id:
+                lines_to_rec |= line
+        lines_to_rec.reconcile()
+
     def _prepare_payment_order_mail(self, lang, account_number_scrambled_ctx):
         res = []
         detail_col = False
