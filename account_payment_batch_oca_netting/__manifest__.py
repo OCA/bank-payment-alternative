@@ -15,6 +15,7 @@
     "data": [
         "views/account_payment_method_line.xml",
         "views/account_payment_order.xml",
+        "wizard/account_payment_line_create_view.xml",
     ],
     "installable": True,
 }

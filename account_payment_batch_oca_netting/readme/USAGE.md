@@ -1,6 +1,14 @@
 Add the receivables to net to a supplier payment order: the amount of their
 payment line is negative, and can be lowered to net only part of the residual.
 
+On a netting payment method line, the "Create Transactions" wizard has an
+"Include receivables" option, checked by default: it also proposes the
+unreconciled debit journal items of the partners that have a payable in the
+order or in the selection, with the same date, target moves, partner and
+invoice filters as payables. The journals and payment method filters apply to
+payables only, as receivables usually come from sale or miscellaneous journals.
+Journal items of payments and bank statement lines are not proposed.
+
 On confirmation, the order is refused if the net amount of a transfer group is
 negative, even when the partner's total over all its bank accounts is positive.
 
