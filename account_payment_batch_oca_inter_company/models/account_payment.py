@@ -107,39 +107,42 @@ class AccountPayment(models.Model):
             )
         return account
 
+    def _get_mirror_sign(self):
+        self.ensure_one()
+        return -1 if self.payment_type == "outbound" else 1
+
     def _prepare_move_line_pending_account(self, bank_journal):
         self.ensure_one()
-        sign = -1 if self.payment_type == "outbound" else 1
         return {
             "partner_id": self.company_id.partner_id.id,
             "name": self.payment_reference,
             "account_id": self._get_inter_company_outstanding_account(bank_journal).id,
-            "balance": -sign * self.amount,
+            "balance": -self._get_mirror_sign() * self.amount,
         }
 
-    def _prepare_move_line_invoice(self, payment_line, dest_invoice, dest_company):
+    def _prepare_mirror_move_line(self, payment_line, dest_line, dest_company):
         self.ensure_one()
-        if dest_invoice:
+        balance = self._get_mirror_sign() * payment_line.amount_currency
+        if dest_line:
+            dest_invoice = dest_line.move_id
             partner = dest_invoice.commercial_partner_id
+            account = dest_line.account_id
             if dest_invoice.state == "draft":
                 name = dest_invoice.ref
             else:
                 name = dest_invoice.name
         else:
-            partner = self.company_id.partner_id
+            partner = self.company_id.partner_id.with_company(dest_company)
             name = payment_line.communication
-        partner = partner.with_company(dest_company)
-        if self.payment_type == "outbound":
-            account = partner.property_account_receivable_id
-            sign = -1
-        else:
-            account = partner.property_account_payable_id
-            sign = 1
+            if balance < 0:
+                account = partner.property_account_receivable_id
+            else:
+                account = partner.property_account_payable_id
         return {
             "partner_id": partner.id,
             "name": name,
             "account_id": account.id,
-            "balance": sign * payment_line.amount_currency,
+            "balance": balance,
         }
 
     def _get_dest_invoice(self, payment_line, dest_company):
@@ -166,18 +169,23 @@ class AccountPayment(models.Model):
             "line_ids": [Command.create(vals) for vals in line_vals_list],
         }
 
+    def _get_dest_line(self, payment_line, dest_company):
+        dest_invoice = self._get_dest_invoice(payment_line, dest_company)
+        return dest_invoice.line_ids.filtered(
+            lambda line: line.account_id.account_type
+            in ("asset_receivable", "liability_payable")
+        )[:1]
+
     def _create_inter_company_move(self, bank_journal):
         self.ensure_one()
         dest_company = bank_journal.company_id
-        dest_invoices = [
-            self._get_dest_invoice(payment_line, dest_company)
+        dest_line_by_payment_line = {
+            payment_line: self._get_dest_line(payment_line, dest_company)
             for payment_line in self.payment_line_ids
-        ]
+        }
         line_vals_list = [
-            self._prepare_move_line_invoice(payment_line, dest_invoice, dest_company)
-            for payment_line, dest_invoice in zip(
-                self.payment_line_ids, dest_invoices, strict=True
-            )
+            self._prepare_mirror_move_line(payment_line, dest_line, dest_company)
+            for payment_line, dest_line in dest_line_by_payment_line.items()
         ] + [self._prepare_move_line_pending_account(bank_journal)]
         move = (
             self.env["account.move"]
@@ -185,18 +193,37 @@ class AccountPayment(models.Model):
             .create(self._prepare_inter_company_move_vals(bank_journal, line_vals_list))
         )
         move.action_post()
-        invoice_lines = move.line_ids.sorted("id")[:-1]
+        mirror_lines = move.line_ids.sorted("id")[:-1]
         self._reconcile_inter_company_lines(
-            zip(invoice_lines, dest_invoices, strict=True)
+            zip(mirror_lines, dest_line_by_payment_line.values(), strict=True)
+        )
+        self._notify_unreconciled_payment_lines(
+            move,
+            self.payment_line_ids.filtered(
+                lambda payment_line: dest_line_by_payment_line[
+                    payment_line
+                ].move_id.state
+                != "posted"
+            ),
         )
         return move
 
-    def _reconcile_inter_company_lines(self, line_invoice_pairs):
-        for line, dest_invoice in line_invoice_pairs:
-            dest_invoice_line = dest_invoice.line_ids.filtered(
-                lambda aml: aml.account_id.account_type
-                in ("asset_receivable", "liability_payable")
+    def _reconcile_inter_company_lines(self, mirror_dest_line_pairs):
+        for mirror_line, dest_line in mirror_dest_line_pairs:
+            if dest_line.move_id.state == "posted":
+                (mirror_line | dest_line).reconcile()
+
+    def _notify_unreconciled_payment_lines(self, move, payment_lines):
+        self.ensure_one()
+        if not payment_lines:
+            return
+        self.payment_order_id.message_post(
+            body=_(
+                "Inter-company entry %(move)s of the company %(company_name)s:"
+                " no single posted linked entry found for %(communications)s."
+                " Left unreconciled.",
+                move=move.name,
+                company_name=move.company_id.name,
+                communications=", ".join(payment_lines.mapped("communication")),
             )
-            if not dest_invoice_line or dest_invoice.state == "draft":
-                continue
-            (line | dest_invoice_line[0]).reconcile()
+        )

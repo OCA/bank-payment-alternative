@@ -150,10 +150,65 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
         payment_order = invoice.line_ids.payment_line_ids.order_id
         payment_order.payment_line_ids.communication = invoice.name
         payment_order = payment_order.with_user(user or self.env.user)
+        self._upload_payment_order(payment_order)
+        return payment_order
+
+    def _upload_payment_order(self, payment_order):
         payment_order.draft2open()
         payment_order.open2generated()
         payment_order.generated2uploaded()
+
+    def _upload_unlinked_misc_entry(
+        self, payment_mode, journal, partner_account, other_account, partner, balance
+    ):
+        company = payment_mode.company_id
+        misc_move = self.account_move_obj.with_company(company).create(
+            {
+                "move_type": "entry",
+                "journal_id": journal.id,
+                "date": "2026-01-15",
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": partner_account.id,
+                            "partner_id": partner.id,
+                            "balance": balance,
+                        }
+                    ),
+                    Command.create(
+                        {"account_id": other_account.id, "balance": -balance}
+                    ),
+                ],
+            }
+        )
+        misc_move.action_post()
+        payment_order = (
+            self.env["account.payment.order"]
+            .with_company(company)
+            .create(
+                {
+                    "payment_method_line_id": payment_mode.id,
+                    "payment_type": payment_mode.payment_type,
+                    "company_id": company.id,
+                }
+            )
+        )
+        misc_move.line_ids.filtered(
+            lambda line: line.account_id == partner_account
+        ).create_payment_line_from_move_line(payment_order)
+        payment_order.payment_line_ids.communication = "Misc entry"
+        self._upload_payment_order(payment_order)
         return payment_order
+
+    def _assert_unreconciled_message_posted(self, payment_order):
+        auto_move = payment_order.payment_ids.auto_move_id
+        communication = payment_order.payment_line_ids.communication
+        self.assertTrue(
+            payment_order.message_ids.filtered(
+                lambda message: auto_move.name in (message.body or "")
+                and communication in message.body
+            )
+        )
 
     def test_create_customer_invoice_and_pay_supplier_invoice(self):
         invoice_company_b = self._create_intercompany_supplier_invoice()
@@ -170,6 +225,73 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
             lambda line: line.account_id == self.outstanding_account_company_a
         )
         self.assertEqual(outstanding_line.debit, 450.0)
+
+    def test_mirror_account_from_linked_line(self):
+        invoice_company_b = self._create_intercompany_supplier_invoice()
+        linked_line = self.invoice_company_a.line_ids.filtered(
+            lambda line: line.account_id == self.a_recv_company_a
+        )
+        self.partner_company_b.with_company(
+            self.company_a
+        ).property_account_receivable_id = self.account_obj.create(
+            {
+                "code": "X4112.A",
+                "name": "Other receivable - (Company A)",
+                "account_type": "asset_receivable",
+                "reconcile": True,
+                "company_ids": [Command.link(self.company_a.id)],
+            }
+        )
+        payment_order = self._pay_invoice(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        mirror_line = payment_order.payment_ids.auto_move_id.line_ids.filtered(
+            lambda line: line.reconciled
+        )
+        self.assertEqual(mirror_line.account_id, self.a_recv_company_a)
+        self.assertEqual(mirror_line.full_reconcile_id, linked_line.full_reconcile_id)
+
+    def test_mirror_unlinked_outbound_line_on_receivable_property(self):
+        payment_order = self._upload_unlinked_misc_entry(
+            self.payment_mode_company_b,
+            self.misc_journal_company_b,
+            self.a_pay_company_b,
+            self.a_expense_company_b,
+            self.partner_company_a,
+            -300.0,
+        )
+        mirror_line = payment_order.payment_ids.auto_move_id.line_ids.filtered(
+            lambda line: line.credit
+        )
+        self.assertEqual(
+            mirror_line.account_id,
+            self.partner_company_b.with_company(
+                self.company_a
+            ).property_account_receivable_id,
+        )
+        self.assertFalse(mirror_line.reconciled)
+        self._assert_unreconciled_message_posted(payment_order)
+
+    def test_mirror_unlinked_inbound_line_on_payable_property(self):
+        payment_order = self._upload_unlinked_misc_entry(
+            self.payment_mode_company_a,
+            self.misc_journal_company_a,
+            self.a_recv_company_a,
+            self.a_sale_company_a,
+            self.partner_company_b,
+            300.0,
+        )
+        mirror_line = payment_order.payment_ids.auto_move_id.line_ids.filtered(
+            lambda line: line.debit
+        )
+        self.assertEqual(
+            mirror_line.account_id,
+            self.partner_company_a.with_company(
+                self.company_b
+            ).property_account_payable_id,
+        )
+        self.assertFalse(mirror_line.reconciled)
+        self._assert_unreconciled_message_posted(payment_order)
 
     def test_create_customer_invoice_and_pay_customer_invoice(self):
         invoice_company_b = self._create_intercompany_supplier_invoice()
@@ -205,6 +327,20 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
         auto_move = payment_order.payment_ids.auto_move_id
         self.assertEqual(auto_move.state, "posted")
         self.assertFalse(auto_move.line_ids.full_reconcile_id)
+        self._assert_unreconciled_message_posted(payment_order)
+
+    def test_pay_customer_invoice_with_cancelled_supplier_invoice(self):
+        self.company_b.invoice_auto_validation = False
+        invoice_company_b = self._create_intercompany_supplier_invoice()
+        invoice_company_b.sudo().button_cancel()
+        payment_order = self._pay_invoice(
+            self.invoice_company_a, self.payment_mode_company_a
+        )
+        self._assert_reconciled(self.invoice_company_a)
+        auto_move = payment_order.payment_ids.auto_move_id
+        self.assertEqual(auto_move.state, "posted")
+        self.assertFalse(auto_move.line_ids.full_reconcile_id)
+        self._assert_unreconciled_message_posted(payment_order)
 
     def test_cancel_payment_order(self):
         invoice_company_a = self._create_intercompany_customer_invoice()
