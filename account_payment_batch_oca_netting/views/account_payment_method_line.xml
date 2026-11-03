@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Copyright 2026 Akretion
+    @author Guillaume MASSON <guillaume.masson@akretion.com>
+    License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="account_payment_method_line_form" model="ir.ui.view">
+        <field name="model">account.payment.method.line</field>
+        <field
+            name="inherit_id"
+            ref="account_payment_batch_oca.account_payment_method_line_form"
+        />
+        <field name="arch" type="xml">
+            <field name="group_lines" position="after">
+                <field name="netting" invisible="payment_type != 'outbound'" />
+            </field>
+        </field>
+    </record>
+</odoo>
