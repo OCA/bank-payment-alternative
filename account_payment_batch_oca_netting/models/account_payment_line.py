@@ -9,6 +9,40 @@ from odoo.exceptions import ValidationError
 class AccountPaymentLine(models.Model):
     _inherit = "account.payment.line"
 
+    bank_account_required = fields.Boolean(
+        related=None, compute="_compute_bank_account_required"
+    )
+
+    @api.depends(
+        "order_id.payment_method_id.bank_account_required",
+        "order_id.payment_method_line_id.netting",
+        "order_id.payment_method_line_id.group_lines",
+        "order_id.payment_line_ids.amount_currency",
+        "order_id.payment_line_ids.partner_bank_id",
+        "order_id.payment_line_ids.partner_id",
+    )
+    def _compute_bank_account_required(self):
+        for line in self:
+            line.bank_account_required = (
+                line.order_id.payment_method_id.bank_account_required
+                and not line._is_net_zero_group_without_bank()
+            )
+
+    def _is_net_zero_group_without_bank(self):
+        self.ensure_one()
+        method_line = self.order_id.payment_method_line_id
+        if not method_line.netting or not method_line.group_lines:
+            return False
+        if self.partner_bank_id:
+            return False
+        grouping_fields = [
+            field for field in self._payment_grouping_fields() if field != "date"
+        ]
+        group_lines = self.order_id.payment_line_ids.filtered(
+            lambda line: all(line[field] == self[field] for field in grouping_fields)
+        )
+        return self.currency_id.is_zero(sum(group_lines.mapped("amount_currency")))
+
     def _compute_partner_bank_id(self):
         res = super()._compute_partner_bank_id()
         for line in self:
@@ -106,3 +140,53 @@ class AccountPaymentLine(models.Model):
             }
         )
         return vals
+
+    def _prepare_netting_move_line_vals(self, date, default_account):
+        self.ensure_one()
+        company = self.company_id
+        return {
+            "name": self.communication,
+            "date_maturity": date,
+            "partner_id": self.partner_id.id,
+            "account_id": (self.move_line_id.account_id or default_account).id,
+            "currency_id": self.currency_id.id,
+            "amount_currency": self.amount_currency,
+            "balance": self.currency_id._convert(
+                self.amount_currency, company.currency_id, company, date
+            ),
+        }
+
+    def _prepare_netting_move_vals(self):
+        order = self.order_id
+        date = self[:1].date
+        default_account = (
+            self[:1]
+            .partner_id.with_company(order.company_id)
+            .property_account_payable_id
+        )
+        return {
+            "move_type": "entry",
+            "journal_id": order.journal_id.id,
+            "date": date,
+            "ref": order.name,
+            "netting_payment_order_id": order.id,
+            "line_ids": [
+                Command.create(
+                    payline._prepare_netting_move_line_vals(date, default_account)
+                )
+                for payline in self
+            ],
+        }
+
+    def _reconcile_netting_counterparts(self, counterpart_lines):
+        for payline in self.filtered("move_line_id"):
+            counterpart = counterpart_lines.filtered(
+                lambda line, payline=payline: line.account_id
+                == payline.move_line_id.account_id
+                and payline.currency_id.compare_amounts(
+                    line.amount_currency, payline.amount_currency
+                )
+                == 0
+            )[:1]
+            counterpart_lines -= counterpart
+            (counterpart | payline.move_line_id).reconcile()

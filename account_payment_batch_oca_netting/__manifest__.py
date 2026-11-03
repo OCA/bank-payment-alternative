@@ -12,6 +12,9 @@
     "website": "https://github.com/OCA/bank-payment-alternative",
     "category": "Banking addons",
     "depends": ["account_payment_batch_oca"],
-    "data": ["views/account_payment_method_line.xml"],
+    "data": [
+        "views/account_payment_method_line.xml",
+        "views/account_payment_order.xml",
+    ],
     "installable": True,
 }

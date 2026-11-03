@@ -2,18 +2,47 @@
 # @author Guillaume MASSON <guillaume.masson@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
+from collections import defaultdict
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
 class AccountPaymentOrder(models.Model):
     _inherit = "account.payment.order"
 
+    netting_move_ids = fields.One2many(
+        comodel_name="account.move",
+        inverse_name="netting_payment_order_id",
+        string="Net-Zero Entries",
+        readonly=True,
+    )
+    netting_move_count = fields.Integer(compute="_compute_netting_move_count")
+
+    @api.depends("netting_move_ids")
+    def _compute_netting_move_count(self):
+        for order in self:
+            order.netting_move_count = len(order.netting_move_ids)
+
+    def cancel2draft(self):
+        moves = self.netting_move_ids
+        moves.filtered(lambda move: move.state != "draft").button_draft()
+        moves.unlink()
+        return super().cancel2draft()
+
+    def action_cancel(self):
+        res = super().action_cancel()
+        moves = self.netting_move_ids.filtered(lambda move: move.state != "cancel")
+        draft_moves = moves.filtered(lambda move: move.state == "draft")
+        draft_moves.unlink()
+        (moves - draft_moves).button_cancel()
+        return res
+
     def _draft2open_payment_group_check(self, paydict):
-        if (
-            self.payment_method_line_id.netting
-            and paydict["currency"].compare_amounts(paydict["total"], 0) < 0
-        ):
+        if not self.payment_method_line_id.netting:
+            return super()._draft2open_payment_group_check(paydict)
+        net_sign = paydict["currency"].compare_amounts(paydict["total"], 0)
+        if net_sign < 0:
             payline = paydict["paylines"][0]
             raise UserError(
                 _(
@@ -24,4 +53,52 @@ class AccountPaymentOrder(models.Model):
                     amount=paydict["total"],
                 )
             )
+        if net_sign == 0 and any(
+            paydict["currency"].compare_amounts(payline.amount_currency, 0) < 0
+            for payline in paydict["paylines"]
+        ):
+            return
         return super()._draft2open_payment_group_check(paydict)
+
+    def generated2uploaded(self):
+        res = super().generated2uploaded()
+        if self.payment_method_line_id.netting:
+            self._create_netting_moves()
+        return res
+
+    def _create_netting_moves(self):
+        self.ensure_one()
+        group_lines = self.payment_method_line_id.group_lines
+        group_paylines = defaultdict(lambda: self.env["account.payment.line"])
+        for payline in self.payment_line_ids - self.payment_ids.payment_line_ids:
+            pay_key = (
+                payline._payment_line_grouping_key() if group_lines else payline.id
+            )
+            group_paylines[pay_key] |= payline
+        moves = self.env["account.move"].create(
+            [
+                paylines._prepare_netting_move_vals()
+                for paylines in group_paylines.values()
+            ]
+        )
+        moves.action_post()
+        for move, paylines in zip(moves, group_paylines.values(), strict=True):
+            paylines._reconcile_netting_counterparts(move.line_ids)
+
+    def action_open_netting_moves(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "account.action_move_journal_line"
+        )
+        if self.netting_move_count == 1:
+            action.update(
+                {
+                    "view_mode": "form,list,kanban,activity",
+                    "views": False,
+                    "view_id": False,
+                    "res_id": self.netting_move_ids.id,
+                }
+            )
+        else:
+            action["domain"] = [("id", "in", self.netting_move_ids.ids)]
+        return action

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Copyright 2026 Akretion
+    @author Guillaume MASSON <guillaume.masson@akretion.com>
+    License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="account_payment_order_form" model="ir.ui.view">
+        <field name="model">account.payment.order</field>
+        <field
+            name="inherit_id"
+            ref="account_payment_batch_oca.account_payment_order_form"
+        />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    class="oe_stat_button"
+                    name="action_open_netting_moves"
+                    type="object"
+                    icon="fa-exchange"
+                    invisible="not netting_move_count"
+                >
+                    <field
+                        string="Net-Zero Entries"
+                        name="netting_move_count"
+                        widget="statinfo"
+                    />
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>
