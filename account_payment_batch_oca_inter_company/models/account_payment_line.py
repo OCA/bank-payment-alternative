@@ -30,10 +30,14 @@ class AccountPaymentLine(models.Model):
     def _prepare_mirror_move_line(self, dest_line, dest_company):
         self.ensure_one()
         balance = self._get_mirror_sign() * self.amount_currency
-        if dest_line:
-            dest_invoice = dest_line.move_id
+        linked_line = (
+            dest_line
+            or self._get_dest_invoice(dest_company)._get_installment_lines()[:1]
+        )
+        if linked_line:
+            dest_invoice = linked_line.move_id
             partner = dest_invoice.commercial_partner_id
-            account = dest_line.account_id
+            account = linked_line.account_id
             if dest_invoice.state == "draft":
                 name = dest_invoice.ref
             else:
@@ -67,14 +71,20 @@ class AccountPaymentLine(models.Model):
             limit=1,
         )
 
+    def _get_dest_line(self, dest_company):
+        self.ensure_one()
+        orig_lines = self.move_line_id.move_id._get_installment_lines()
+        dest_lines = self._get_dest_invoice(dest_company)._get_installment_lines()
+        dest_line_by_orig_line = (
+            dict(zip(orig_lines, dest_lines, strict=True))
+            if len(orig_lines) == len(dest_lines)
+            else {}
+        )
+        return dest_line_by_orig_line.get(self.move_line_id, dest_lines.browse())
+
     def _get_dest_line_by_payment_line(self, dest_company):
         return {
-            payment_line: payment_line._get_dest_invoice(
-                dest_company
-            ).line_ids.filtered(
-                lambda line: line.account_id.account_type
-                in ("asset_receivable", "liability_payable")
-            )[:1]
+            payment_line: payment_line._get_dest_line(dest_company)
             for payment_line in self
         }
 
@@ -92,15 +102,15 @@ class AccountPaymentLine(models.Model):
         )
         move.action_post()
         mirror_lines = move.line_ids.sorted("id")[: len(self)]
-        for mirror_line, dest_line in zip(
-            mirror_lines, dest_line_by_payment_line.values(), strict=True
+        unreconciled_payment_lines = self.browse()
+        for mirror_line, (payment_line, dest_line) in zip(
+            mirror_lines, dest_line_by_payment_line.items(), strict=True
         ):
-            if dest_line.move_id.state == "posted":
+            if dest_line.parent_state == "posted" and not dest_line.reconciled:
                 (mirror_line | dest_line).reconcile()
-        self.filtered(
-            lambda payment_line: dest_line_by_payment_line[payment_line].move_id.state
-            != "posted"
-        )._notify_unreconciled_payment_lines(move)
+            else:
+                unreconciled_payment_lines |= payment_line
+        unreconciled_payment_lines._notify_unreconciled_payment_lines(move)
         return move
 
     def _notify_unreconciled_payment_lines(self, move):
@@ -109,7 +119,7 @@ class AccountPaymentLine(models.Model):
         self.order_id.message_post(
             body=_(
                 "Inter-company entry %(move)s of the company %(company_name)s:"
-                " no single posted linked entry found for %(communications)s."
+                " no single posted linked entry is open for %(communications)s."
                 " Left unreconciled.",
                 move=move.name,
                 company_name=move.company_id.name,

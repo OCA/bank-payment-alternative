@@ -143,15 +143,67 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
     def _assert_reconciled(self, invoice):
         self.assertTrue(invoice.currency_id.is_zero(invoice.amount_residual))
 
-    def _pay_invoice(self, invoice, payment_mode, user=None):
+    def _create_payment_order(self, invoice, payment_mode):
         invoice = invoice.with_env(self.env).with_company(invoice.company_id)
         invoice.preferred_payment_method_line_id = payment_mode
         invoice.create_account_payment_line()
         payment_order = invoice.line_ids.payment_line_ids.order_id
         payment_order.payment_line_ids.communication = invoice.name
-        payment_order = payment_order.with_user(user or self.env.user)
+        return payment_order
+
+    def _pay_invoice(self, invoice, payment_mode, user=None):
+        payment_order = self._create_payment_order(invoice, payment_mode).with_user(
+            user or self.env.user
+        )
         self._upload_payment_order(payment_order)
         return payment_order
+
+    def _create_two_installment_term(self):
+        return self.env["account.payment.term"].create(
+            {
+                "name": "30% now, 70% in 30 days",
+                "line_ids": [
+                    Command.create(
+                        {"value": "percent", "value_amount": 30.0, "nb_days": 0}
+                    ),
+                    Command.create(
+                        {"value": "percent", "value_amount": 70.0, "nb_days": 30}
+                    ),
+                ],
+            }
+        )
+
+    def _create_supplier_invoice_with_installments(
+        self, on_customer_invoice=True, on_supplier_invoice=True
+    ):
+        term = self._create_two_installment_term()
+        if on_customer_invoice:
+            self.invoice_company_a.invoice_payment_term_id = term
+        if on_supplier_invoice:
+            self.partner_company_a.with_company(
+                self.company_b
+            ).property_supplier_payment_term_id = term
+        return self._create_intercompany_supplier_invoice()
+
+    def _set_other_receivable_property_company_a(self):
+        self.partner_company_b.with_company(
+            self.company_a
+        ).property_account_receivable_id = self.account_obj.create(
+            {
+                "code": "X4112.A",
+                "name": "Other receivable - (Company A)",
+                "account_type": "asset_receivable",
+                "reconcile": True,
+                "company_ids": [Command.link(self.company_a.id)],
+            }
+        )
+
+    def _get_installments(self, invoice):
+        return (
+            invoice.sudo()
+            .line_ids.filtered(lambda line: line.display_type == "payment_term")
+            .sorted("date_maturity")
+        )
 
     def _upload_payment_order(self, payment_order):
         payment_order.draft2open()
@@ -202,7 +254,7 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
 
     def _assert_unreconciled_message_posted(self, payment_order):
         auto_move = payment_order.payment_ids.auto_move_id
-        communication = payment_order.payment_line_ids.communication
+        communication = payment_order.payment_line_ids[0].communication
         self.assertTrue(
             payment_order.message_ids.filtered(
                 lambda message: auto_move.name in (message.body or "")
@@ -231,17 +283,7 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
         linked_line = self.invoice_company_a.line_ids.filtered(
             lambda line: line.account_id == self.a_recv_company_a
         )
-        self.partner_company_b.with_company(
-            self.company_a
-        ).property_account_receivable_id = self.account_obj.create(
-            {
-                "code": "X4112.A",
-                "name": "Other receivable - (Company A)",
-                "account_type": "asset_receivable",
-                "reconcile": True,
-                "company_ids": [Command.link(self.company_a.id)],
-            }
-        )
+        self._set_other_receivable_property_company_a()
         payment_order = self._pay_invoice(
             invoice_company_b, self.payment_mode_company_b
         )
@@ -340,6 +382,124 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
         auto_move = payment_order.payment_ids.auto_move_id
         self.assertEqual(auto_move.state, "posted")
         self.assertFalse(auto_move.line_ids.full_reconcile_id)
+        self._assert_unreconciled_message_posted(payment_order)
+
+    def test_pay_both_installments_in_one_order(self):
+        self.payment_mode_company_b.default_date_prefered = "now"
+        invoice_company_b = self._create_supplier_invoice_with_installments()
+        dest_installments = self._get_installments(self.invoice_company_a)
+        self.assertEqual(dest_installments.mapped("debit"), [135.0, 315.0])
+        payment_order = self._pay_invoice(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        self.assertEqual(len(payment_order.payment_ids), 1)
+        self._assert_reconciled(invoice_company_b)
+        self._assert_reconciled(self.invoice_company_a)
+        mirror_lines = payment_order.payment_ids.auto_move_id.line_ids
+        for dest_installment in dest_installments:
+            mirror_line = (
+                mirror_lines & dest_installment.full_reconcile_id.reconciled_line_ids
+            )
+            self.assertEqual(mirror_line.credit, dest_installment.debit)
+
+    def test_pay_second_installment_only(self):
+        invoice_company_b = self._create_supplier_invoice_with_installments()
+        first_installment, second_installment = self._get_installments(
+            self.invoice_company_a
+        )
+        payment_order = self._create_payment_order(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        first_paid_installment = self._get_installments(invoice_company_b)[0]
+        payment_order.payment_line_ids.filtered(
+            lambda line: line.move_line_id == first_paid_installment
+        ).unlink()
+        self._upload_payment_order(payment_order)
+        self.assertTrue(second_installment.reconciled)
+        self.assertFalse(first_installment.matched_credit_ids)
+
+    def test_dest_with_more_installments_left_unreconciled_on_linked_account(self):
+        invoice_company_b = self._create_supplier_invoice_with_installments(
+            on_supplier_invoice=False
+        )
+        self.assertEqual(len(self._get_installments(invoice_company_b)), 1)
+        self.assertEqual(len(self._get_installments(self.invoice_company_a)), 2)
+        self._set_other_receivable_property_company_a()
+        payment_order = self._pay_invoice(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        self._assert_reconciled(invoice_company_b)
+        self.assertFalse(self.invoice_company_a.line_ids.matched_credit_ids)
+        auto_move = payment_order.payment_ids.auto_move_id
+        self.assertFalse(auto_move.line_ids.full_reconcile_id)
+        mirror_line = auto_move.line_ids.filtered("credit")
+        self.assertEqual(mirror_line.account_id, self.a_recv_company_a)
+        self.assertEqual(mirror_line.partner_id, self.partner_company_b)
+        self._assert_unreconciled_message_posted(payment_order)
+
+    def test_payer_with_more_installments_left_unreconciled_on_linked_account(self):
+        self.payment_mode_company_b.default_date_prefered = "now"
+        invoice_company_b = self._create_supplier_invoice_with_installments(
+            on_customer_invoice=False
+        )
+        self.assertEqual(len(self._get_installments(invoice_company_b)), 2)
+        self.assertEqual(len(self._get_installments(self.invoice_company_a)), 1)
+        self._set_other_receivable_property_company_a()
+        payment_order = self._pay_invoice(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        self._assert_reconciled(invoice_company_b)
+        self.assertFalse(self.invoice_company_a.line_ids.matched_credit_ids)
+        auto_move = payment_order.payment_ids.auto_move_id
+        self.assertFalse(auto_move.line_ids.full_reconcile_id)
+        mirror_lines = auto_move.line_ids.filtered("credit")
+        self.assertEqual(mirror_lines.mapped("credit"), [135.0, 315.0])
+        self.assertEqual(mirror_lines.account_id, self.a_recv_company_a)
+        self._assert_unreconciled_message_posted(payment_order)
+
+    def test_installment_already_paid_left_unreconciled(self):
+        self.payment_mode_company_b.default_date_prefered = "now"
+        invoice_company_b = self._create_supplier_invoice_with_installments()
+        first_installment, second_installment = self._get_installments(
+            self.invoice_company_a
+        )
+        other_payment = self.account_move_obj.with_company(self.company_a).create(
+            {
+                "move_type": "entry",
+                "date": "2026-01-15",
+                "journal_id": self.bank_journal_company_a.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": first_installment.account_id.id,
+                            "partner_id": first_installment.partner_id.id,
+                            "credit": 135.0,
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.outstanding_account_company_a.id,
+                            "debit": 135.0,
+                        }
+                    ),
+                ],
+            }
+        )
+        other_payment.action_post()
+        (
+            first_installment
+            | other_payment.line_ids.filtered(
+                lambda line: line.account_id == first_installment.account_id
+            )
+        ).reconcile()
+        payment_order = self._pay_invoice(
+            invoice_company_b, self.payment_mode_company_b
+        )
+        self._assert_reconciled(invoice_company_b)
+        self.assertTrue(second_installment.reconciled)
+        self.assertEqual(
+            first_installment.matched_credit_ids.credit_move_id.move_id, other_payment
+        )
         self._assert_unreconciled_message_posted(payment_order)
 
     def test_cancel_payment_order(self):
