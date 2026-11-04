@@ -45,6 +45,11 @@ payable account. It is reconciled only when exactly one open line of
 that account matches (partner = paying company or empty, residual =
 amount). Otherwise it is left open, with a message on the payment order.
 
+A net-zero group has no payment but its entry gets a mirror too: same
+lines, no outstanding line, in the receiving company's inter-company
+netting journal. It follows its source: reset to draft, cancelled or
+deleted with it.
+
 **Table of contents**
 
 .. contents::
@@ -60,6 +65,11 @@ set the reconcilable inter-company dividend accounts:
   line is a dividend: its mirror goes on the partner's payable account;
 - *Payable* on the company receiving it. Uploading a payment order with
   a netted dividend is refused if this account is not set.
+
+In the same section, set the *Inter-company netting journal* (general
+journal) on the company receiving the transfers. Uploading a payment
+order with a net-zero group for that company is refused if it is not
+set.
 
 Bug Tracker
 ===========

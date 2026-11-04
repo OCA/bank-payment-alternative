@@ -76,6 +76,7 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
             cls.dividend_receivable_account
         )
         cls.company_a.interco_dividend_payable_account_id = cls.dividend_payable_account
+        cls.company_a.interco_netting_journal_id = cls.misc_journal_company_a
 
     @classmethod
     def _create_dividend_account(cls, code, account_type, company):
@@ -242,10 +243,11 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
     def _upload_netted(self, invoices):
         return self._upload(self._create_order(self._open_line(invoices)))
 
+    def _mirror_move_line(self, mirror, account):
+        return mirror.line_ids.filtered(lambda line: line.account_id == account)
+
     def _mirror_line(self, order, account):
-        return order.payment_ids.auto_move_id.line_ids.filtered(
-            lambda line: line.account_id == account
-        )
+        return self._mirror_move_line(order.payment_ids.auto_move_id, account)
 
     def _assert_mirror_reconciled(self, mirror_line, invoice):
         invoice_line = invoice.line_ids.filtered(
@@ -441,3 +443,173 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
 
         self.assertFalse(self._mirror_line(order, self.dividend_payable_account))
         self.assertEqual(self._mirror_line(order, self.a_pay_company_a).balance, 300.0)
+
+    def _create_net_zero_order(self):
+        customer_invoice_a = self._post_customer_invoice_company_a(300.0)
+        customer_invoice_b = self._post_customer_invoice_company_b(300.0)
+        order = self._create_order(
+            self._open_line(
+                self._get_linked_invoice(customer_invoice_a) | customer_invoice_b
+            )
+        )
+        return order, customer_invoice_a, self._get_linked_invoice(customer_invoice_b)
+
+    def _net_zero_mirror_line(self, order, account):
+        return self._mirror_move_line(
+            order.netting_move_ids.netting_auto_move_id, account
+        )
+
+    def test_net_zero_mirror_in_netting_journal(self):
+        order, customer_invoice_a, supplier_invoice_a = self._create_net_zero_order()
+
+        self._upload(order)
+
+        self.assertFalse(order.payment_ids)
+        source = order.netting_move_ids
+        mirror = source.netting_auto_move_id
+        self.assertRecordValues(
+            mirror,
+            [
+                {
+                    "company_id": self.company_a.id,
+                    "journal_id": self.misc_journal_company_a.id,
+                    "date": source.date,
+                    "ref": order.name,
+                    "state": "posted",
+                }
+            ],
+        )
+        self.assertEqual(len(mirror.line_ids), 2)
+        receivable_line = self._net_zero_mirror_line(order, self.a_recv_company_a)
+        self.assertEqual(receivable_line.balance, -300.0)
+        self._assert_mirror_reconciled(receivable_line, customer_invoice_a)
+        payable_line = self._net_zero_mirror_line(order, self.a_pay_company_a)
+        self.assertEqual(payable_line.balance, 300.0)
+        self._assert_mirror_reconciled(payable_line, supplier_invoice_a)
+
+    def test_net_zero_mirror_journal_not_set(self):
+        self.company_a.interco_netting_journal_id = False
+        order, _customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        order.draft2open()
+        order.open2generated()
+
+        with self.assertRaisesRegex(UserError, "netting journal is not set"):
+            order.generated2uploaded()
+
+    def test_net_zero_mirror_of_dividend(self):
+        candidate = self._post_dividend_payable(300.0, self.partner_company_b)
+        supplier_invoice_b = self._get_linked_invoice(
+            self._post_customer_invoice_company_a(300.0)
+        )
+
+        order = self._upload_netted(
+            supplier_invoice_b | self._post_dividend_receivable()
+        )
+
+        mirror_line = self._net_zero_mirror_line(order, self.dividend_payable_account)
+        self.assertEqual(mirror_line.balance, 300.0)
+        self.assertEqual(mirror_line.partner_id, self.partner_company_b)
+        self._assert_mirror_reconciled(mirror_line, candidate)
+
+    def test_net_zero_without_receiving_company_has_no_mirror(self):
+        self.company_a.interco_netting_journal_id = False
+
+        partner = self.env["res.partner"].create({"name": "External Partner"})
+        partner.with_company(self.company_b).write(
+            {
+                "property_account_receivable_id": self.a_recv_company_b.id,
+                "property_account_payable_id": self.a_pay_company_b.id,
+            }
+        )
+        supplier_invoice = self._post_invoice(
+            self.company_b,
+            partner,
+            self.purchases_journal_company_b,
+            "in_invoice",
+            500.0,
+        )
+        customer_invoice = self._post_invoice(
+            self.company_b,
+            partner,
+            self.sales_journal_company_b,
+            "out_invoice",
+            500.0,
+        )
+
+        order = self._upload_netted(supplier_invoice | customer_invoice)
+
+        self.assertEqual(order.netting_move_ids.state, "posted")
+        self.assertFalse(order.netting_move_ids.netting_auto_move_id)
+
+    def test_net_zero_mirror_cancel_and_redo(self):
+        order, customer_invoice_a, supplier_invoice_a = self._create_net_zero_order()
+        self._upload(order)
+        mirror = order.netting_move_ids.netting_auto_move_id
+
+        order.action_cancel()
+
+        self.assertEqual(mirror.state, "cancel")
+        self.assertEqual(customer_invoice_a.amount_residual, 300.0)
+        self.assertEqual(supplier_invoice_a.amount_residual, 300.0)
+
+        order.cancel2draft()
+
+        self.assertFalse(mirror.exists())
+
+        self._upload(order)
+
+        self.assertEqual(order.netting_move_ids.netting_auto_move_id.state, "posted")
+        self.assertEqual(customer_invoice_a.amount_residual, 0.0)
+        self.assertEqual(supplier_invoice_a.amount_residual, 0.0)
+
+    def test_net_zero_source_reset_to_draft_resets_mirror(self):
+        order, customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        self._upload(order)
+        source = order.netting_move_ids
+        mirror = source.netting_auto_move_id
+
+        source.button_draft()
+
+        self.assertEqual(mirror.state, "draft")
+        self.assertEqual(customer_invoice_a.amount_residual, 300.0)
+
+    def test_net_zero_source_in_draft_then_order_cancel_deletes_mirror(self):
+        order, customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        self._upload(order)
+        source = order.netting_move_ids
+        mirror = source.netting_auto_move_id
+        source.button_draft()
+
+        order.action_cancel()
+
+        self.assertFalse(source.exists())
+        self.assertFalse(mirror.exists())
+        self.assertEqual(customer_invoice_a.amount_residual, 300.0)
+
+    def test_payment_line_without_journal_item_not_matched_to_any_entry(self):
+        supplier_invoice_b = self._post_supplier_invoice_company_b()
+        self.company_a.intercompany_invoicing = False
+        unrelated_invoice = self._post_customer_invoice_company_a(500.0)
+        self.assertFalse(self._get_linked_invoice(unrelated_invoice))
+        order = self._create_order(self._open_line(supplier_invoice_b))
+        self.env["account.payment.line"].create(
+            {
+                "order_id": order.id,
+                "partner_id": self.partner_company_a.id,
+                "partner_bank_id": order.payment_line_ids.partner_bank_id.id,
+                "currency_id": order.payment_line_ids.currency_id.id,
+                "amount_currency": 200.0,
+                "communication": "Manual line",
+                "communication_type": "free",
+            }
+        )
+
+        self._upload(order)
+
+        self.assertEqual(order.payment_ids.amount, 1200.0)
+        mirror_lines = self._mirror_line(order, self.a_recv_company_a).filtered(
+            lambda line: line.name == "Manual line"
+        )
+        self.assertEqual(mirror_lines.balance, -200.0)
+        self.assertFalse(mirror_lines.reconciled)
+        self.assertEqual(unrelated_invoice.amount_residual, 500.0)

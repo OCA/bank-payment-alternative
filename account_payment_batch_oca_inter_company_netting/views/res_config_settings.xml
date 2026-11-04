@@ -35,6 +35,23 @@
                         </div>
                     </div>
                 </setting>
+                <setting
+                    id="interco_netting_journal"
+                    string="Inter-company netting journal:"
+                    company_dependent="1"
+                    help="General journal of the entries mirroring the net-zero groups of inter-company payment orders."
+                >
+                    <div class="content-group">
+                        <div class="row mt8">
+                            <label
+                                for="interco_netting_journal_id"
+                                string="Journal"
+                                class="col-lg-4 o_light_label"
+                            />
+                            <field name="interco_netting_journal_id" />
+                        </div>
+                    </div>
+                </setting>
             </xpath>
         </field>
     </record>

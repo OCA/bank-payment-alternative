@@ -5,3 +5,8 @@ set the reconcilable inter-company dividend accounts:
   line is a dividend: its mirror goes on the partner's payable account;
 - *Payable* on the company receiving it. Uploading a payment order with
   a netted dividend is refused if this account is not set.
+
+In the same section, set the *Inter-company netting journal* (general
+journal) on the company receiving the transfers. Uploading a payment
+order with a net-zero group for that company is refused if it is not
+set.

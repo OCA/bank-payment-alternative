@@ -16,3 +16,7 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.interco_dividend_payable_account_id",
         readonly=False,
     )
+    interco_netting_journal_id = fields.Many2one(
+        related="company_id.interco_netting_journal_id",
+        readonly=False,
+    )

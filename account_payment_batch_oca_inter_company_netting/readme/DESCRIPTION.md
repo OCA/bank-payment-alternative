@@ -14,3 +14,8 @@ dividend: its mirror line goes on the receiving company's dividend
 payable account. It is reconciled only when exactly one open line of
 that account matches (partner = paying company or empty, residual =
 amount). Otherwise it is left open, with a message on the payment order.
+
+A net-zero group has no payment but its entry gets a mirror too: same
+lines, no outstanding line, in the receiving company's inter-company
+netting journal. It follows its source: reset to draft, cancelled or
+deleted with it.
