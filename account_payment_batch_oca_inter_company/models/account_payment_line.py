@@ -55,6 +55,8 @@ class AccountPaymentLine(models.Model):
     def _get_dest_invoice(self, dest_company):
         self.ensure_one()
         orig_invoice = self.move_line_id.move_id
+        if not orig_invoice:
+            return orig_invoice
         if orig_invoice.auto_generated:
             return orig_invoice.auto_invoice_id
         return self.env["account.move"].search(
