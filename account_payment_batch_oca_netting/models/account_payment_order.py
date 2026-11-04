@@ -82,8 +82,10 @@ class AccountPaymentOrder(models.Model):
             ]
         )
         moves.action_post()
-        for move, paylines in zip(moves, group_paylines.values(), strict=True):
+        paylines_by_move = dict(zip(moves, group_paylines.values(), strict=True))
+        for move, paylines in paylines_by_move.items():
             paylines._reconcile_netting_counterparts(move.line_ids)
+        return paylines_by_move
 
     def action_open_netting_moves(self):
         self.ensure_one()
