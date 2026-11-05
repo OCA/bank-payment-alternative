@@ -61,6 +61,7 @@ class AccountPaymentOrder(models.Model):
         return super()._draft2open_payment_group_check(paydict)
 
     def generated2uploaded(self):
+        self.payment_line_ids._check_netting_line()
         res = super().generated2uploaded()
         if self.payment_method_line_id.netting:
             self._create_netting_moves()

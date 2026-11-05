@@ -15,6 +15,17 @@ class AccountPayment(models.Model):
             and self.payment_line_ids
         )
 
+    def _prepare_move_line_default_vals(
+        self, write_off_line_vals=None, force_balance=None
+    ):
+        if self._is_netting() and force_balance is None:
+            force_balance = sum(
+                vals["balance"] for vals in self._prepare_move_counterpart_lines({})
+            )
+        return super()._prepare_move_line_default_vals(
+            write_off_line_vals=write_off_line_vals, force_balance=force_balance
+        )
+
     def _prepare_move_counterpart_lines(self, default_values):
         if not self._is_netting():
             return super()._prepare_move_counterpart_lines(default_values)

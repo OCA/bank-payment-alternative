@@ -18,6 +18,7 @@ class NettingCommon(AccountTestInvoicingCommon):
             )
         ]
         cls.company = cls.company_data["company"]
+        cls.other_currency = cls.setup_other_currency("HRK")
         cls.payable_account = cls.company_data["default_account_payable"]
         cls.receivable_account = cls.company_data["default_account_receivable"]
         cls.partner = cls.env["res.partner"].create({"name": "Netting Partner"})
@@ -75,7 +76,13 @@ class NettingCommon(AccountTestInvoicingCommon):
 
     @classmethod
     def _create_invoice(
-        cls, move_type, amount, partner=None, date_due=None, open_account=None
+        cls,
+        move_type,
+        amount,
+        partner=None,
+        date_due=None,
+        open_account=None,
+        currency=None,
     ):
         account = (
             cls.company_data["default_account_expense"]
@@ -87,6 +94,7 @@ class NettingCommon(AccountTestInvoicingCommon):
                 "move_type": move_type,
                 "partner_id": (partner or cls.partner).id,
                 "invoice_date": fields.Date.today(),
+                "currency_id": (currency or cls.company.currency_id).id,
                 "ref": f"{move_type} {amount}",
                 "invoice_line_ids": [
                     Command.create(

@@ -2,12 +2,15 @@
 # @author Guillaume MASSON <guillaume.masson@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from freezegun import freeze_time
+
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from .common import NettingCommon
 
 
+@freeze_time("2026-01-15 12:00:00")
 @tagged("-at_install", "post_install")
 class TestNetZero(NettingCommon):
     @classmethod
@@ -127,4 +130,27 @@ class TestNetZero(NettingCommon):
         self.assertRecordValues(
             self.invoice | self.customer_invoice,
             [{"amount_residual": 0}, {"amount_residual": 0}],
+        )
+
+    def test_net_zero_foreign_currency_rounding(self):
+        invoice = self._create_invoice(
+            "in_invoice", 10.01, currency=self.other_currency
+        )
+        other_invoice = self._create_invoice(
+            "in_invoice", 12.01, currency=self.other_currency
+        )
+        customer_invoice = self._create_invoice(
+            "out_invoice", 22.02, currency=self.other_currency
+        )
+        order = self._create_order(
+            self._open_line(invoice)
+            | self._open_line(other_invoice)
+            | self._open_line(customer_invoice)
+        )
+        self._upload(order)
+        self.assertFalse(order.payment_ids)
+        self.assertEqual(order.netting_move_ids.state, "posted")
+        self.assertRecordValues(
+            invoice | other_invoice | customer_invoice,
+            [{"amount_residual": 0}, {"amount_residual": 0}, {"amount_residual": 0}],
         )

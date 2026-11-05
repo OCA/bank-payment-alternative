@@ -66,17 +66,45 @@ class AccountPaymentLine(models.Model):
             ):
                 continue
             move_line = line.move_line_id
-            if not move_line or move_line.balance <= 0:
+            if (
+                not move_line
+                or move_line.balance <= 0
+                or move_line.partner_id.commercial_partner_id
+                != line.partner_id.commercial_partner_id
+            ):
                 raise ValidationError(
                     _(
                         "Payment line %(name)s is negative: it must be linked "
-                        "to a debit journal item.",
+                        "to a debit journal item of its partner.",
                         name=line.name,
                     )
                 )
+            order = line.order_id
+            journal = order.journal_id
+            if move_line.account_id in (
+                journal.default_account_id
+                | order.payment_method_line_id.payment_account_id
+                | journal.inbound_payment_method_line_ids.payment_account_id
+                | journal.outbound_payment_method_line_ids.payment_account_id
+            ):
+                raise ValidationError(
+                    _(
+                        "Payment line %(name)s can't net journal item "
+                        "%(move_line)s: its account is a liquidity account of "
+                        "journal %(journal)s.",
+                        name=line.name,
+                        move_line=move_line.display_name,
+                        journal=journal.display_name,
+                    )
+                )
+            netted_amount = -sum(
+                order.payment_line_ids.filtered(
+                    lambda other, move_line=move_line: other.move_line_id == move_line
+                ).mapped("amount_currency")
+            )
             if (
                 currency.compare_amounts(
-                    -line.amount_currency, move_line.amount_residual_currency
+                    netted_amount, move_line.amount_residual_currency
                 )
                 > 0
             ):
@@ -86,7 +114,7 @@ class AccountPaymentLine(models.Model):
                         "%(amount).2f exceeds the residual %(residual).2f "
                         "of journal item %(move_line)s.",
                         name=line.name,
-                        amount=-line.amount_currency,
+                        amount=netted_amount,
                         residual=move_line.amount_residual_currency,
                         move_line=move_line.display_name,
                     )
@@ -110,6 +138,7 @@ class AccountPaymentLine(models.Model):
 
     def _draft2open_payment_line_check(self):
         errors = super()._draft2open_payment_line_check()
+        self._check_netting_line()
         if (
             self.order_id.payment_method_line_id.netting
             and self.communication_type != "free"
@@ -164,18 +193,20 @@ class AccountPaymentLine(models.Model):
             .partner_id.with_company(order.company_id)
             .property_account_payable_id
         )
+        line_vals_list = [
+            payline._prepare_netting_move_line_vals(date, default_account)
+            for payline in self
+        ]
+        line_vals_list[0]["balance"] -= order.company_id.currency_id.round(
+            sum(vals["balance"] for vals in line_vals_list)
+        )
         return {
             "move_type": "entry",
             "journal_id": order.journal_id.id,
             "date": date,
             "ref": order.name,
             "netting_payment_order_id": order.id,
-            "line_ids": [
-                Command.create(
-                    payline._prepare_netting_move_line_vals(date, default_account)
-                )
-                for payline in self
-            ],
+            "line_ids": [Command.create(vals) for vals in line_vals_list],
         }
 
     def _reconcile_netting_counterparts(self, counterpart_lines):

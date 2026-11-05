@@ -77,6 +77,11 @@ On confirmation, the order is refused if the net amount of a transfer
 group is negative, even when the partner's total over all its bank
 accounts is positive.
 
+A negative line must be linked to a debit journal item of its partner,
+not on a liquidity account of the bank journal, and the lines of the
+order on this journal item cannot exceed its residual. These conditions
+are checked again on confirmation and on upload.
+
 A transfer group whose net amount is zero gives no payment and is absent
 from the bank file. On upload, a miscellaneous entry is posted instead,
 in the bank journal of the order at the payment date, with the same

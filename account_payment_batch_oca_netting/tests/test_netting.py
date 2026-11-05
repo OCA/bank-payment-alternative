@@ -2,15 +2,20 @@
 # @author Guillaume MASSON <guillaume.masson@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from datetime import timedelta
+from datetime import date, timedelta
 
-from odoo import fields
+from freezegun import freeze_time
+
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 
 from .common import NettingCommon
 
+TODAY = date(2026, 1, 15)
 
+
+@freeze_time("2026-01-15 12:00:00")
 @tagged("-at_install", "post_install")
 class TestNetting(NettingCommon):
     def test_positive_group(self):
@@ -133,14 +138,13 @@ class TestNetting(NettingCommon):
                 "reconcile": True,
             }
         )
-        today = fields.Date.context_today(self.env.user)
         invoice = self._create_invoice(
-            "in_invoice", 1000, date_due=today + timedelta(days=10)
+            "in_invoice", 1000, date_due=TODAY + timedelta(days=10)
         )
         other_invoice = self._create_invoice(
             "in_invoice",
             500,
-            date_due=today + timedelta(days=20),
+            date_due=TODAY + timedelta(days=20),
             open_account=other_payable,
         )
         order = self._create_order(
@@ -148,8 +152,8 @@ class TestNetting(NettingCommon):
         )
         order.date_prefered = "due"
         self._confirm(order)
-        self.assertRecordValues(order.payment_ids, [{"amount": 1500, "date": today}])
-        self.assertRecordValues(order.payment_lot_ids, [{"date": today}])
+        self.assertRecordValues(order.payment_ids, [{"amount": 1500, "date": TODAY}])
+        self.assertRecordValues(order.payment_lot_ids, [{"date": TODAY}])
 
     def test_structured_reference_refused(self):
         invoice = self._create_invoice("in_invoice", 1000)
@@ -267,6 +271,143 @@ class TestNetting(NettingCommon):
                 }
             )
 
+    def test_negative_line_other_partner_refused(self):
+        other_partner = self.env["res.partner"].create({"name": "Other"})
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice(
+            "out_invoice", 300, partner=other_partner
+        )
+        order = self._create_order(self._open_line(invoice))
+        with self.assertRaisesRegex(ValidationError, "of its partner"):
+            self.env["account.payment.line"].create(
+                {
+                    "order_id": order.id,
+                    "partner_id": self.partner.id,
+                    "move_line_id": self._open_line(customer_invoice).id,
+                    "communication": "Other partner",
+                    "amount_currency": -300,
+                }
+            )
+
+    def test_negative_line_without_partner_refused(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        entry = self._create_debit_entry(self.receivable_account, 300)
+        move_line = self._open_line(entry)
+        entry.button_draft()
+        move_line.partner_id = False
+        entry.action_post()
+        order = self._create_order(self._open_line(invoice))
+        with self.assertRaisesRegex(ValidationError, "of its partner"):
+            self.env["account.payment.line"].create(
+                {
+                    "order_id": order.id,
+                    "partner_id": self.partner.id,
+                    "move_line_id": move_line.id,
+                    "communication": "No partner",
+                    "amount_currency": -300,
+                }
+            )
+
+    def test_negative_line_on_outstanding_account_refused(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        entry = self._create_debit_entry(self.outstanding_account, 300)
+        order = self._create_order(self._open_line(invoice))
+        with self.assertRaisesRegex(ValidationError, "liquidity account"):
+            self._open_line(entry).create_payment_line_from_move_line(order)
+
+    def test_two_lines_on_one_debit_over_residual_refused(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        customer_line = self._open_line(customer_invoice)
+        order = self._create_order(self._open_line(invoice) | customer_line)
+        with self.assertRaisesRegex(ValidationError, "residual"):
+            customer_line.create_payment_line_from_move_line(order)
+
+    def _reduce_residual(self, invoice_line, amount):
+        entry = self.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "journal_id": self.company_data["default_journal_misc"].id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "name": "Credit",
+                            "account_id": invoice_line.account_id.id,
+                            "partner_id": invoice_line.partner_id.id,
+                            "credit": amount,
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "name": "Debit",
+                            "account_id": self.company_data[
+                                "default_account_revenue"
+                            ].id,
+                            "debit": amount,
+                        }
+                    ),
+                ],
+            }
+        )
+        entry.action_post()
+        (self._open_line(entry) | invoice_line).reconcile()
+
+    def test_residual_checked_at_confirm(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        customer_line = self._open_line(customer_invoice)
+        order = self._create_order(self._open_line(invoice) | customer_line)
+        self._reduce_residual(customer_line, 100)
+        with self.assertRaisesRegex(UserError, "residual"):
+            self._confirm(order)
+
+    def test_residual_checked_at_upload(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        customer_line = self._open_line(customer_invoice)
+        order = self._create_order(self._open_line(invoice) | customer_line)
+        self._confirm(order)
+        self._reduce_residual(customer_line, 100)
+        with self.assertRaisesRegex(UserError, "residual"):
+            self._upload(order)
+
+    def test_foreign_currency_rounding_on_liquidity_line(self):
+        invoice = self._create_invoice(
+            "in_invoice", 10.01, currency=self.other_currency
+        )
+        other_invoice = self._create_invoice(
+            "in_invoice", 12.01, currency=self.other_currency
+        )
+        order = self._create_order(
+            self._open_line(invoice) | self._open_line(other_invoice)
+        )
+        self._upload(order)
+        self.assertRecordValues(order.payment_ids, [{"amount": 22.02}])
+        self.assertRecordValues(
+            order.payment_ids.move_id.line_ids.sorted("balance"),
+            [
+                {
+                    "account_id": self.outstanding_account.id,
+                    "amount_currency": -22.02,
+                    "balance": -11.02,
+                },
+                {
+                    "account_id": self.payable_account.id,
+                    "amount_currency": 10.01,
+                    "balance": 5.01,
+                },
+                {
+                    "account_id": self.payable_account.id,
+                    "amount_currency": 12.01,
+                    "balance": 6.01,
+                },
+            ],
+        )
+        self.assertRecordValues(
+            invoice | other_invoice,
+            [{"amount_residual": 0}, {"amount_residual": 0}],
+        )
+
     def test_payment_edit_keeps_netting_lines(self):
         invoice = self._create_invoice("in_invoice", 1000)
         customer_invoice = self._create_invoice("out_invoice", 300)
@@ -276,7 +417,9 @@ class TestNetting(NettingCommon):
         self._upload(order)
         payment = order.payment_ids
         payment.move_id.button_draft()
+        move_lines = payment.move_id.line_ids
         payment.payment_reference = "Edited"
+        self.assertEqual(payment.move_id.line_ids, move_lines)
         self.assertRecordValues(
             payment.move_id.line_ids.sorted("balance"),
             [

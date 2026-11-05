@@ -4,12 +4,15 @@
 
 from datetime import timedelta
 
+from freezegun import freeze_time
+
 from odoo import fields
 from odoo.tests import tagged
 
 from .common import NettingCommon
 
 
+@freeze_time("2026-01-15 12:00:00")
 @tagged("-at_install", "post_install")
 class TestNettingWizard(NettingCommon):
     @classmethod
