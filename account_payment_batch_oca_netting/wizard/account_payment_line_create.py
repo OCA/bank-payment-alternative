@@ -24,21 +24,24 @@ class AccountPaymentLineCreate(models.TransientModel):
         domain = super()._prepare_move_line_domain()
         if not (self.netting and self.include_receivables):
             return domain
-        partners = (
+        payable_partners = (
             self.order_id.payment_line_ids.filtered(
                 lambda line: line.amount_currency > 0
             ).partner_id
             | self.env["account.move.line"].search(domain).partner_id
         )
-        return expression.OR([domain, self._prepare_receivable_domain(partners)])
+        return expression.OR(
+            [domain, self._prepare_receivable_domain(payable_partners)]
+        )
 
-    def _prepare_receivable_domain(self, partners):
+    def _prepare_receivable_domain(self, payable_partners):
         domain = [
             ("reconciled", "=", False),
             ("company_id", "=", self.order_id.company_id.id),
             ("move_id.payment_state", "in", ("not_paid", "partial")),
-            ("partner_id", "in", partners.ids),
+            ("partner_id", "in", payable_partners.ids),
             ("account_id.reconcile", "=", True),
+            ("account_id", "not in", self.order_id._get_liquidity_accounts().ids),
             ("debit", ">", 0),
             ("payment_id", "=", False),
             ("statement_line_id", "=", False),

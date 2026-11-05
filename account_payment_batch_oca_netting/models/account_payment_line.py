@@ -68,12 +68,7 @@ class AccountPaymentLine(models.Model):
                 )
             order = line.order_id
             journal = order.journal_id
-            if move_line.account_id in (
-                journal.default_account_id
-                | order.payment_method_line_id.payment_account_id
-                | journal.inbound_payment_method_line_ids.payment_account_id
-                | journal.outbound_payment_method_line_ids.payment_account_id
-            ):
+            if move_line.account_id in order._get_liquidity_accounts():
                 raise ValidationError(
                     _(
                         "Payment line %(name)s can't net journal item "

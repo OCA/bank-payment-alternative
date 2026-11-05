@@ -7,7 +7,8 @@ unreconciled debit journal items of the partners that have a payable in the
 order or in the selection, with the same date, target moves, partner and
 invoice filters as payables. The journals and payment method filters apply to
 payables only, as receivables usually come from sale or miscellaneous journals.
-Journal items of payments and bank statement lines are not proposed.
+Journal items of payments and bank statement lines, and journal items on a
+liquidity account of the bank journal, are not proposed.
 
 On confirmation, the order is refused if the net amount of a transfer group is
 negative, even when the partner's total over all its bank accounts is positive.

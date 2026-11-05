@@ -7,6 +7,7 @@ from datetime import timedelta
 from freezegun import freeze_time
 
 from odoo import fields
+from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
 from .common import NettingCommon
@@ -35,6 +36,32 @@ class TestNettingWizard(NettingCommon):
         )
         wizard.populate()
         return wizard
+
+    def _create_inbound_payment(self):
+        journal = self.env["account.journal"].create(
+            {"name": "Other bank", "type": "bank", "code": "OBNK"}
+        )
+        journal.inbound_payment_method_line_ids.payment_account_id = self.env[
+            "account.account"
+        ].create(
+            {
+                "name": "Incoming payments",
+                "code": "511810",
+                "account_type": "asset_current",
+                "reconcile": True,
+            }
+        )
+        payment = self.env["account.payment"].create(
+            {
+                "payment_type": "inbound",
+                "partner_type": "customer",
+                "partner_id": self.partner.id,
+                "amount": 300,
+                "journal_id": journal.id,
+            }
+        )
+        payment.action_post()
+        return payment
 
     def _proposed(self, wizard):
         return wizard.move_line_ids.filtered(
@@ -120,18 +147,73 @@ class TestNettingWizard(NettingCommon):
 
     def test_receivables_exclude_payments(self):
         invoice = self._create_invoice("in_invoice", 1000)
-        payment = self.env["account.payment"].create(
+        payment = self._create_inbound_payment()
+        self.assertTrue(payment.move_id)
+        wizard = self._populate(self._create_order(self.env["account.move.line"]))
+        self.assertIn(self._open_line(invoice), self._proposed(wizard))
+        self.assertFalse(
+            self._proposed(wizard).filtered(
+                lambda line: line.move_id == payment.move_id and line.debit
+            )
+        )
+
+    def test_receivables_ignore_payment_partners(self):
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        payment = self._create_inbound_payment()
+        self.assertTrue(payment.move_id)
+        wizard = self._populate(self._create_order(self.env["account.move.line"]))
+        self.assertNotIn(self._open_line(customer_invoice), self._proposed(wizard))
+
+    def test_receivables_ignore_journal_and_mode_filters(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        wizard = self._populate(
+            self._create_order(self._open_line(invoice)),
+            journal_ids=invoice.journal_id.ids,
+            payment_mode="same",
+        )
+        self.assertEqual(self._proposed(wizard), self._open_line(customer_invoice))
+
+    def test_receivables_exclude_liquidity_account(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        self._create_debit_entry(self.outstanding_account, 100)
+        order = self._create_order(self.env["account.move.line"])
+        wizard = self._populate(order)
+        self.assertEqual(
+            self._proposed(wizard),
+            self._open_line(invoice) | self._open_line(customer_invoice),
+        )
+        wizard.create_payment_lines()
+        self.assertEqual(
+            order.payment_line_ids.move_line_id.filtered(
+                lambda line: line.partner_id == self.partner
+            ),
+            self._proposed(wizard),
+        )
+
+    def test_netting_refused_on_inbound_mode(self):
+        method = (
+            self.env["account.payment.method"]
+            .sudo()
+            .create(
+                {
+                    "name": "Netting test debit",
+                    "code": "test_manual_in",
+                    "payment_type": "inbound",
+                    "payment_order_ok": True,
+                }
+            )
+        )
+        mode = self.env["account.payment.method.line"].create(
             {
-                "payment_type": "inbound",
-                "partner_type": "customer",
-                "partner_id": self.partner.id,
-                "amount": 300,
+                "name": "Direct debit",
                 "journal_id": self.company_data["default_journal_bank"].id,
+                "payment_method_id": method.id,
             }
         )
-        payment.action_post()
-        wizard = self._populate(self._create_order(self.env["account.move.line"]))
-        self.assertEqual(self._proposed(wizard), self._open_line(invoice))
+        with self.assertRaisesRegex(ValidationError, "outbound"):
+            mode.netting = True
 
     def test_receivables_invoice_filter(self):
         invoice = self._create_invoice("in_invoice", 1000)
