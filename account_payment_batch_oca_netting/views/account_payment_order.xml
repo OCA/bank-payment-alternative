@@ -5,7 +5,7 @@
     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-    <record id="account_payment_order_form" model="ir.ui.view">
+    <record id="account_payment_order_view_form" model="ir.ui.view">
         <field name="model">account.payment.order</field>
         <field
             name="inherit_id"
@@ -21,8 +21,8 @@
                     invisible="not netting_move_count"
                 >
                     <field
-                        string="Net-Zero Entries"
                         name="netting_move_count"
+                        string="Net-Zero Entries"
                         widget="statinfo"
                     />
                 </button>

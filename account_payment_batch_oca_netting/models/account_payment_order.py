@@ -38,6 +38,24 @@ class AccountPaymentOrder(models.Model):
         (moves - draft_moves).button_cancel()
         return res
 
+    def action_open_netting_moves(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "account.action_move_journal_line"
+        )
+        if self.netting_move_count == 1:
+            action.update(
+                {
+                    "view_mode": "form,list,kanban,activity",
+                    "views": False,
+                    "view_id": False,
+                    "res_id": self.netting_move_ids.id,
+                }
+            )
+        else:
+            action["domain"] = [("id", "in", self.netting_move_ids.ids)]
+        return action
+
     def _draft2open_payment_group_check(self, paydict):
         if not self.payment_method_line_id.netting:
             return super()._draft2open_payment_group_check(paydict)
@@ -59,6 +77,18 @@ class AccountPaymentOrder(models.Model):
         ):
             return
         return super()._draft2open_payment_group_check(paydict)
+
+    def open2generated(self):
+        self.ensure_one()
+        if self.payment_method_line_id.netting and not self.payment_ids:
+            self.write(
+                {
+                    "state": "generated",
+                    "date_generated": fields.Date.context_today(self),
+                }
+            )
+            return {}
+        return super().open2generated()
 
     def generated2uploaded(self):
         self.payment_line_ids._check_netting_line()
@@ -87,21 +117,3 @@ class AccountPaymentOrder(models.Model):
         for move, paylines in paylines_by_move.items():
             paylines._reconcile_netting_counterparts(move.line_ids)
         return paylines_by_move
-
-    def action_open_netting_moves(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "account.action_move_journal_line"
-        )
-        if self.netting_move_count == 1:
-            action.update(
-                {
-                    "view_mode": "form,list,kanban,activity",
-                    "views": False,
-                    "view_id": False,
-                    "res_id": self.netting_move_ids.id,
-                }
-            )
-        else:
-            action["domain"] = [("id", "in", self.netting_move_ids.ids)]
-        return action

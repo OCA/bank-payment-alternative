@@ -20,6 +20,8 @@ class AccountPaymentLine(models.Model):
         "order_id.payment_line_ids.amount_currency",
         "order_id.payment_line_ids.partner_bank_id",
         "order_id.payment_line_ids.partner_id",
+        "order_id.payment_line_ids.currency_id",
+        "order_id.payment_line_ids.communication_type",
     )
     def _compute_bank_account_required(self):
         for line in self:
@@ -27,21 +29,6 @@ class AccountPaymentLine(models.Model):
                 line.order_id.payment_method_id.bank_account_required
                 and not line._is_net_zero_group_without_bank()
             )
-
-    def _is_net_zero_group_without_bank(self):
-        self.ensure_one()
-        method_line = self.order_id.payment_method_line_id
-        if not method_line.netting or not method_line.group_lines:
-            return False
-        if self.partner_bank_id:
-            return False
-        grouping_fields = [
-            field for field in self._payment_grouping_fields() if field != "date"
-        ]
-        group_lines = self.order_id.payment_line_ids.filtered(
-            lambda line: all(line[field] == self[field] for field in grouping_fields)
-        )
-        return self.currency_id.is_zero(sum(group_lines.mapped("amount_currency")))
 
     def _compute_partner_bank_id(self):
         res = super()._compute_partner_bank_id()
@@ -120,6 +107,21 @@ class AccountPaymentLine(models.Model):
                     )
                 )
 
+    def _is_net_zero_group_without_bank(self):
+        self.ensure_one()
+        method_line = self.order_id.payment_method_line_id
+        if not method_line.netting or not method_line.group_lines:
+            return False
+        if self.partner_bank_id:
+            return False
+        grouping_fields = [
+            field for field in self._payment_grouping_fields() if field != "date"
+        ]
+        group_lines = self.order_id.payment_line_ids.filtered(
+            lambda line: all(line[field] == self[field] for field in grouping_fields)
+        )
+        return self.currency_id.is_zero(sum(group_lines.mapped("amount_currency")))
+
     def _payment_line_grouping_account_key(self):
         if self.order_id.payment_method_line_id.netting:
             return False
@@ -195,7 +197,7 @@ class AccountPaymentLine(models.Model):
         )
         line_vals_list = [
             payline._prepare_netting_move_line_vals(date, default_account)
-            for payline in self
+            for payline in self.sorted("amount_currency", reverse=True)
         ]
         line_vals_list[0]["balance"] -= order.company_id.currency_id.round(
             sum(vals["balance"] for vals in line_vals_list)

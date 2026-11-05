@@ -2,6 +2,8 @@
 # @author Guillaume MASSON <guillaume.masson@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from unittest.mock import patch
+
 from freezegun import freeze_time
 
 from odoo.exceptions import UserError
@@ -132,6 +134,28 @@ class TestNetZero(NettingCommon):
             [{"amount_residual": 0}, {"amount_residual": 0}],
         )
 
+    def test_net_zero_only_order_generates_no_file(self):
+        order = self._confirm(
+            self._create_order(
+                self._open_line(self.invoice) | self._open_line(self.customer_invoice)
+            )
+        )
+        with patch.object(type(order), "generate_payment_file") as generate:
+            order.open2generated()
+        generate.assert_not_called()
+        self.assertEqual(order.state, "generated")
+        order.generated2uploaded()
+        self.assertEqual(order.state, "uploaded")
+        self.assertRecordValues(order.netting_move_ids, [{"state": "posted"}])
+
+    def test_order_with_payment_generates_file(self):
+        order = self._confirm(self._create_net_zero_order())
+        with patch.object(
+            type(order), "generate_payment_file", return_value=(False, False)
+        ) as generate:
+            order.open2generated()
+        generate.assert_called_once()
+
     def test_net_zero_foreign_currency_rounding(self):
         invoice = self._create_invoice(
             "in_invoice", 10.01, currency=self.other_currency
@@ -150,6 +174,14 @@ class TestNetZero(NettingCommon):
         self._upload(order)
         self.assertFalse(order.payment_ids)
         self.assertEqual(order.netting_move_ids.state, "posted")
+        self.assertRecordValues(
+            order.netting_move_ids.line_ids.sorted("amount_currency"),
+            [
+                {"amount_currency": -22.02, "balance": -11.01},
+                {"amount_currency": 10.01, "balance": 5.01},
+                {"amount_currency": 12.01, "balance": 6.00},
+            ],
+        )
         self.assertRecordValues(
             invoice | other_invoice | customer_invoice,
             [{"amount_residual": 0}, {"amount_residual": 0}, {"amount_residual": 0}],
