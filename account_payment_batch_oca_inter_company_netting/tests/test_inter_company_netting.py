@@ -573,6 +573,18 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
         self.assertEqual(mirror.state, "draft")
         self.assertEqual(customer_invoice_a.amount_residual, 300.0)
 
+    def test_net_zero_cancelled_source_reset_to_draft_resets_mirror(self):
+        order, _customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        self._upload(order)
+        order.action_cancel()
+        source = order.netting_move_ids
+        mirror = source.netting_auto_move_id
+
+        source.button_draft()
+
+        self.assertEqual(source.state, "draft")
+        self.assertEqual(mirror.state, "draft")
+
     def test_net_zero_source_in_draft_then_order_cancel_deletes_mirror(self):
         order, customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
         self._upload(order)

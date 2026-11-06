@@ -24,7 +24,7 @@ class AccountMove(models.Model):
     def button_draft(self):
         res = super().button_draft()
         mirrors = self.sudo().netting_auto_move_id.filtered(
-            lambda move: move.state == "posted"
+            lambda move: move.state in ("posted", "cancel")
         )
         if mirrors:
             mirrors.button_draft()

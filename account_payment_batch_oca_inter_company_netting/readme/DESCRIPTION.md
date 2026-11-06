@@ -18,4 +18,4 @@ amount). Otherwise it is left open, with a message on the payment order.
 A net-zero group has no payment but its entry gets a mirror too: same
 lines, no outstanding line, in the receiving company's inter-company
 netting journal. It follows its source: reset to draft, cancelled or
-deleted with it.
+deleted with it. Posting the source again doesn't post the mirror.
