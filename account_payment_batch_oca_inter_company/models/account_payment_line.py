@@ -62,7 +62,9 @@ class AccountPaymentLine(models.Model):
         if not orig_invoice:
             return orig_invoice
         if orig_invoice.auto_generated:
-            return orig_invoice.auto_invoice_id
+            return orig_invoice.auto_invoice_id.filtered(
+                lambda move: move.company_id == dest_company
+            )
         return self.env["account.move"].search(
             [
                 ("auto_invoice_id", "=", orig_invoice.id),

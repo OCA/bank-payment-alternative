@@ -541,6 +541,25 @@ class TestAccountPaymentOrderInterCompany(TestAccountInvoiceInterCompanyBase):
         with self.assertRaisesRegex(UserError, "outstanding"):
             self._pay_invoice(invoice_company_b, self.payment_mode_company_b)
 
+    def test_linked_invoice_of_another_company_left_unreconciled(self):
+        paid_invoice = self._create_intercompany_supplier_invoice()
+        linked_invoice = self.invoice_company_a
+        paid_invoice.sudo().auto_invoice_id = self.invoice_company_b
+        payment_order = self._pay_invoice(paid_invoice, self.payment_mode_company_b)
+        self._assert_reconciled(paid_invoice)
+        self.assertFalse(linked_invoice.line_ids.matched_credit_ids)
+        mirror_line = payment_order.payment_ids.auto_move_id.line_ids.filtered(
+            lambda line: line.credit
+        )
+        self.assertEqual(
+            mirror_line.account_id,
+            self.partner_company_b.with_company(
+                self.company_a
+            ).property_account_receivable_id,
+        )
+        self.assertFalse(mirror_line.reconciled)
+        self._assert_unreconciled_message_posted(payment_order)
+
     def test_missing_bank_journal(self):
         self.bank_journal_company_a.bank_account_id = False
         invoice_company_b = self._create_intercompany_supplier_invoice()

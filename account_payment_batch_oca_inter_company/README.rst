@@ -38,7 +38,8 @@ of its bank journal.
 On a multi-installment invoice, each payment line is paired with the
 installment of the linked invoice at the same position, by due date.
 
-A payment line without linked invoice is booked on the partner's
+A linked invoice of another company than the receiving one counts as no
+link. A payment line without linked invoice is booked on the partner's
 receivable or payable account and left unreconciled, with a message on
 the payment order. A line whose linked invoice is not posted or has a
 different number of installments, or whose installment is already fully
