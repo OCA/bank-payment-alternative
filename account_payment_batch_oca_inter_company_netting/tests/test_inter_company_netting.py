@@ -573,6 +573,17 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
         self.assertEqual(mirror.state, "draft")
         self.assertEqual(customer_invoice_a.amount_residual, 300.0)
 
+    def test_net_zero_source_cancelled_unreconciles_posted_mirror(self):
+        order, customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        self._upload(order)
+        source = order.netting_move_ids
+        mirror = source.netting_auto_move_id
+
+        source.button_cancel()
+
+        self.assertEqual(mirror.state, "cancel")
+        self.assertEqual(customer_invoice_a.amount_residual, 300.0)
+
     def test_net_zero_cancelled_source_reset_to_draft_resets_mirror(self):
         order, _customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
         self._upload(order)
@@ -596,6 +607,29 @@ class TestInterCompanyNetting(NettingCommon, TestAccountInvoiceInterCompanyBase)
 
         self.assertFalse(source.exists())
         self.assertFalse(mirror.exists())
+        self.assertEqual(customer_invoice_a.amount_residual, 300.0)
+
+    def test_net_zero_by_user_of_paying_company_only(self):
+        self.user_company_b.groups_id = [
+            Command.link(
+                self.env.ref("account_payment_batch_oca.group_account_payment").id
+            )
+        ]
+        order, customer_invoice_a, _supplier_invoice_a = self._create_net_zero_order()
+        order_as_user = order.with_user(self.user_company_b).with_context(
+            allowed_company_ids=[self.company_b.id]
+        )
+
+        self._upload(order_as_user)
+
+        mirror = order.netting_move_ids.netting_auto_move_id
+        self.assertEqual(mirror.company_id, self.company_a)
+        self.assertEqual(mirror.state, "posted")
+        self.assertEqual(customer_invoice_a.amount_residual, 0.0)
+
+        order_as_user.action_cancel()
+
+        self.assertEqual(mirror.state, "cancel")
         self.assertEqual(customer_invoice_a.amount_residual, 300.0)
 
     def test_payment_line_without_journal_item_not_matched_to_any_entry(self):

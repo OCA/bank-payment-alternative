@@ -15,7 +15,7 @@
         "account_payment_batch_oca_inter_company",
         "account_payment_batch_oca_netting",
     ],
-    "data": ["views/res_config_settings.xml"],
+    "data": ["views/res_config_settings_views.xml"],
     "auto_install": True,
     "installable": True,
 }
