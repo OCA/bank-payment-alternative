@@ -37,11 +37,21 @@ class AccountPaymentLine(models.Model):
             if (
                 order.payment_method_line_id.netting
                 and order.payment_method_id.bank_account_required
-                and line.move_line_id.move_id.move_type == "in_refund"
-                and line.partner_bank_id.partner_id != line.partner_id
+                and line.move_line_id.move_id.move_type != "in_invoice"
             ):
-                line.partner_bank_id = line.partner_id.bank_ids[:1]
+                line.partner_bank_id = line._get_netting_partner_bank()
         return res
+
+    def _get_netting_partner_bank(self):
+        self.ensure_one()
+        supplier_invoice_lines = self.order_id.payment_line_ids.filtered(
+            lambda other: other.partner_id == self.partner_id
+            and other.move_line_id.move_id.move_type == "in_invoice"
+            and other.partner_bank_id
+        )
+        return (
+            supplier_invoice_lines.partner_bank_id[:1] or self.partner_id.bank_ids[:1]
+        )
 
     @api.constrains("amount_currency", "move_line_id", "order_id")
     def _check_netting_line(self):

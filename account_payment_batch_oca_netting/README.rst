@@ -74,6 +74,11 @@ miscellaneous journals. Journal items of payments and bank statement
 lines, and journal items on a liquidity account of the bank journal, are
 not proposed.
 
+A line that does not come from a vendor bill takes the bank account of a
+vendor bill line of the same partner in the order, so that it falls into
+the same transfer group; without such a line, the partner's first bank
+account.
+
 On confirmation, the order is refused if the net amount of a transfer
 group is negative, even when the partner's total over all its bank
 accounts is positive.

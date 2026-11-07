@@ -42,6 +42,20 @@ class TestNetting(NettingCommon):
         )
         self.assertTrue(payment.is_reconciled)
 
+    def test_netted_lines_take_supplier_invoice_bank(self):
+        invoice = self._create_invoice("in_invoice", 1000)
+        invoice.button_draft()
+        invoice.partner_bank_id = self.bank_b
+        invoice.action_post()
+        customer_invoice = self._create_invoice("out_invoice", 300)
+        debit_entry = self._create_debit_entry(self.receivable_account, 200)
+        order = self._create_order(
+            self._open_line(customer_invoice)
+            | self._open_line(debit_entry)
+            | self._open_line(invoice)
+        )
+        self.assertEqual(order.payment_line_ids.partner_bank_id, self.bank_b)
+
     def test_supplier_refund(self):
         invoice = self._create_invoice("in_invoice", 1000)
         refund = self._create_invoice("in_refund", 200)
