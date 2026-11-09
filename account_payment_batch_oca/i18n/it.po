@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-23 03:38+0000\n"
-"PO-Revision-Date: 2026-03-16 10:45+0000\n"
+"PO-Revision-Date: 2026-11-09 14:47+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian (https://www.transifex.com/oca/teams/23907/it/)\n"
 "Language: it\n"
@@ -531,7 +531,7 @@ msgstr "Crea transazioni"
 #. module: account_payment_batch_oca
 #: model:ir.actions.act_window,name:account_payment_batch_oca.account_payment_line_create_action
 msgid "Create Transactions from Journal Items"
-msgstr "Crea transizioni dai movimenti contabili"
+msgstr "Crea transazioni dai movimenti contabili"
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__create_uid
@@ -1441,7 +1441,7 @@ msgstr "Medesimo o vuoto"
 #. odoo-python
 #: code:addons/account_payment_batch_oca/wizard/account_payment_line_create.py:0
 msgid "Select Journal Items to Create Transactions"
-msgstr "Selezionare i movimenti contabili per creare le transizioni"
+msgstr "Selezionare i movimenti contabili per creare le transazioni"
 
 #. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_method_line_form
@@ -1472,7 +1472,7 @@ msgstr "Selezionabile negli ordini di pagamento"
 #. module: account_payment_batch_oca
 #: model_terms:ir.ui.view,arch_db:account_payment_batch_oca.account_payment_line_create_form
 msgid "Selected Journal Items to Create Transactions"
-msgstr "Movimenti contabili selezionati per creare transizioni"
+msgstr "Movimenti contabili selezionati per creare transazioni"
 
 #. module: account_payment_batch_oca
 #: model:ir.model.fields,field_description:account_payment_batch_oca.field_account_payment_line__partner_bank_allow_out_payment
