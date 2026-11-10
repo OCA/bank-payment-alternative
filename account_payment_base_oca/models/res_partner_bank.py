@@ -15,9 +15,12 @@ class ResPartnerBank(models.Model):
     def _do_scramble(
         self, letter, position_from_start, position_from_end, first_n, last_n
     ):
-        if first_n and position_from_start <= first_n:
-            return False
-        elif last_n and position_from_end <= last_n:
+        if (
+            first_n
+            and position_from_start <= first_n
+            or last_n
+            and position_from_end <= last_n
+        ):
             return False
         return True
 

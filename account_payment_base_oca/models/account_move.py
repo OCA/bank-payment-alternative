@@ -19,8 +19,10 @@ class AccountMove(models.Model):
     def _compute_partner_bank_id(self):
         res = super()._compute_partner_bank_id()
         for invoice in self.filtered(
-            lambda inv: inv.is_inbound()
-            and inv.preferred_payment_method_line_id.journal_id.bank_account_id
+            lambda inv: (
+                inv.is_inbound()
+                and inv.preferred_payment_method_line_id.journal_id.bank_account_id
+            )
         ):
             invoice.partner_bank_id = (
                 invoice.preferred_payment_method_line_id.journal_id.bank_account_id
