@@ -11,6 +11,7 @@ class ResPartner(models.Model):
     # add selectable=True in domain
     property_outbound_payment_method_line_id = fields.Many2one(
         domain=lambda self: [
+            ("journal_id.active", "=", True),
             ("payment_type", "=", "outbound"),
             ("company_id", "parent_of", self.env.company.id),
             ("selectable", "=", True),
@@ -18,6 +19,7 @@ class ResPartner(models.Model):
     )
     property_inbound_payment_method_line_id = fields.Many2one(
         domain=lambda self: [
+            ("journal_id.active", "=", True),
             ("payment_type", "=", "inbound"),
             ("company_id", "parent_of", self.env.company.id),
             ("selectable", "=", True),

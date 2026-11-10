@@ -4,7 +4,7 @@
 
 {
     "name": "Account Payment Base OCA",
-    "version": "19.0.1.1.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting",
     "license": "AGPL-3",
     "summary": "OCA extensions to native payment objects of Odoo",
@@ -18,7 +18,7 @@
         "views/account_payment_method_line.xml",
         "views/account_move.xml",
         "reports/account_invoice_report_view.xml",
-        "security/ir_rule.xml",
+        "security/ir.access.csv",
     ],
     "pre_init_hook": "pre_init_hook",
     "demo": ["demo/demo.xml"],

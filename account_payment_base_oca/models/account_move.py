@@ -2,7 +2,7 @@
 # @author: Alexis de Lattre <alexis.delattre@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class AccountMove(models.Model):
@@ -15,7 +15,6 @@ class AccountMove(models.Model):
         related="preferred_payment_method_line_id.payment_method_id.code", store=True
     )
 
-    @api.depends("bank_partner_id", "preferred_payment_method_line_id")
     def _compute_partner_bank_id(self):
         res = super()._compute_partner_bank_id()
         for invoice in self.filtered(
