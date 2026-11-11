@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+account_payment_method_line_multicompany_rule,Payment method multi-company,account.payment.method.line,,crud,"[('company_id', 'in', company_ids)]"
