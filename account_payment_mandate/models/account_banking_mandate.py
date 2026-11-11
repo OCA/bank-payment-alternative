@@ -51,7 +51,6 @@ class AccountBankingMandate(models.Model):
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
-        string="Partner",
         index="btree",
         required=True,
         tracking=35,
@@ -59,7 +58,6 @@ class AccountBankingMandate(models.Model):
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
-        string="Company",
         required=True,
         default=lambda self: self.env.company,
     )
