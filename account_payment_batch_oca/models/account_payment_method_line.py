@@ -99,6 +99,17 @@ class AccountPaymentMethodLine(models.Model):
         help="If enabled, Odoo will automatically notify the partner by email when "
         "the payment/debit order file is successfully uploaded.",
     )
+    order_uploaded_mail_template_id = fields.Many2one(
+        comodel_name="mail.template",
+        string="Email Template",
+        default=lambda self: self.env.ref(
+            "account_payment_batch_oca.payment_order_mail_notif",
+            raise_if_not_found=False,
+        ),
+        domain="[('model', '=', 'account.payment.order')]",
+        help="Default email template used to notify partners when a payment/debit "
+        "order is marked as uploaded.",
+    )
     mail_partner_policy = fields.Selection(
         [
             ("invoice_partner", "Partner of the Invoice"),
