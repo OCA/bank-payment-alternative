@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Copyright 2026 Akretion
+  @author Guillaume MASSON <guillaume.masson@akretion.com>
+  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='default_accounts']" position="inside">
+                <setting
+                    id="interco_dividend_accounts"
+                    string="Inter-company dividends:"
+                    company_dependent="1"
+                    help="Accounts of the dividends netted in inter-company payment orders."
+                >
+                    <div class="content-group">
+                        <div class="row mt8">
+                            <label
+                                for="interco_dividend_receivable_account_id"
+                                string="Receivable"
+                                class="col-lg-4 o_light_label"
+                            />
+                            <field name="interco_dividend_receivable_account_id" />
+                        </div>
+                        <div class="row mt8">
+                            <label
+                                for="interco_dividend_payable_account_id"
+                                string="Payable"
+                                class="col-lg-4 o_light_label"
+                            />
+                            <field name="interco_dividend_payable_account_id" />
+                        </div>
+                    </div>
+                </setting>
+                <setting
+                    id="interco_netting_journal"
+                    string="Inter-company netting journal:"
+                    company_dependent="1"
+                    help="General journal of the entries mirroring the net-zero groups of inter-company payment orders."
+                >
+                    <div class="content-group">
+                        <div class="row mt8">
+                            <label
+                                for="interco_netting_journal_id"
+                                string="Journal"
+                                class="col-lg-4 o_light_label"
+                            />
+                            <field name="interco_netting_journal_id" />
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

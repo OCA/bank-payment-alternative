@@ -1,0 +1,3 @@
+odoo-addon-account_payment_batch_oca @ git+https://github.com/OCA/bank-payment-alternative.git@refs/pull/88/head#subdirectory=account_payment_batch_oca
+odoo-addon-account_payment_batch_oca_inter_company @ git+https://github.com/OCA/bank-payment-alternative.git@refs/pull/89/head#subdirectory=account_payment_batch_oca_inter_company
+odoo-addon-account_payment_batch_oca_netting @ git+https://github.com/OCA/bank-payment-alternative.git@refs/pull/90/head#subdirectory=account_payment_batch_oca_netting
