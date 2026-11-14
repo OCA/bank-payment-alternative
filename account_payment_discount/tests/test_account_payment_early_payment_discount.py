@@ -734,3 +734,21 @@ class TestAccountPaymentEarlyPaymentDiscount(TestPaymentOrderOutboundBase):
                     target_amount,
                     places=payment_move_lines.currency_id.decimal_places,
                 )
+
+    def test_with_2_invoices_different_currency(self):
+        """Two invoices in different currencies in the same payment order"""
+        self.invoice_02.currency_id = self.setup_other_currency("EUR")
+        for invoice in self.invoice + self.invoice_02:
+            invoice.invoice_payment_term_id = self.pay_terms_7_days_10_discount
+            invoice.action_post()
+            invoice.create_account_payment_line()
+
+        payment_order = self.env["account.payment.order"].search(self.domain)
+        payment_lines = payment_order.payment_line_ids
+        self.assertEqual(len(payment_lines.currency_id), 2)
+        self.assertEqual(
+            payment_lines.mapped(
+                "diff_amount_residual_currency_amount_discount_currency"
+            ),
+            [10.0, 10.0],
+        )
