@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Copyright 2026 Akretion France (https://www.akretion.com/)
+  @author: Alexis de Lattre <alexis.delattre@akretion.com>
+  License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="account_payment_reconcile_rejection_form" model="ir.ui.view">
+        <field name="model">account.payment.reconcile.rejection</field>
+        <field name="arch" type="xml">
+            <form>
+                <div id="help">
+                    <p>
+                                            This wizard handles rejections of debit orders and payment orders when the bank statement line correspond to the rejection of a single payment inside a payment/debit order.</p>
+                </div>
+                <group name="main">
+                    <field name="statement_line_id" invisible="1" />
+                    <field
+                        name="statement_line_rejected_payment_min_date"
+                        invisible="1"
+                    />
+                    <field
+                        name="statement_line_rejected_payment_min_amount"
+                        invisible="1"
+                    />
+                    <field
+                        name="statement_line_rejected_payment_max_amount"
+                        invisible="1"
+                    />
+                    <field name="company_id" invisible="1" />
+                    <field name="payment_type" invisible="1" />
+                    <field name="statement_line_currency_id" invisible="1" />
+                    <field name="statement_line_journal_id" invisible="1" />
+                    <field name="statement_line_date" />
+                    <field name="statement_line_payment_ref" />
+                    <field name="statement_line_amount" />
+                    <field
+                        name="match_method"
+                        widget="badge"
+                        decoration-success="match_method == 'endtoend_id'"
+                        decoration-info="match_method == 'remittance_info'"
+                        decoration-warning="match_method == 'partner_last'"
+                        decoration-danger="match_method == 'partner_no_match'"
+                        decoration-muted="match_method == 'no_partner_no_match'"
+                    />
+                    <field name="partner_id" readonly="match_method == 'endtoend_id'" />
+                    <field name="payment_id" />
+                    <field name="payment_memo" />
+                </group>
+                <footer>
+                    <button
+                        name="run"
+                        type="object"
+                        string="Validate"
+                        class="btn-primary"
+                    />
+                    <button special="cancel" string="Cancel" class="btn-default" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record
+        id="account_payment_reconcile_rejection_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Debit/Payment Rejection</field>
+        <field name="res_model">account.payment.reconcile.rejection</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
