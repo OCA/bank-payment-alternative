@@ -45,6 +45,10 @@
                 >
                     <field name="mail_notif" />
                     <field
+                        name="order_uploaded_mail_template_id"
+                        invisible="not mail_notif"
+                    />
+                    <field
                         name="mail_partner_policy"
                         invisible="not mail_notif"
                         widget="radio"

@@ -510,9 +510,6 @@ class AccountPaymentOrder(models.Model):
     def generated2uploaded(self):
         self.ensure_one()
         self.payment_ids.action_post()
-        method_line = self.payment_method_line_id
-        mail_notif = method_line.mail_notif
-        partner2mail = {}
         # Perform the reconciliation of payments and source journal items
         # Reminder : in v18, account.payment doesn't always have a move_id
         for payment in self.payment_ids:
@@ -524,72 +521,103 @@ class AccountPaymentOrder(models.Model):
                     if line.account_id.id == payment.destination_account_id.id:
                         lines_to_rec |= line
                 lines_to_rec.reconcile()
-            if mail_notif:
-                if payment.partner_id not in partner2mail:
-                    partner2mail[payment.partner_id] = {
-                        "payments": payment,
-                        "dest_partners": self.env["res.partner"],
-                    }
-                else:
-                    partner2mail[payment.partner_id]["payments"] |= payment
-                for line in payment.payment_line_ids:
-                    if line.mail_notif_partner_id:
-                        partner2mail[payment.partner_id]["dest_partners"] |= (
-                            line.mail_notif_partner_id
-                        )
-        if mail_notif:
-            account_number_scrambled_ctx = {
-                "show_bank_account_chars": method_line.show_bank_account_chars,
-                "show_bank_account": method_line.show_bank_account,
-            }
-            for partner, mail_dict in partner2mail.items():
-                if mail_dict["dest_partners"]:
-                    payments, detail_col = mail_dict[
-                        "payments"
-                    ]._prepare_payment_order_mail(
-                        partner.lang, account_number_scrambled_ctx
-                    )
-                    partner_to = ",".join(
-                        [str(p.id) for p in mail_dict["dest_partners"]]
-                    )
-                    try:
-                        self.env.ref(
-                            "account_payment_batch_oca.payment_order_mail_notif"
-                        ).with_context(
-                            payments=payments,
-                            detail_col=detail_col,
-                            partner_lang=partner.lang,
-                            partner_to=partner_to,
-                            partner_display_name=partner.display_name,
-                            partner_name=partner.name,
-                        ).send_mail(self.id)
-                        logger.info(
-                            "mail generated for partner %s", partner.display_name
-                        )
-                    except Exception as e:
-                        logger.warning(
-                            "Error in the generation of the payment notif mail "
-                            "for partner %s: %s",
-                            partner.display_name,
-                            e,
-                        )
-                        self.message_post(
-                            body=Markup(
-                                self.env._(
-                                    "Odoo <strong>failed to generate the email"
-                                    "</strong> for partner <a href=# "
-                                    "data-oe-model=res.partner "
-                                    "data-oe-id=%(partner_id)d> "
-                                    "%(partner_name)s</a>: %(error)s",
-                                    partner_id=partner.id,
-                                    partner_name=partner.display_name,
-                                    error=e,
-                                )
-                            )
-                        )
+        if self.payment_method_line_id.mail_notif:
+            self._send_generated_uploaded_notifications()
         self.write(
             {"state": "uploaded", "date_uploaded": fields.Date.context_today(self)}
         )
+
+    def _get_generated_uploaded_notification_template(self, mail_template=False):
+        self.ensure_one()
+        if isinstance(mail_template, int):
+            mail_template = self.env["mail.template"].browse(mail_template)
+        return (
+            mail_template[:1]
+            if mail_template
+            else self.payment_method_line_id.order_uploaded_mail_template_id
+        )
+
+    def _get_generated_uploaded_notifications_by_partner(self):
+        self.ensure_one()
+        partner2mail = {}
+        for payment in self.payment_ids:
+            if not payment.partner_id:
+                continue
+            partner_data = partner2mail.setdefault(
+                payment.partner_id.id,
+                {
+                    "partner": payment.partner_id,
+                    "payments": self.env["account.payment"],
+                    "dest_partners": self.env["res.partner"],
+                },
+            )
+            partner_data["payments"] |= payment
+            partner_data["dest_partners"] |= payment.payment_line_ids.mapped(
+                "mail_notif_partner_id"
+            )
+        return partner2mail.values()
+
+    def _send_generated_uploaded_notification(
+        self, partner, payments, dest_partners, mail_template=False
+    ):
+        self.ensure_one()
+        if not dest_partners:
+            return
+        template = self._get_generated_uploaded_notification_template(mail_template)
+        if not template:
+            return
+        account_number_scrambled_ctx = {
+            "show_bank_account_chars": (
+                self.payment_method_line_id.show_bank_account_chars
+            ),
+            "show_bank_account": self.payment_method_line_id.show_bank_account,
+        }
+        payments_vals, detail_col = payments._prepare_payment_order_mail(
+            partner.lang, account_number_scrambled_ctx
+        )
+        partner_to = ",".join([str(partner_id) for partner_id in dest_partners.ids])
+        template.with_context(
+            payments=payments_vals,
+            detail_col=detail_col,
+            partner_lang=partner.lang,
+            partner_to=partner_to,
+            partner_display_name=partner.display_name,
+            partner_name=partner.name,
+        ).send_mail(self.id)
+        logger.info("mail generated for partner %s", partner.display_name)
+
+    def _send_generated_uploaded_notifications(self, mail_template=False):
+        self.ensure_one()
+        for mail_dict in self._get_generated_uploaded_notifications_by_partner():
+            partner = mail_dict["partner"]
+            try:
+                self._send_generated_uploaded_notification(
+                    partner,
+                    mail_dict["payments"],
+                    mail_dict["dest_partners"],
+                    mail_template=mail_template,
+                )
+            except Exception as e:
+                logger.warning(
+                    "Error in the generation of the payment notif mail "
+                    "for partner %s: %s",
+                    partner.display_name,
+                    e,
+                )
+                self.message_post(
+                    body=Markup(
+                        self.env._(
+                            "Odoo <strong>failed to generate the email"
+                            "</strong> for partner <a href=# "
+                            "data-oe-model=res.partner "
+                            "data-oe-id=%(partner_id)d> "
+                            "%(partner_name)s</a>: %(error)s",
+                            partner_id=partner.id,
+                            partner_name=partner.display_name,
+                            error=e,
+                        )
+                    )
+                )
 
     def action_open_payments(self):
         self.ensure_one()
