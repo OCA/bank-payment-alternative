@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 ACSONE SA/NV
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record model="ir.ui.view" id="account_payment_method_line_form_view">
+        <field
+            name="name"
+        >account.payment.method.line.form (in account_payment_batch_fs_storage)</field>
+        <field name="model">account.payment.method.line</field>
+        <field
+            name="inherit_id"
+            ref="account_payment_base_oca.account_payment_method_line_form"
+        />
+        <field name="arch" type="xml">
+            <field name="payment_method_id" position="after">
+                <field name="storage" />
+            </field>
+        </field>
+    </record>
+</odoo>
